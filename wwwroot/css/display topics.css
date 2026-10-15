@@ -1,0 +1,314 @@
+/* ===== TOPICS PAGE ===== */
+
+/* ---------- Page base ---------- */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #1a1917;
+  color: #e8e7e4;
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+
+main {
+  display: block;
+  width: 100%;
+}
+
+/* ---------- Hero: About this course ---------- */
+.course-intro-section {
+  position: relative;
+  z-index: 2;                       /* lets the avatar overlap the next section */
+  width: 100%;
+  min-height: 400px;
+  padding: 60px 100px 70px;         /* bottom padding keeps Get Started from touching the edge */
+
+  /* avatar tuning: change these two numbers to nudge him */
+  --avatar-w: clamp(240px, 21vw, 330px);
+  --avatar-overhang: 35px;          /* how far his laptop/hand hang past the hero's bottom edge */
+  --avatar-pad: 0.22;               /* transparent space at the bottom of the PNG, as a fraction of its width */
+
+  background: linear-gradient(
+    to bottom,
+    #6b6558 0%,
+    #3d3a35 45%,
+    #1a1917 100%
+  );
+}
+
+.course-intro-content {
+  max-width: 560px;
+}
+
+.course-intro-content h1 {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #e8e7e4;
+  margin: 0 0 16px;
+}
+
+.course-intro-content p {
+  font-size: 16px;
+  line-height: 1.45;
+  color: #e8e7e4;
+  margin: 0 0 48px;
+}
+
+.cta-button {
+  display: inline-block;
+  background-color: #C97D60;
+  color: #F1E6D8;
+  padding: 18px 28px;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: #D99278;
+}
+
+.course-intro-image {
+  position: absolute;
+  right: clamp(60px, 10vw, 160px);
+  bottom: calc(var(--avatar-w) * var(--avatar-pad) * -1 - var(--avatar-overhang));
+  width: var(--avatar-w);
+}
+
+.course-intro-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- Beginner topics ---------- */
+.beginner-topics-section {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 80px 20px 110px;
+  background: linear-gradient(to bottom, #5a362e 0%, #3a201c 75%, #2e1916 100%);
+}
+
+.beginner-topics-section h2 {
+  max-width: 960px;
+  margin: 0 auto 40px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #e8e7e4;
+}
+
+.beginner-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 56px;
+  row-gap: 42px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.java-topic-card {
+  display: flex;
+  align-items: flex-start;          /* title sits at the top, like the Figma */
+  gap: 16px;
+  padding: 10px;
+  background: #66392f;
+  border-radius: 20px;
+  transition: transform 0.3s ease;
+}
+
+.java-topic-card:hover {
+  transform: translateY(-4px);
+}
+
+.java-topic-icon {
+  flex-shrink: 0;
+  width: 100px;
+  height: 90px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.java-topic-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.java-topic-title {
+  padding-top: 6px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #e8e7e4;
+}
+
+/* ---------- FAQ ---------- */
+.faq-section {
+  width: 100%;
+  padding: 80px 20px 110px;
+  background: #1a1917;
+}
+
+.faq-header {
+  max-width: 480px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.faq-header h2 {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #e8e7e4;
+  margin-bottom: 36px;
+}
+
+.faq-header p {
+  font-size: 16px;
+  color: #e8e7e4;
+}
+
+.faq-container {
+  max-width: 525px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  background: #232120;
+  margin-bottom: 12px;
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: #e8e7e4;
+}
+
+.faq-question h3 {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #e8e7e4;
+}
+
+.faq-question:focus-visible {
+  outline: 2px solid #C97D60;
+  outline-offset: -2px;
+}
+
+.faq-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: #e8e7e4;
+  transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-icon {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 40px;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 500px;
+  padding-bottom: 24px;
+}
+
+.faq-answer p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #a8a7a4;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .course-intro-section {
+    padding: 60px 50px 70px;
+    --avatar-w: 240px;
+  }
+
+  .course-intro-image {
+    right: 50px;
+  }
+
+  .beginner-topics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .course-intro-section {
+    min-height: 0;
+    padding: 50px 30px 0;
+    text-align: center;
+    --avatar-w: 220px;
+  }
+
+  .course-intro-content {
+    max-width: none;
+  }
+
+  .course-intro-content h1 {
+    font-size: 36px;
+  }
+
+  .course-intro-content p {
+    margin-bottom: 32px;
+  }
+
+  .course-intro-image {
+    position: relative;
+    right: auto;
+    margin: 30px auto 0;
+  }
+
+  .beginner-topics-section {
+    padding: 80px 24px 80px;
+  }
+
+  .beginner-topics-grid {
+    grid-template-columns: 1fr;
+    row-gap: 20px;
+  }
+
+  .faq-header h2 {
+    font-size: 32px;
+  }
+
+  .faq-question {
+    padding: 20px 24px;
+  }
+
+  .faq-answer {
+    padding: 0 24px;
+  }
+}

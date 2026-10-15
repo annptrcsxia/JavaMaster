@@ -1,0 +1,840 @@
+/* FOR ABOUT STYLE */
+
+html {
+  scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: #1a1917;
+  margin: 0;
+  padding: 0;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  color: #e8e7e4;
+}
+
+.home-page {
+  background: #1a1917;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.home-page main {
+  background: transparent;
+}
+
+.home-page .hero {
+  background: transparent;
+  margin-bottom: 0;
+}
+
+.home-page::after {
+  display: none;
+}
+
+/* Ensure content stays above overlay */
+.home-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+* {
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+/* ---------- Scroll animation ---------- */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-animate.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delay for cards/containers */
+.scroll-animate-delay {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+}
+
+.scroll-animate-delay.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+h1 {
+  color: #e8e7e4;
+  margin: 25px 50px 20px 100px;
+  padding: 10px 50px;
+}
+
+p {
+  color: #a8a7a4;
+  font-size: 18px;
+  margin: 0 100px 50px;
+  line-height: 1.6;
+}
+
+/* ---------- Shared Get Started button (raised, soft glow) ---------- */
+.cta-button {
+  display: inline-block;
+  margin-top: 30px;
+  margin-left: 0;
+  background-color: #C97D60;
+  color: #F1E6D8;
+  padding: 18px 28px;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+  text-align: left;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.55),
+    0 0 22px rgba(201, 125, 96, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.cta-button:hover {
+  background-color: #D99278;
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(217, 146, 120, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  --avatar-w: clamp(300px, 44.5vw, 700px);   /* model size (also drives text alignment) */
+  margin-top: -15px;
+  padding: 0 5% 195px 14.7%;     /* hero content sits 45px higher; extra bottom padding keeps the next section where it was */
+  color: #e8e7e4;
+  background: #1a1917;
+}
+
+.hero-left {
+  flex: 0 0 38%;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+  padding: 0 0 calc(var(--avatar-w) * 0.133);   /* lifts the text block so the heading lines up with the top of the card */
+}
+
+.hero-left h1 {
+  font-size: clamp(36px, 3.5vw, 56px);
+  line-height: 1.45;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  color: #e8e7e4;
+}
+
+.hero-left h1 span {
+  display: block;
+}
+
+.hero-left .highlight {
+  color: #FFA500;
+}
+
+.hero-left .hero-subtitle {
+  font-size: clamp(15px, 1.32vw, 21px);
+  line-height: 1.4;
+  color: #e8e7e4;
+  margin: 22px 0 0;
+}
+
+.hero-left .cta-button {
+  margin-top: 56px;
+  font-size: clamp(17px, 1.58vw, 24px);
+  font-weight: 600;
+  padding: clamp(14px, 1.2vw, 18px) clamp(26px, 2.4vw, 36px);
+}
+
+.hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  overflow: visible;
+}
+
+.image-stack {
+  position: relative;
+  width: var(--avatar-w);
+  margin-left: 0;
+}
+
+.avatar {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* floating decorations around the avatar */
+.hero-icon {
+  position: absolute;
+  height: auto;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.icon-braces {
+  width: 9.5%;
+  left: -2%;                       /* more negative = farther from the model */
+  top: 21%;
+}
+
+.icon-keyboard {
+  width: 18%;
+  left: 91%;                       /* larger = farther from the model */
+  top: 57.5%;
+  transform: rotate(10deg);        /* change or remove if your PNG is already tilted */
+}
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+    margin-top: 0;
+    padding: 30px 24px 100px;
+    gap: 30px;
+  }
+
+  .hero-left {
+    flex: none;
+    min-width: 0;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 0;
+  }
+
+  .hero-right {
+    justify-content: center;
+  }
+
+  .image-stack {
+    width: min(80vw, 380px);
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-icon {
+    display: none;
+  }
+}
+
+/* ---------- Why Java Master ---------- */
+.why-section-wrapper * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.why-section-wrapper {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(26, 25, 23, 0.3) 15%,
+      rgba(26, 25, 23, 0.7) 40%,
+      #1a1917 60%,
+      #1a1917 100%
+  );
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  margin-top: -100px;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  margin-bottom: 0;
+  padding: 150px 20px 200px 20px;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.why-content-container {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.why-hero-section {
+  text-align: center;
+  color: #e8e7e4;
+}
+
+.why-hero-section h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: -1px;
+  color: #e8e7e4;
+}
+
+.why-subtitle {
+  font-size: 1.3rem;
+  color: #a8a7a4;
+  margin-bottom: 60px;
+  font-weight: 400;
+}
+
+.why-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 88px;
+  max-width: 1130px;
+  margin: 0 auto;
+}
+
+.why-feature-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 350px;
+  background: linear-gradient(135deg, #262322 0%, #363230 30%, #63372C 70%, #C97D60 100%);
+  border-radius: 30px;
+  padding: 40px 43px;
+  border: 1px solid #3a3835;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.why-feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(199, 125, 96, 0.3);
+  border-color: #C97D60;
+}
+
+.why-card-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.why-card-icon {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 30px;
+  display: block;
+}
+
+.why-card-description {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #e8e7e4;
+  text-align: left;
+  font-weight: 400;
+}
+
+@media (max-width: 1100px) {
+  .why-cards-grid {
+    gap: 30px;
+  }
+}
+
+@media (max-width: 900px) {
+  .why-cards-grid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+  }
+
+  .why-feature-card {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .why-hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .why-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+  }
+
+  .why-feature-card {
+    padding: 40px 30px;
+  }
+
+  .why-card-description {
+    font-size: 1rem;
+  }
+}
+
+/* ---------- Benefits you'll get ---------- */
+.benefits-section-wrapper {
+  background: #1a1917;
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 80px 20px;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.benefits-content-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 50px;
+}
+
+/* header is left-aligned with the first card, like the Figma */
+.benefits-header {
+  max-width: 1200px;
+  margin: 0 auto 50px;
+  text-align: left;
+}
+
+.benefits-header h2 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #e8e7e4;
+  margin: 0 0 20px 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.benefits-header p {
+  font-size: 1.3rem;
+  color: #a8a7a4;
+  margin: 0;
+  line-height: 1.6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 900px;
+}
+
+.benefits-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.benefit-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 350px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  border: 1px solid #3a3835;
+}
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+}
+
+.benefit-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.benefit-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+  padding: 30px 25px;
+  transition: all 0.4s ease;
+}
+
+.benefit-card-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #e8e7e4;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: opacity 0.4s ease;
+}
+
+.benefit-card-description {
+  font-size: 1.1rem;
+  color: #a8a7a4;
+  margin: 15px 0 0 0;
+  line-height: 1.5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+}
+
+.benefit-card:hover .benefit-card-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.85) 70%, rgba(0, 0, 0, 0.6) 100%);
+  padding: 40px 25px;
+}
+
+.benefit-card:hover .benefit-card-description {
+  opacity: 1;
+  transform: translateY(0);
+  color: #e8e7e4;
+}
+
+@media (max-width: 1024px) {
+  .benefits-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .benefits-header h2 {
+    font-size: 2.5rem;
+  }
+
+  .benefits-header p {
+    font-size: 1.1rem;
+  }
+
+  .benefits-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .benefit-card {
+    height: 300px;
+  }
+
+  .benefit-card-title {
+    font-size: 1.5rem;
+  }
+
+  .benefit-card-description {
+    font-size: 1rem;
+  }
+}
+
+/* ---------- What makes us different ---------- */
+.different-section-wrapper {
+  background: #1a1917;
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 80px 20px;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.different-content-container {
+  max-width: 1400px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 80px;
+  padding: 0 100px;
+}
+
+.different-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.different-avatar-image {
+  width: auto;
+  height: 680px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.different-right {
+  flex: 1;
+  color: #e8e7e4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.different-right h2 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 20px 0;
+  color: #e8e7e4;
+}
+
+.different-subtitle {
+  font-size: 1.3rem;
+  color: #a8a7a4;
+  margin: 0 0 50px 0;
+  line-height: 1.5;
+}
+
+.different-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.different-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.different-check-icon {
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+}
+
+.different-feature-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  color: #e8e7e4;
+}
+
+@media (max-width: 1024px) {
+  .different-content-container {
+    flex-direction: column;
+    gap: 50px;
+    padding: 0 50px;
+  }
+
+  .different-right h2 {
+    font-size: 2.8rem;
+  }
+
+  .different-avatar-image {
+    width: 350px;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .different-right h2 {
+    font-size: 2.2rem;
+  }
+
+  .different-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .different-feature-text {
+    font-size: 1.1rem;
+  }
+
+  .different-avatar-image {
+    width: 300px;
+  }
+
+  .different-content-container {
+    padding: 0 30px;
+  }
+}
+
+/* ---------- You can… (progressive scroll) ----------
+   Replaces the old "Learn to code anytime" section.
+   Everything is scoped to .can-* classes so it can't touch the navbar,
+   hero, or any other section. Tweak the look from the variables below. */
+
+.can-section {
+  --can-start: 50vh;                        /* where the lit word sits on screen */
+  --can-space: 50vh;                        /* scroll gap before the closing panel rises */
+  --can-accent: #FFA500;                    /* the active word */
+  --can-dim: rgba(232, 231, 228, 0.25);     /* inactive words */
+  --can-panel: #F1E6D8;                     /* closing panel background */
+  --can-ink: #1a1917;                       /* closing panel text */
+  --can-brand: #A8553A;                     /* "Java Master" on the panel (darker for contrast) */
+  --can-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  position: relative;
+  width: 100%;
+  font-family: var(--can-font);
+}
+
+/* ----- Sticky intro ----- */
+.can-intro {
+  position: sticky;
+  top: calc((var(--count) - 1) * -1lh);     /* --count is set inline in the HTML */
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: var(--can-space);
+  font-size: clamp(2rem, 6.5vw, 5.5rem);
+  line-height: 1.2;
+}
+
+.can-intro-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  padding: calc(var(--can-start) - 0.5lh) 20px 0;
+}
+
+.can-lead {
+  position: sticky;
+  top: calc(var(--can-start) - 0.5lh);
+  display: inline-block;
+  height: fit-content;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: #e8e7e4;
+}
+
+.can-words {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
+}
+
+/* The lit band: a fixed gradient clipped to the text, so each word
+   only lights up while it passes the "you can" line. */
+.can-words li {
+  background: linear-gradient(
+    180deg,
+    var(--can-dim) 0 calc(var(--can-start) - 0.5lh),
+    var(--can-accent) calc(var(--can-start) - 0.55lh) calc(var(--can-start) + 0.55lh),
+    var(--can-dim) calc(var(--can-start) + 0.5lh)
+  );
+  background-attachment: fixed;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* iOS Safari ignores background-attachment: fixed, so show every word lit instead */
+@supports (-webkit-touch-callout: none) {
+  .can-words li {
+    background: none;
+    color: var(--can-accent);
+    -webkit-text-fill-color: var(--can-accent);
+  }
+}
+
+.can-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ----- Closing panel ----- */
+.can-reveal {
+  position: relative;
+  z-index: 2;                               /* sits over the pinned words */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 80px 24px;
+  text-align: center;
+  color: var(--can-ink);
+}
+
+.can-reveal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--can-panel);
+  border-radius: 1rem 1rem 0 0;
+  transform-origin: 50% 100%;
+}
+
+.can-reveal-text {
+  margin: 0;
+  max-width: 14em;
+  font-size: clamp(1.9rem, 5.5vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--can-ink);
+  text-wrap: balance;
+}
+
+.can-brand {
+  color: var(--can-brand);
+}
+
+/* The shared button is built for dark backgrounds, so flip it on the cream panel */
+.can-reveal .cta-button {
+  margin-top: 48px;
+  background-color: var(--can-ink);
+  color: #F1E6D8;
+  box-shadow: 0 10px 24px rgba(26, 25, 23, 0.28);
+}
+
+.can-reveal .cta-button:hover {
+  background-color: #C97D60;
+  box-shadow: 0 14px 28px rgba(26, 25, 23, 0.32);
+}
+
+/* ----- Scroll-driven grow + fade (browsers without support just show the final state) ----- */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .can-reveal {
+      view-timeline: --can-reveal;
+    }
+
+    .can-reveal::before {
+      scale: 0.9;
+      animation: can-grow both ease-in-out;
+      animation-timeline: --can-reveal;
+      animation-range: entry 50%;
+    }
+
+    .can-reveal > * {
+      animation: can-fade both ease-in-out;
+      animation-timeline: --can-reveal;
+      animation-range: entry 50%;
+    }
+  }
+}
+
+@keyframes can-grow {
+  to {
+    scale: 1;
+    border-radius: 0;
+  }
+}
+
+@keyframes can-fade {
+  from {
+    opacity: 0;
+  }
+}

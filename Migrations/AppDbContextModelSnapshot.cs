@@ -22,6 +22,97 @@ namespace JavaMaster.Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("JavaMaster.Api.Entities.LearnNode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoinReward")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IntroText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LearnSectionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NodeType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("OutroText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Subtitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TopicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("XpReward")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearnSectionId");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("LearnNodes");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.LearnSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LearnSections");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.NodeQuestion", b =>
+                {
+                    b.Property<int>("LearnNodeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("LearnNodeId", "QuestionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("NodeQuestions");
+                });
+
             modelBuilder.Entity("JavaMaster.Api.Entities.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -78,6 +169,65 @@ namespace JavaMaster.Api.Migrations
                     b.HasIndex("TopicId");
 
                     b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.QuestionAttempt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LearnNodeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubmittedAnswer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QuestionAttempts");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.Rank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IconFile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MaxXp")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinXp")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ranks");
                 });
 
             modelBuilder.Entity("JavaMaster.Api.Entities.Topic", b =>
@@ -174,6 +324,68 @@ namespace JavaMaster.Api.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("JavaMaster.Api.Entities.UserNodeProgress", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LearnNodeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastPlayedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("TimesCompleted")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "LearnNodeId");
+
+                    b.HasIndex("LearnNodeId");
+
+                    b.ToTable("UserNodeProgress");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.LearnNode", b =>
+                {
+                    b.HasOne("JavaMaster.Api.Entities.LearnSection", "LearnSection")
+                        .WithMany("Nodes")
+                        .HasForeignKey("LearnSectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JavaMaster.Api.Entities.Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId");
+
+                    b.Navigation("LearnSection");
+
+                    b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.NodeQuestion", b =>
+                {
+                    b.HasOne("JavaMaster.Api.Entities.LearnNode", "LearnNode")
+                        .WithMany("NodeQuestions")
+                        .HasForeignKey("LearnNodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JavaMaster.Api.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearnNode");
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("JavaMaster.Api.Entities.Question", b =>
                 {
                     b.HasOne("JavaMaster.Api.Entities.Topic", "Topic")
@@ -183,6 +395,35 @@ namespace JavaMaster.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.UserNodeProgress", b =>
+                {
+                    b.HasOne("JavaMaster.Api.Entities.LearnNode", "LearnNode")
+                        .WithMany()
+                        .HasForeignKey("LearnNodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JavaMaster.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearnNode");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.LearnNode", b =>
+                {
+                    b.Navigation("NodeQuestions");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.LearnSection", b =>
+                {
+                    b.Navigation("Nodes");
                 });
 #pragma warning restore 612, 618
         }

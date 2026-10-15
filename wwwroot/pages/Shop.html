@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+    <link rel="stylesheet" href="/css/Dashboard-navbar-style.css">
+    <link rel="stylesheet" href="/css/Shop-style.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+
+        <div class="nav-sections">
+            <a href="Home.html" class="nav-item"><img src="/icons/home.png" alt="Home">Home</a>
+            <a href="Learn.html" class="nav-item"><img src="/icons/toga cap.png" alt="Learn">Learn</a>
+            <a href="Progress.html" class="nav-item"><img src="/icons/coffee.png" alt="Progress">Progress</a>
+            <a href="Profile.html" class="nav-item"><img src="/icons/profile.png" alt="Profile">Profile</a>
+            <a href="Lobby.html" class="nav-item"><img src="/icons/lobby.png" alt="Lobby">Lobby</a>
+        </div>
+
+        <div class="action-buttons">
+            <a href="Study.html" class="action-btn study-button">
+                <img src="/icons/game console.png" alt="Study">
+                Study
+            </a>
+        </div>
+    </nav>
+
+    <!-- Top Bar -->
+    <div class="top-navbar">
+        <a href="Notifications.html" class="icon-button">
+            <img src="/icons/notification_bell_icon.png" alt="notification icon">
+            <span class="notification-badge hidden" id="notificationBadge"></span>
+        </a>
+
+        <div class="profile-container">
+            <button class="profile-button" id="profileButton">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+                <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+            </button>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="Profile.html" class="dropdown-item"><img src="/icons/profile.png" alt="profile icon">Profile</a>
+                <a href="FAQ.html" class="dropdown-item"><img src="/icons/faq_icon.png" alt="faq icon">FAQ</a>
+                <a href="About.html" class="dropdown-item logout" id="logoutBtn"><img src="/icons/logout_icon.png" alt="logout icon">Log out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop -->
+    <main class="main-content">
+        <header class="shop-header">
+            <h1 class="shop-title">Shop</h1>
+            <div class="user-coins" title="Your coins">
+                <img src="/icons/currency.png" alt="coins">
+                <span id="user-coins">0</span>
+            </div>
+        </header>
+
+        <section class="shop-section">
+            <h2 class="section-title">Power ups</h2>
+            <div class="powerup-grid">
+
+                <article class="powerup-card" data-type="heart" data-storage="heartRecharges">
+                    <div class="powerup-icon">
+                        <img src="/icons/heal potion.png" alt="hp">
+                        <span class="owned-badge">0</span>
+                    </div>
+                    <h3 class="powerup-name">Hearts</h3>
+                    <button class="buy-more-btn" type="button">Buy more</button>
+                </article>
+
+                <article class="powerup-card" data-type="hint" data-storage="playerHints">
+                    <div class="powerup-icon">
+                        <img src="/icons/key.png" alt="hints">
+                        <span class="owned-badge">0</span>
+                    </div>
+                    <h3 class="powerup-name">Hints</h3>
+                    <button class="buy-more-btn" type="button">Buy more</button>
+                </article>
+
+                <article class="powerup-card" data-type="streak" data-storage="streakSavers">
+                    <div class="powerup-icon">
+                        <img src="/icons/kettle.png" alt="streak saver">
+                        <span class="owned-badge">0</span>
+                    </div>
+                    <h3 class="powerup-name">Streak repair</h3>
+                    <button class="buy-more-btn" type="button">Buy more</button>
+                </article>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Purchase Modal -->
+    <div class="modal-overlay" id="purchase-modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="powerup-icon modal-icon">
+                <img id="modal-icon" src="" alt="">
+                <span class="owned-badge" id="modal-owned">0</span>
+            </div>
+            <h3 class="powerup-name" id="modal-title">Hearts</h3>
+
+            <div class="pack-options">
+                <button type="button" class="pack-option selected" data-pack="0">
+                    <span class="pack-label">5 pack</span>
+                    <span class="pack-price"><img src="/icons/currency.png" alt="coins"><span>50</span></span>
+                </button>
+                <button type="button" class="pack-option" data-pack="1">
+                    <span class="pack-label">10 pack</span>
+                    <span class="pack-price"><img src="/icons/currency.png" alt="coins"><span>100</span></span>
+                </button>
+            </div>
+
+            <p class="modal-error" id="modal-error" role="alert"></p>
+            <button type="button" class="confirm-btn" id="confirm-purchase">Buy 5 pack</button>
+        </div>
+    </div>
+
+    <script src="/js/notification-manager.js"></script>
+    <script src="/js/coins-sync.js"></script>
+    <script>
+        /* ---------- Navbar: dropdown, avatar, logout ---------- */
+        const profileButton = document.getElementById('profileButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const dropdownIcon = profileButton.querySelector('.dropdown-icon');
+
+        profileButton.addEventListener('click', e => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+            dropdownIcon.classList.toggle('rotated');
+        });
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.profile-button') && !e.target.closest('.dropdown-menu')) {
+                dropdownMenu.classList.remove('active');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+
+        function loadNavbarAvatar() {
+            const el = document.getElementById('navbarAvatar');
+            if (el) el.src = localStorage.getItem('profileAvatar') || 'avatars/Avatar 1.png';
+        }
+        loadNavbarAvatar();
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('loggedInUsername');
+            localStorage.removeItem('loggedInPassword');
+        });
+
+        /* ---------- Shop data ---------- */
+        // Each power-up: display name, localStorage key, and its two packs.
+        const POWERUPS = {
+            heart:  { name: 'Hearts',        key: 'heartRecharges', icon: 'icons/heal potion.png',  packs: [{ qty: 5, price: 150 }, { qty: 10, price: 300 }] },
+            hint:   { name: 'Hints',         key: 'playerHints',    icon: 'icons/key.png',    packs: [{ qty: 5, price: 75 },  { qty: 10, price: 140 }] },
+            streak: { name: 'Streak repair', key: 'streakSavers',   icon: 'icons/kettle.png', packs: [{ qty: 5, price: 50 },  { qty: 10, price: 100 }] }
+        };
+
+        const coinSound = new Audio('sounds/coins_sound-efx.mp3');
+        coinSound.preload = 'auto';
+
+        const modal = document.getElementById('purchase-modal');
+        const confirmBtn = document.getElementById('confirm-purchase');
+        const errorEl = document.getElementById('modal-error');
+        const packButtons = [...document.querySelectorAll('.pack-option')];
+
+        let userCoins = 0;
+        let currentType = null;
+        let currentPack = 0;
+        let resetTimer = null;
+
+        const getOwned = type => parseInt(localStorage.getItem(POWERUPS[type].key) || '0', 10);
+
+        function readCoins() {
+            const saved = localStorage.getItem('coins');
+            if (saved === null) {           // new player: starter bonus
+                localStorage.setItem('coins', '80');
+                return 80;
+            }
+            return parseInt(saved, 10) || 0;
+        }
+
+        function renderShop() {
+            userCoins = readCoins();
+            document.getElementById('user-coins').textContent = userCoins;
+            const sidebarCoins = document.getElementById('sidebar-coins');
+            if (sidebarCoins) sidebarCoins.textContent = userCoins;
+
+            document.querySelectorAll('.powerup-card').forEach(card => {
+                card.querySelector('.owned-badge').textContent = getOwned(card.dataset.type);
+            });
+            if (currentType) document.getElementById('modal-owned').textContent = getOwned(currentType);
+        }
+
+        /* ---------- Modal ---------- */
+        function resetConfirmButton() {
+            clearTimeout(resetTimer);
+            const pack = POWERUPS[currentType].packs[currentPack];
+            confirmBtn.textContent = `Buy ${pack.qty} pack`;
+            confirmBtn.classList.remove('purchased');
+            confirmBtn.disabled = false;
+        }
+
+        function selectPack(index) {
+            currentPack = index;
+            packButtons.forEach((b, i) => b.classList.toggle('selected', i === index));
+            errorEl.textContent = '';
+            resetConfirmButton();
+        }
+
+        function openModal(type) {
+            currentType = type;
+            const p = POWERUPS[type];
+            document.getElementById('modal-icon').src = p.icon;
+            document.getElementById('modal-icon').alt = p.name;
+            document.getElementById('modal-title').textContent = p.name;
+            packButtons.forEach((b, i) => {
+                b.querySelector('.pack-label').textContent = `${p.packs[i].qty} pack`;
+                b.querySelector('.pack-price span').textContent = p.packs[i].price;
+            });
+            renderShop();
+            selectPack(0);
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            confirmBtn.focus();
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            clearTimeout(resetTimer);
+            currentType = null;
+        }
+
+        function confirmPurchase() {
+            if (!currentType || confirmBtn.disabled) return;
+            const pack = POWERUPS[currentType].packs[currentPack];
+            userCoins = readCoins();
+
+            if (userCoins < pack.price) {
+                errorEl.textContent = `You need ${pack.price - userCoins} more coins for this pack.`;
+                confirmBtn.classList.remove('shake');
+                void confirmBtn.offsetWidth;   // restart animation
+                confirmBtn.classList.add('shake');
+                return;
+            }
+
+            localStorage.setItem('coins', userCoins - pack.price);
+            localStorage.setItem(POWERUPS[currentType].key, getOwned(currentType) + pack.qty);
+
+            coinSound.currentTime = 0;
+            coinSound.play().catch(() => {});   // ignore autoplay/missing-file errors
+
+            errorEl.textContent = '';
+            renderShop();
+            confirmBtn.textContent = 'Purchased';
+            confirmBtn.classList.add('purchased');
+            confirmBtn.disabled = true;
+            resetTimer = setTimeout(resetConfirmButton, 1800);
+        }
+
+        document.querySelectorAll('.powerup-card').forEach(card => {
+            card.querySelector('.buy-more-btn').addEventListener('click', () => openModal(card.dataset.type));
+        });
+        packButtons.forEach((b, i) => b.addEventListener('click', () => selectPack(i)));
+        confirmBtn.addEventListener('click', confirmPurchase);
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        window.addEventListener('storage', e => {
+            if (['coins', 'heartRecharges', 'playerHints', 'streakSavers'].includes(e.key)) renderShop();
+            if (e.key === 'profileAvatar') loadNavbarAvatar();
+        });
+
+        renderShop();
+        window.addEventListener('DOMContentLoaded', () => NotificationManager.updateBadge());
+    </script>
+</body>
+</html>

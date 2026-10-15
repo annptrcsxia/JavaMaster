@@ -1,0 +1,423 @@
+/* STYLE FOR THE HOME PAGE CONTENT
+   Load this AFTER Dashboard-navbar-style.css (it uses the --u unit defined there:
+   1 unit = 1/1920 of the screen width, so every number below is a pixel value
+   from the 1920x1080 mockup).
+
+   All elements are placed with absolute coordinates taken from the mockup,
+   so the page always keeps the same proportions as the design. */
+
+/* Content canvas: covers the whole 1920x1080 design area; the sidebar sits on top of it */
+.main-content.home-page {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: max(100vh, calc(1080 * var(--u)));
+    min-height: 0;
+    background: var(--page-bg);
+    color: #f1e6da;
+    overflow: hidden;
+    flex: none;               /* never let the flex <body> squeeze the page */
+}
+
+.home-page > * {
+    position: absolute;
+}
+
+/* ---------- Page title ---------- */
+.page-title {
+    left: calc(500 * var(--u));
+    top: calc(93 * var(--u));
+    font-size: calc(26 * var(--u));
+    line-height: calc(32 * var(--u));
+    font-weight: 600;
+    color: #7c7068;
+}
+
+/* ---------- Greeting ---------- */
+.model {
+    left: calc(470 * var(--u));
+    top: calc(175 * var(--u));
+    height: calc(265 * var(--u));
+    width: auto;
+}
+
+.speech-bubble {
+    left: calc(662 * var(--u));
+    top: calc(208 * var(--u));
+    /* The bubble grows with the greeting text: wider first, then taller when it wraps */
+    width: fit-content;
+    min-width: calc(300 * var(--u));
+    max-width: calc(538 * var(--u));
+    min-height: calc(87 * var(--u));
+    display: flex;
+    align-items: center;
+    padding: calc(22 * var(--u)) calc(46 * var(--u)) calc(22 * var(--u)) calc(42 * var(--u));
+    color: #2a2320;
+}
+
+/* The bubble outline + tail is drawn by the script at the bottom of Home.html
+   (so it always fits the text). Only its position is set here. */
+.speech-bubble-shape {
+    position: absolute;
+    left: calc(-12 * var(--u));
+    top: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.speech-bubble-shape path {
+    fill: #f0e4d8;
+    stroke: #b8b0a6;
+    stroke-linejoin: round;
+}
+
+.speech-bubble p {
+    position: relative;
+    z-index: 1;
+    font-size: calc(28 * var(--u));
+    line-height: 1.25;
+    font-weight: 500;
+}
+
+/* Typing animation: letters start hidden (they still take up space, so the bubble keeps
+   its final size) and are revealed one by one by the script in Home.html */
+.greeting-char {
+    visibility: hidden;
+}
+
+.greeting-char.shown {
+    visibility: visible;
+}
+
+/* blinking cursor after the letter that was just typed (drawn with a shadow, so it takes no space) */
+.greeting-char.cursor {
+    box-shadow: calc(3 * var(--u)) 0 0 0 #2a2320;
+    animation: caret-blink 0.8s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+    50% { box-shadow: calc(3 * var(--u)) 0 0 0 transparent; }
+}
+
+/* ---------- Jump Back In ---------- */
+.section-title {
+    left: calc(512 * var(--u));
+    top: calc(485 * var(--u));
+    font-size: calc(36 * var(--u));
+    line-height: calc(44 * var(--u));
+    font-weight: 600;
+    color: #e8dfd5;
+}
+
+.course-card {
+    left: calc(497 * var(--u));
+    top: calc(552 * var(--u));
+    width: calc(703 * var(--u));
+    height: calc(337 * var(--u));
+    border-radius: calc(28 * var(--u));
+    overflow: hidden;
+    box-shadow: 0 calc(8 * var(--u)) calc(24 * var(--u)) rgba(0, 0, 0, 0.45);
+    background: #2a2320;
+}
+
+/* Everything inside the card is positioned relative to the card */
+.course-card > * {
+    position: absolute;
+}
+
+.course-bg {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* dim fade over the topic cover: darkest on the left, fading to clear on the right
+   (change the 0.65 to make the left side darker or lighter) */
+.course-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(20, 16, 14, 0.65) 0%, rgba(20, 16, 14, 0.35) 45%, rgba(20, 16, 14, 0) 100%);
+    pointer-events: none;
+    z-index: 1;               /* above the picture (0), below the text (2) */
+}
+
+.course-card > * {
+    z-index: 2;               /* text and buttons */
+}
+
+.course-card > .course-bg {
+    z-index: 0;               /* the topic cover picture, at the very back */
+}
+
+.progress-track {
+    left: calc(39 * var(--u));
+    top: calc(33 * var(--u));
+    width: calc(222 * var(--u));
+    height: calc(13 * var(--u));
+    border-radius: 999px;
+    background: #e8e0d8;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 20%;
+    border-radius: 999px;
+    background: #f59e0b;
+}
+
+.progress-label {
+    left: calc(269 * var(--u));
+    top: calc(28 * var(--u));
+    font-size: calc(18 * var(--u));
+    line-height: calc(22 * var(--u));
+    color: #f1e6da;
+}
+
+.course-title {
+    left: calc(37 * var(--u));
+    top: calc(141 * var(--u));
+    font-size: calc(42 * var(--u));
+    line-height: calc(50 * var(--u));
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #f6efe8;
+}
+
+.course-next {
+    left: calc(38 * var(--u));
+    top: calc(185 * var(--u));
+    font-size: calc(26 * var(--u));
+    line-height: calc(32 * var(--u));
+    font-weight: 400;
+    color: #f6efe8;
+}
+
+.continue-btn {
+    left: calc(36 * var(--u));
+    top: calc(243 * var(--u));
+    width: calc(322 * var(--u));
+    height: calc(52 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #5b3fe0;
+    color: #ffffff;
+    font-size: calc(26 * var(--u));
+    font-weight: 600;
+    text-decoration: none;
+    z-index: 3;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.continue-btn:hover {
+    background: #6c52ee;
+}
+
+.continue-btn:active {
+    transform: scale(0.98);
+}
+
+/* dark pill tucked behind the button, as in the mockup */
+.view-course {
+    left: calc(377 * var(--u));
+    top: calc(258 * var(--u));
+    height: calc(30 * var(--u));
+    display: flex;
+    align-items: center;
+    color: #f1e6da;
+    font-size: calc(17 * var(--u));
+    text-decoration: none;
+    z-index: 2;
+    transition: color 0.2s ease;
+}
+
+.view-course:hover {
+    color: #ffffff;
+}
+
+/* ---------- Daily Challenge card ---------- */
+.daily-card {
+    left: calc(1349 * var(--u));
+    top: calc(199 * var(--u));
+    width: calc(375 * var(--u));
+    height: calc(255 * var(--u));
+    border-radius: calc(24 * var(--u));
+    background: #6b4033;
+    box-shadow: 0 calc(8 * var(--u)) calc(24 * var(--u)) rgba(0, 0, 0, 0.45);
+}
+
+.daily-card > * {
+    position: absolute;
+}
+
+.daily-title {
+    left: calc(29 * var(--u));
+    top: calc(33 * var(--u));
+    font-size: calc(34 * var(--u));
+    line-height: calc(39 * var(--u));
+    font-weight: 600;
+    color: #f0e4d8;
+}
+
+.daily-desc {
+    left: calc(29 * var(--u));
+    top: calc(115 * var(--u));
+    width: calc(172 * var(--u));
+    font-size: calc(12 * var(--u));
+    line-height: calc(15 * var(--u));
+    color: #f0e4d8;
+}
+
+.lets-go-btn {
+    left: calc(20 * var(--u));
+    top: calc(184 * var(--u));
+    width: calc(194 * var(--u));
+    height: calc(46 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #c4512f;
+    color: #f6ebe0;
+    font-size: calc(22 * var(--u));
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 calc(4 * var(--u)) calc(8 * var(--u)) rgba(0, 0, 0, 0.35);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.lets-go-btn:hover {
+    background: #d4613f;
+}
+
+.lets-go-btn:active {
+    transform: scale(0.98);
+}
+
+.daily-icon {
+    left: calc(219 * var(--u));
+    top: calc(46 * var(--u));
+    width: calc(140 * var(--u));
+    height: calc(137 * var(--u));
+    object-fit: contain;
+}
+
+/* ---------- Coins + Power ups card ---------- */
+.coins-card {
+    left: calc(1349 * var(--u));
+    top: calc(508 * var(--u));
+    width: calc(375 * var(--u));
+    height: calc(330 * var(--u));
+    border-radius: calc(24 * var(--u));
+    background: #3b2d29;
+    box-shadow: 0 calc(8 * var(--u)) calc(24 * var(--u)) rgba(0, 0, 0, 0.45);
+}
+
+.coins-card > * {
+    position: absolute;
+}
+
+.coin-icon {
+    left: calc(42 * var(--u));
+    top: calc(30 * var(--u));
+    width: calc(60 * var(--u));
+    height: calc(60 * var(--u));
+    object-fit: contain;
+}
+
+.coin-amount {
+    left: calc(120 * var(--u));
+    top: calc(28 * var(--u));
+    font-size: calc(40 * var(--u));
+    line-height: calc(48 * var(--u));
+    font-weight: 700;
+    color: #f0e4d8;
+}
+
+.coin-label {
+    left: calc(119 * var(--u));
+    top: calc(75 * var(--u));
+    font-size: calc(14 * var(--u));
+    line-height: calc(16 * var(--u));
+    color: #e8c8c0;
+}
+
+.coins-divider {
+    left: calc(9 * var(--u));
+    top: calc(113 * var(--u));
+    width: calc(358 * var(--u));
+    height: calc(3 * var(--u));
+    border: none;
+    border-radius: 999px;
+    background: #5b4b46;
+}
+
+.powerups-title {
+    left: calc(52 * var(--u));
+    top: calc(140 * var(--u));
+    font-size: calc(18 * var(--u));
+    line-height: calc(22 * var(--u));
+    font-weight: 500;
+    color: #f0e4d8;
+}
+
+.powerup {
+    position: absolute;
+}
+
+.powerup img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.powerup-heart  { left: calc(54 * var(--u));  top: calc(184 * var(--u)); width: calc(66 * var(--u)); height: calc(58 * var(--u)); }
+.powerup-key    { left: calc(161 * var(--u)); top: calc(175 * var(--u)); width: calc(68 * var(--u)); height: calc(69 * var(--u)); }
+.powerup-kettle { left: calc(271 * var(--u)); top: calc(177 * var(--u)); width: calc(70 * var(--u)); height: calc(67 * var(--u)); }
+
+/* count badge at the bottom-right of each power up */
+.powerup-badge {
+    position: absolute;
+    right: calc(-8 * var(--u));
+    bottom: calc(-12 * var(--u));
+    width: calc(28 * var(--u));
+    height: calc(28 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #d6d6d6;
+    border: calc(2 * var(--u)) solid #8f8f8f;
+    color: #2a2320;
+    font-size: calc(13 * var(--u));
+    font-weight: 600;
+}
+
+.shop-link {
+    left: calc(230 * var(--u));
+    top: calc(286 * var(--u));
+    display: flex;
+    align-items: center;
+    gap: calc(10 * var(--u));
+    color: #f0e4d8;
+    font-size: calc(16 * var(--u));
+    font-weight: 500;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.shop-link svg {
+    width: calc(22 * var(--u));
+    height: calc(22 * var(--u));
+}
+
+.shop-link:hover {
+    opacity: 0.75;
+}

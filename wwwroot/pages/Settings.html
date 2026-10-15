@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="/logo/java-master-logo" type="image/png">
+    <link rel="stylesheet" href="Dashboard-navbar-style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-y: auto;
+            height: auto;
+        }
+
+        body nav.sidebar .nav-sections a.nav-item.active {
+            background-color: transparent !important;
+        }
+
+        body nav.sidebar .nav-sections a.nav-item:hover {
+            background-color: #5e2b50 !important;
+        }
+
+        body {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            min-height: 100vh;
+            padding-left: 260px;
+        }
+
+        .main-content {
+            padding: 80px 60px 300px 60px !important;
+            max-width: 900px;
+            min-height: 0 !important;
+            height: auto !important;
+        }
+
+        .settings-title {
+            color: #ffffff;
+            font-size: 48px;
+            font-weight: 700;
+            text-align: left;
+            margin-bottom: 40px;
+        }
+
+        .settings-section {
+            background: #e1d3de;
+            border: 3px solid #825375;
+            border-radius: 30px;
+            padding: 30px 35px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 580px;
+        }
+
+        .settings-section.login-section {
+            height: 310px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4742;
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            font-size: 20px;
+            color: #76726c;
+            margin-bottom: 35px;
+        }
+
+        .login-field {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .login-field img {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            opacity: 0.6;
+        }
+
+        .login-field input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 18px;
+            color: #76726c;
+            background: transparent;
+            letter-spacing: 2px;
+        }
+
+        .login-field input::placeholder {
+            color: #76726c;
+            opacity: 0.7;
+            letter-spacing: 2px;
+        }
+
+        .login-field input[type="password"] {
+            letter-spacing: 3px;
+        }
+
+        .login-field input[type="password"]::placeholder {
+            letter-spacing: 2px;
+        }
+
+        .login-field input:disabled {
+            opacity: 0.7;
+        }
+
+        .change-btn {
+            background: #8b7a94;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .change-btn:hover {
+            background: #6b5876;
+        }
+
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .option-label {
+            font-size: 22px;
+            color: #76726c;
+            font-weight: 500;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            display: none;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f4f4f4;
+            border-radius: 34px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider:before {
+            content: "";
+            position: absolute;
+            height: 24px;
+            width: 24px;
+            left: 4px;
+            bottom: 4px;
+            background: #522546;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: #522546;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            background: #f4f4f4;
+            transform: translateX(28px);
+        }
+
+        .small-toggle {
+            width: 60px;
+            height: 32px;
+        }
+
+        .small-toggle .toggle-slider:before {
+            height: 24px;
+            width: 24px;
+        }
+
+        .small-toggle input:checked + .toggle-slider:before {
+            transform: translateX(28px);
+        }
+
+        .contact-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .contact-link {
+            font-size: 22px;
+            color: #76726c;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-link:hover {
+            color: #4a4742;
+        }
+
+        .delete-account-container {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 300px !important;
+            padding-bottom: 200px !important;
+            width: 580px;
+        }
+
+        .delete-account-btn {
+            background: none;
+            border: none;
+            color: #9c83ff;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .delete-account-btn:hover {
+            text-decoration: underline;
+            color: #9c83ff;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #e1d3de;
+            border: 3px solid #825375;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4a4742;
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            font-size: 18px;
+            color: #76726c;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.cancel {
+            background: #8b7a94;
+            color: white;
+        }
+
+        .modal-btn.cancel:hover {
+            background: #6b5876;
+        }
+
+        .modal-btn.delete {
+            background: #d94a4a;
+            color: white;
+        }
+
+        .modal-btn.delete:hover {
+            background: #b93939;
+        }
+
+        .modal-btn.save {
+            background: #6b9e6b;
+            color: white;
+        }
+
+        .modal-btn.save:hover {
+            background: #5a8a5a;
+        }
+
+        /* Change Username/Password Modal Styles */
+        .modal-content.change-modal {
+            max-width: 400px;
+        }
+
+        .modal-input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .modal-input-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a4742;
+            margin-bottom: 8px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #825375;
+            border-radius: 12px;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 16px;
+            color: #4a4742;
+            background: white;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .modal-input:focus {
+            border-color: #522546;
+        }
+
+        .modal-input::placeholder {
+            color: #76726c;
+            opacity: 0.6;
+        }
+
+        /* Success notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            background: #6b9e6b;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .user-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #8b7a94;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .user-icon::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .user-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 3px;
+            width: 14px;
+            height: 8px;
+            background: white;
+            border-radius: 50% 50% 0 0;
+        }
+
+        .lock-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #8b7a94;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .lock-icon::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 5px;
+            width: 10px;
+            height: 10px;
+            border: 2px solid #8b7a94;
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .lock-icon::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 8px;
+            width: 4px;
+            height: 6px;
+            background: white;
+            border-radius: 1px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+
+        <div class="nav-sections">
+            <a href="My level.html" class="nav-item">
+                <img src="/icons/level_icon.png" alt="level icon">
+                My level
+            </a>
+
+            <a href="Progress.html" class="nav-item">
+                <img src="/icons/coffee_icon.png" alt="coffee icon">
+                Progress
+            </a>
+
+            <a href="Profile.html" class="nav-item active">
+                <img src="/icons/profile_icon.png" alt="profile icon">
+                Profile
+            </a>
+
+            <a href="Modules.html" class="nav-item">
+                <img src="/icons/decks_icon.png" alt="decks icon">
+                Modules
+            </a>
+        </div>
+
+        <div class="action-buttons">
+            <a href="Learn.html" class="action-btn learn-button">Learn</a>
+            <a href="Daily Challenges.html" class="action-btn daily-challenges-button">Daily Challenges</a>
+        </div>
+
+        <div class="bottom-section">
+            <div class="coins-section">
+                <span class="coins-label">My coins</span>
+                <div class="coins-amount">
+                    <img src="/icons/currency_icon.png" alt="coins icon">
+                    <span id="sidebar-coins">80</span>
+                </div>
+            </div>
+            <div class="shop-section">
+                <img src="/icons/shop_icon.png" alt="shop icon" class="shop-icon">
+                <a href="Shop.html" class="shop-button">Shop</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-navbar">
+        <a href="Settings.html" class="icon-button">
+            <img src="/icons/settings_icon.png" alt="settings icon">
+        </a>
+        <a href="Notifications.html" class="icon-button">
+            <img src="/icons/notification_bell_icon.png" alt="notification icon">
+            <span class="notification-badge hidden" id="notificationBadge"></span>
+        </a>
+        
+        <div class="profile-container">
+            <button class="profile-button" id="profileButton">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+                <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+            </button>
+            
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="Profile.html" class="dropdown-item">
+                    <img src="/icons/profile_icon.png" alt="profile icon">
+                    Profile
+                </a>
+                <a href="FAQ.html" target="_blank" class="dropdown-item">
+                    <img src="/icons/faq_icon.png" alt="faq icon">
+                    FAQ
+                </a>
+                <a href="overview.html" class="dropdown-item logout" id="logoutBtn">
+                    <img src="/icons/logout_icon.png" alt="logout icon">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="settings-title">Settings</h1>
+
+        <!-- Login Methods Section -->
+        <div class="settings-section login-section">
+            <h2 class="section-title">Login methods</h2>
+            <p class="section-subtitle">username & password</p>
+            
+            <div class="login-field">
+                <img src="/icons/user_icon.png" alt="user icon">
+                <input type="text" placeholder="Username" id="usernameDisplay" disabled>
+                <button class="change-btn" onclick="openChangeUsernameModal()">Change</button>
+            </div>
+            
+            <div class="login-field">
+                <img src="/icons/password_icon.png" alt="password icon">
+                <input type="password" placeholder="••••••••" disabled>
+                <button class="change-btn" onclick="openChangePasswordModal()">Change</button>
+            </div>
+        </div>
+
+        <!-- More Settings Section -->
+        <div class="settings-section">
+            <h2 class="section-title">More settings</h2>
+            
+            <div class="settings-option">
+                <span class="option-label">Background Music</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="bgMusicToggle" onchange="toggleBackgroundMusic(this)" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="settings-option">
+                <span class="option-label">Sound effects</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="soundEffectsToggle" onchange="toggleSoundEffects(this)" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Contact Us Section -->
+        <div class="settings-section">
+            <h2 class="section-title">Contact us</h2>
+            <div class="contact-links">
+                <a href="FAQ.html" target="_blank" class="contact-link">FAQ</a>
+                <a href="Terms&Conditions_Page.html" target="_blank" class="contact-link">Terms and Conditions</a>
+                <a href="PrivacyPolicy.html" target="_blank" class="contact-link">Privacy Policy</a>
+            </div>
+        </div>
+
+        <!-- Delete Account -->
+        <div class="delete-account-container">
+            <button class="delete-account-btn" onclick="showDeleteModal()">Delete account</button>
+        </div>
+    </div>
+
+    <!-- Change Username Modal -->
+    <div class="modal" id="changeUsernameModal">
+        <div class="modal-content change-modal">
+            <h2 class="modal-title">Change Username</h2>
+            <div class="modal-input-group">
+                <label class="modal-input-label">Current Username</label>
+                <input type="text" class="modal-input" id="currentUsername" disabled>
+            </div>
+            <div class="modal-input-group">
+                <label class="modal-input-label">New Username</label>
+                <input type="text" class="modal-input" id="newUsername" placeholder="Enter new username">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeChangeUsernameModal()">Cancel</button>
+                <button class="modal-btn save" onclick="saveUsername()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal" id="changePasswordModal">
+        <div class="modal-content change-modal">
+            <h2 class="modal-title">Change Password</h2>
+            <div class="modal-input-group">
+                <label class="modal-input-label">Current Password</label>
+                <input type="password" class="modal-input" id="currentPassword" placeholder="Enter current password">
+            </div>
+            <div class="modal-input-group">
+                <label class="modal-input-label">New Password</label>
+                <input type="password" class="modal-input" id="newPassword" placeholder="Enter new password">
+            </div>
+            <div class="modal-input-group">
+                <label class="modal-input-label">Confirm New Password</label>
+                <input type="password" class="modal-input" id="confirmPassword" placeholder="Confirm new password">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeChangePasswordModal()">Cancel</button>
+                <button class="modal-btn save" onclick="savePassword()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Are you sure?</h2>
+            <p class="modal-text">
+                Deleting your account is permanent and cannot be undone. All your progress, coins, and data will be lost forever.
+            </p>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="hideDeleteModal()">Cancel</button>
+                <button class="modal-btn delete" onclick="confirmDelete()">Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div class="notification" id="notification"></div>
+
+
+    <script src="/js/notification-manager.js"></script>
+    <script src="coins-sync.js"></script>
+    <script>
+        // Dropdown functionality
+        const profileButton = document.getElementById('profileButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const dropdownIcon = profileButton.querySelector('.dropdown-icon');
+
+        profileButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+            dropdownIcon.classList.toggle('rotated');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.profile-button') && !e.target.closest('.dropdown-menu')) {
+                dropdownMenu.classList.remove('active');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+
+        // ============================================
+        // PROFILE AVATAR MANAGEMENT
+        // ============================================
+        function loadNavbarAvatar() {
+            const savedAvatar = localStorage.getItem('profileAvatar') || 'avatars/Avatar 1.png';
+            const navbarAvatarElement = document.getElementById('navbarAvatar');
+            
+            if (navbarAvatarElement) {
+                navbarAvatarElement.src = savedAvatar;
+            }
+        }
+
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'profileAvatar') {
+                loadNavbarAvatar();
+            }
+        });
+
+        // ============================================
+        // USERNAME MANAGEMENT
+        // ============================================
+        function loadUsername() {
+            const savedUsername = localStorage.getItem('username') || 'JavaLearner123';
+            document.getElementById('usernameDisplay').value = savedUsername;
+        }
+
+        function openChangeUsernameModal() {
+            const currentUsername = localStorage.getItem('username') || 'JavaLearner123';
+            document.getElementById('currentUsername').value = currentUsername;
+            document.getElementById('newUsername').value = '';
+            document.getElementById('changeUsernameModal').classList.add('active');
+        }
+
+        function closeChangeUsernameModal() {
+            document.getElementById('changeUsernameModal').classList.remove('active');
+        }
+
+        function saveUsername() {
+            const newUsername = document.getElementById('newUsername').value.trim();
+            
+            if (!newUsername) {
+                showNotification('Please enter a new username', 'error');
+                return;
+            }
+
+            if (newUsername.length < 3) {
+                showNotification('Username must be at least 3 characters', 'error');
+                return;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('username', newUsername);
+            
+            // Update display
+            document.getElementById('usernameDisplay').value = newUsername;
+            
+            // Close modal
+            closeChangeUsernameModal();
+            
+            // Show success notification
+            showNotification('Username changed successfully!');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('changeUsernameModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeChangeUsernameModal();
+            }
+        });
+
+        // ============================================
+        // PASSWORD MANAGEMENT
+        // ============================================
+        function openChangePasswordModal() {
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('changePasswordModal').classList.add('active');
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.remove('active');
+        }
+
+        function savePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showNotification('Please fill in all password fields', 'error');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                showNotification('Password must be at least 8 characters', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showNotification('New passwords do not match', 'error');
+                return;
+            }
+
+            // In a real app, you would verify the current password with backend
+            // For now, we'll just simulate success
+            
+            // Save to localStorage (in real app, this would be handled by backend)
+            localStorage.setItem('passwordLastChanged', new Date().toISOString());
+            
+            // Close modal
+            closeChangePasswordModal();
+            
+            // Show success notification
+            showNotification('Password changed successfully!');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('changePasswordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeChangePasswordModal();
+            }
+        });
+
+        // ============================================
+        // DELETE ACCOUNT
+        // ============================================
+        function showDeleteModal() {
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+
+        function confirmDelete() {
+            // Clear all user data from localStorage
+            const keysToKeep = ['backgroundMusicEnabled', 'soundEffectsEnabled']; // Keep audio preferences
+            const keysToRemove = [];
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (!keysToKeep.includes(key)) {
+                    keysToRemove.push(key);
+                }
+            }
+            
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            
+            hideDeleteModal();
+            showNotification('Account deleted successfully', 'success');
+            
+            // Redirect to login/overview page after 2 seconds
+            setTimeout(() => {
+                window.location.href = 'overview.html';
+            }, 2000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideDeleteModal();
+            }
+        });
+
+        // ============================================
+        // NOTIFICATION SYSTEM
+        // ============================================
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            
+            // Change color based on type
+            if (type === 'error') {
+                notification.style.background = '#d94a4a';
+            } else {
+                notification.style.background = '#6b9e6b';
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============================================
+        // AUDIO SETTINGS MANAGEMENT
+        // ============================================
+        function initializeAudioSettings() {
+            const bgMusicEnabled = localStorage.getItem('backgroundMusicEnabled') !== 'false';
+            const soundEffectsEnabled = localStorage.getItem('soundEffectsEnabled') !== 'false';
+            
+            document.getElementById('bgMusicToggle').checked = bgMusicEnabled;
+            document.getElementById('soundEffectsToggle').checked = soundEffectsEnabled;
+        }
+
+        function toggleBackgroundMusic(checkbox) {
+            const isEnabled = checkbox.checked;
+            localStorage.setItem('backgroundMusicEnabled', isEnabled);
+            showNotification('Background music ' + (isEnabled ? 'enabled' : 'disabled'));
+        }
+
+        function toggleSoundEffects(checkbox) {
+            const isEnabled = checkbox.checked;
+            localStorage.setItem('soundEffectsEnabled', isEnabled);
+            
+            if (isEnabled) {
+                playTestSound();
+            }
+            
+            showNotification('Sound effects ' + (isEnabled ? 'enabled' : 'disabled'));
+        }
+
+        function playTestSound() {
+            const testSound = new Audio('sounds/correct_sound-efx.wav');
+            testSound.volume = 0.5;
+            testSound.play().catch(e => {
+                console.log('Could not play test sound:', e);
+            });
+        }
+
+        // ============================================
+        // INITIALIZE ON PAGE LOAD
+        // ============================================
+        window.addEventListener('DOMContentLoaded', function() {
+            loadNavbarAvatar();
+            loadUsername();
+            initializeAudioSettings();
+            loadCoinsDisplay();
+            NotificationManager.updateBadge();
+        });
+
+        
+        // Listen for changes from other tabs/windows
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'coins') {
+                    loadCoinsDisplay();
+                }
+            });
+
+
+            // Load coins when page loads
+        window.addEventListener('DOMContentLoaded', loadCoinsDisplay);
+
+        // Logout functionality - clear session data before redirect
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                // Clear login session data
+                localStorage.removeItem('loggedInUsername');
+                localStorage.removeItem('loggedInPassword');
+                
+                // The link will naturally redirect to overview.html
+                // No need to prevent default or manually redirect
+            });
+        }
+    </script>
+    </script>
+</body>
+</html>

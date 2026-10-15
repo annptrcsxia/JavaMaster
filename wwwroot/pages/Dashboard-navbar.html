@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+ 
+    <!-- ===== COPY #1 (goes inside <head> of EVERY page): the navbar stylesheet ===== -->
+    <link rel="stylesheet" href="Dashboard-navbar-style.css">
+</head>
+<body>
+ 
+    <!-- ============================================================
+         COPY #2 (goes right after <body> on EVERY page)
+         START of SIDEBAR + TOP BAR  -  copy everything down to "END of SIDEBAR + TOP BAR"
+ 
+         HOW TO MARK THE CURRENT PAGE:
+         Keep class="nav-item" on all links, then add the word  active  ONLY to the
+         link of the page you are pasting this into. Example for Profile.html:
+             <a href="Profile.html" class="nav-item active">
+         Remove "active" from every other link.
+              Home.html     -> Home link
+              Learn.html    -> Learn link
+              Progress.html -> Progress link
+              Profile.html  -> Profile link
+              Lobby.html    -> Lobby link
+         (On pages that are not in the sidebar, e.g. Settings, use no "active" at all.)
+         ============================================================ -->
+ 
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <!-- Logo -->
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+ 
+        <!-- Navigation Links -->
+        <div class="nav-sections">
+            <!-- ACTIVE EXAMPLE: this is the Home page, so only Home has "active" -->
+            <a href="Home.html" class="nav-item active">
+                <img src="/icons/home.png" alt="Home">
+                Home
+            </a>
+ 
+            <a href="Learn.html" class="nav-item">
+                <img src="/icons/toga cap.png" alt="Learn">
+                Learn
+            </a>
+ 
+            <a href="Progress.html" class="nav-item">
+                <img src="/icons/coffee.png" alt="Progress">
+                Progress
+            </a>
+ 
+            <a href="Profile.html" class="nav-item">
+                <img src="/icons/profile.png" alt="Profile">
+                Profile
+            </a>
+ 
+            <a href="Lobby.html" class="nav-item">
+                <img src="/icons/lobby.png" alt="Lobby">
+                Lobby
+            </a>
+        </div>
+ 
+        <!-- Study Button -->
+        <div class="action-buttons">
+            <a href="Study.html" class="action-btn study-button">
+                <img src="/icons/game console.png" alt="Study">
+                Study
+            </a>
+        </div>
+    </nav>
+ 
+    <!-- Top Bar (no visible bar: just the bell and profile floating on the page) -->
+    <div class="top-navbar">
+        <a href="Notifications.html" class="icon-button">
+            <img src="/icons/notification_bell_icon.png" alt="notification icon">
+            <span class="notification-badge hidden" id="notificationBadge"></span>
+        </a>
+ 
+        <!-- Profile Button with Dropdown -->
+        <div class="profile-container">
+            <button class="profile-button" id="profileButton">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+                <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+            </button>
+ 
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="Profile.html" class="dropdown-item">
+                    <img src="/icons/profile.png" alt="profile icon">
+                    Profile
+                </a>
+                <a href="FAQ.html" class="dropdown-item">
+                    <img src="/icons/faq_icon.png" alt="faq icon">
+                    FAQ
+                </a>
+                <a href="overview.html" class="dropdown-item logout" id="logoutBtn">
+                    <img src="/icons/logout_icon.png" alt="logout icon">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- END of SIDEBAR + TOP BAR (COPY #2 ends here) -->
+ 
+ 
+    <!-- ============================================================
+         YOUR PAGE CONTENT GOES HERE (not part of the template).
+         Wrap it in:  <main class="main-content"> ... </main>
+         ============================================================ -->
+ 
+ 
+    <!-- ============================================================
+         COPY #3 (goes just before </body> on EVERY page)
+         START of NAVBAR SCRIPTS (dropdown, logout, notification badge)
+         ============================================================ -->
+
+    <script src="notification-manager.js"></script>
+    <script src="profile-dropdown.js"></script>
+</body>
+</html>

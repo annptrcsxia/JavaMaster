@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Welcome</title>
+    <link rel="icon" href="/logo/java-master-logo" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 0% 0%, #1e0517 0%, #571245 50%, #c41f98 100%);
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            transition: opacity 0.5s ease;
+        }
+
+        .container.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .welcome-container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .welcome-container.show {
+            display: flex;
+        }
+
+        .welcome-container.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .purpose-container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .purpose-container.show {
+            display: flex;
+        }
+
+        .purpose-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.3;
+            opacity: 0;
+            animation: rise 0.8s ease-out forwards;
+        }
+
+        .purpose-options {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: rise 0.8s ease-out forwards;
+            animation-delay: 0.8s;
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .purpose-card {
+            width: 220px;
+            height: 220px;
+            background: rgba(121, 85, 112, 0.6);
+            border: 3px solid transparent;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .purpose-card:hover {
+            background: rgba(121, 85, 112, 0.8);
+        }
+
+        .purpose-card.selected {
+            border-color: #e2a9f1;
+            background: rgba(121, 85, 112, 0.9);
+        }
+
+        .purpose-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .purpose-card-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .proceed-btn {
+            padding: 1.2rem 3.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: not-allowed;
+            white-space: nowrap;
+            margin-top: 1.5rem;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .proceed-btn.active {
+            background: black;
+            color: white;
+            cursor: pointer;
+        }
+
+        .proceed-btn.active:hover {
+            background: #1a1a1a;
+        }
+
+        .course-container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .course-container.show {
+            display: flex;
+        }
+
+        .course-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.3;
+            opacity: 0;
+            animation: rise 0.8s ease-out forwards;
+        }
+
+        .course-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 400px;
+            opacity: 0;
+            animation: rise 0.8s ease-out forwards;
+            animation-delay: 0.8s;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: left;
+            width: 100%
+        }
+
+        .form-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .dropdown {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            border: 2px solid #522546;
+            border-radius: 12px;
+            background: #6e4662;
+            color: white;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 20px;
+            padding-right: 3rem;
+        }
+
+        .dropdown option {
+            background: #6e4662;
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .skip-btn {
+            padding: 1.2rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 4px solid #522546;
+            border-radius: 12px;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.3s;
+        }
+
+        .skip-btn:hover {
+            background: rgba(82, 37, 70, 0.3);
+        }
+
+        .final-proceed-btn {
+            padding: 1.2rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            background: black;
+            color: white;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.3s;
+        }
+
+        .final-proceed-btn:hover {
+            background: #1a1a1a;
+        }
+
+        .final-proceed-btn:disabled {
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: not-allowed;
+        }
+
+        .school-container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .school-container.show {
+            display: flex;
+        }
+
+        .school-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.3;
+            opacity: 0;
+            animation: rise 0.8s ease-out forwards;
+        }
+
+        .school-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 400px;
+            opacity: 0;
+            animation: rise 0.8s ease-out forwards;
+            animation-delay: 0.8s;
+        }
+
+        .text-input {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-bottom: 2px solid white;
+            background: transparent;
+            color: white;
+            outline: none;
+            transition: border-color 0.3s;
+            width: 100%;
+        }
+
+        .text-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .text-input:focus {
+            border-bottom-color: #e2a9f1;
+        }
+
+        .searchable-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            padding: 1rem 1.5rem;
+            padding-right: 3rem;
+            font-size: 1rem;
+            border: 2px solid #522546;
+            border-radius: 12px;
+            background: #6e4662;
+            color: white;
+            outline: none;
+            transition: border-color 0.3s;
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 20px;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-input:focus {
+            border-color: #e2a9f1;
+        }
+
+        .search-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-image: none;
+        }
+
+        .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #6e4662;
+            border: 2px solid #522546;
+            border-radius: 12px;
+            margin-top: 0.5rem;
+            z-index: 1000;
+            display: none;
+        }
+
+        .dropdown-list.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 0.8rem 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(226, 169, 241, 0.2);
+        }
+
+        .dropdown-item.selected {
+            background: rgba(226, 169, 241, 0.3);
+        }
+
+        .no-results {
+            padding: 0.8rem 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+
+        .dropdown-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .dropdown-list::-webkit-scrollbar-track {
+            background: rgba(82, 37, 70, 0.3);
+            border-radius: 12px;
+        }
+
+        .dropdown-list::-webkit-scrollbar-thumb {
+            background: #e2a9f1;
+            border-radius: 12px;
+        }
+
+        .reason-container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .reason-container.show {
+            display: flex;
+        }
+
+        .reason-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.3;
+            opacity: 0;
+            animation: rise 0.8s ease-out forwards;
+        }
+
+        .reason-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 800px;
+            opacity: 0;
+            animation: rise 0.8s ease-out forwards;
+            animation-delay: 0.8s;
+        }
+
+        .reason-card {
+            background: rgba(121, 85, 112, 0.6);
+            border: 3px solid transparent;
+            border-radius: 24px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .reason-card:hover {
+            background: rgba(121, 85, 112, 0.8);
+        }
+
+        .reason-card.selected {
+            border-color: #e2a9f1;
+            background: rgba(121, 85, 112, 0.9);
+        }
+
+        .reason-icon {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reason-icon img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+
+        .reason-text {
+            color: white;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .reason-proceed-btn {
+            padding: 1.2rem 3.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: not-allowed;
+            white-space: nowrap;
+            margin-top: 1.5rem;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .reason-proceed-btn.active {
+            background: black;
+            color: white;
+            cursor: pointer;
+        }
+
+        .reason-proceed-btn.active:hover {
+            background: #1a1a1a;
+        }
+
+        @media (max-width: 768px) {
+            .reason-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .outro-container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 2s ease;
+        }
+
+        .outro-message {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.2;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid white;
+            width: 0;
+            animation: typing-outro 2s steps(40, end) forwards, blink 0.75s step-end infinite;
+            display: inline-block;
+        }
+
+        @keyframes typing-outro {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        .outro-message.typed-complete {
+            border-right: none;
+            animation: none;
+        }
+
+        .outro-container.show {
+            display: flex;
+        }
+
+        .outro-container.fade-out {
+            opacity: 0;
+        }
+
+        .greeting {
+            font-size: 1.5rem;
+            color: white;
+            opacity: 0;
+            font-weight: 700;
+            animation: breathe 0.7s ease-in-out forwards;
+        }
+
+        .player-name {
+            color: #e2a9f1;
+            opacity: 0;
+        }
+
+        .player-name.animate {
+            animation: breathe 0.7s ease-in-out forwards;
+            animation-delay: 0.7s;
+        }
+
+        .welcome-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.2;
+            opacity: 0;
+        }
+
+        .welcome-title.animate {
+            animation: breathe 0.7s ease-in-out forwards;
+            animation-delay: 1.4s;
+        }
+
+        .lets-go-btn {
+            padding: 1.2rem 3.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            background: black;
+            color: white;
+            cursor: pointer;
+            opacity: 0;
+            transition: background 0.3s;
+            white-space: nowrap;
+            margin-top: 1.5rem;
+        }
+
+        .lets-go-btn.show {
+            animation: breathe 0.7s ease-in-out forwards;
+            animation-delay: 2.1s;
+        }
+
+        .lets-go-btn:hover {
+            background: #1a1a1a;
+        }
+
+        @keyframes breathe {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            line-height: 1.3;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid white;
+            width: 0;
+            animation: typing 1.5s steps(50, end) forwards, blink 0.75s step-end infinite;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+                max-width: 900px;
+            }
+        }
+
+        @keyframes blink {
+            from, to {
+                border-color: transparent;
+            }
+            50% {
+                border-color: white;
+            }
+        }
+
+        h1.typed {
+            border-right: none;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+            animation-delay: 1.7s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input {
+            flex: 1;
+            max-width: 300px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            border: 4px solid #522546;
+            border-radius: 12px;
+            background: #6e4662;
+            color: white;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        button {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        button.active {
+            background: black;
+            color: white;
+            cursor: pointer;
+        }
+
+        button.active:hover {
+            background: #1a1a1a;
+        }
+
+        button svg {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="nameSection">
+        <h1 id="heading">Before we get started, what should I call you?</h1>
+        <div class="input-wrapper">
+            <input type="text" placeholder="Enter your name" id="nameInput">
+            <button id="submitBtn" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="welcome-container" id="welcomeSection">
+        <p class="greeting">Hello <span class="player-name" id="userName"></span></p>
+        <h2 class="welcome-title" id="welcomeTitle">Welcome to<br>Java Master !</h2>
+        <button class="lets-go-btn" id="letsGoBtn">Let's go</button>
+    </div>
+
+    <div class="purpose-container" id="purposeSection">
+        <h2 class="purpose-title">What brings you to<br>Java Master?</h2>
+        <div class="purpose-options">
+            <div class="purpose-card" data-purpose="self-learning">
+                <img src="/icons/critical-thinking.png" alt="Self learning">
+                <span class="purpose-card-label">Self learning</span>
+            </div>
+            <div class="purpose-card" data-purpose="college">
+                <img src="/icons/college.png" alt="College">
+                <span class="purpose-card-label">College</span>
+            </div>
+        </div>
+        <button class="proceed-btn" id="proceedBtn" disabled>Proceed</button>
+    </div>
+
+    <div class="course-container" id="courseSection">
+        <h2 class="course-title">Your course and level</h2>
+        <div class="course-form">
+            <div class="form-group">
+                <label class="form-label">Year level</label>
+                <select class="dropdown" id="yearLevel">
+                    <option value="" disabled selected>Select your year level</option>
+                    <option value="1st">1st year</option>
+                    <option value="2nd">2nd year</option>
+                    <option value="3rd">3rd year</option>
+                    <option value="4th">4th year</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Course</label>
+                <select class="dropdown" id="course">
+                    <option value="" disabled selected>Select your course</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Others">Others...</option>
+                </select>
+            </div>
+        </div>
+        <div class="button-group">
+            <button class="skip-btn" id="skipBtn">Skip</button>
+            <button class="final-proceed-btn" id="finalProceedBtn" disabled>Proceed</button>
+        </div>
+    </div>
+
+    <div class="school-container" id="schoolSection">
+        <h2 class="school-title">Where do you study?</h2>
+        <div class="school-form">
+            <div class="form-group">
+                <label class="form-label">School name</label>
+                <div class="searchable-dropdown">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="schoolName" 
+                        placeholder="Search school..."
+                        autocomplete="off">
+                    <div class="dropdown-list" id="schoolDropdown"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Branch</label>
+                <div class="searchable-dropdown">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="branch" 
+                        placeholder="Search branch..."
+                        autocomplete="off">
+                    <div class="dropdown-list" id="branchDropdown"></div>
+                </div>
+            </div>
+        </div>
+        <div class="button-group">
+            <button class="skip-btn" id="skipSchoolBtn">Skip</button>
+            <button class="final-proceed-btn" id="proceedSchoolBtn" disabled>Proceed</button>
+        </div>
+    </div>
+
+    <div class="reason-container" id="reasonSection">
+        <h2 class="reason-title">What was the reason<br>why you choose Java<br>Master?</h2>
+        <div class="reason-grid">
+            <div class="reason-card" data-reason="improve-coding">
+                <div class="reason-icon">
+                    <img src="/icons/browsing.png" alt="Improve coding">
+                </div>
+                <div class="reason-text">
+                    To improve my coding skills through hands-on practice and real projects.
+                </div>
+            </div>
+            <div class="reason-card" data-reason="beginner-friendly">
+                <div class="reason-icon">
+                    <img src="/icons/map-ensign.png" alt="Beginner friendly">
+                </div>
+                <div class="reason-text">
+                    Because I needed a beginner-friendly platform that explains Java clearly and visually.
+                </div>
+            </div>
+            <div class="reason-card" data-reason="interactive-learning">
+                <div class="reason-icon">
+                    <img src="/icons/brain.png" alt="Interactive learning">
+                </div>
+                <div class="reason-text">
+                    Because I learn best with interactive previews and instant feedback, to keeps me motivated.
+                </div>
+            </div>
+            <div class="reason-card" data-reason="college-prep">
+                <div class="reason-icon">
+                    <img src="/icons/idea.png" alt="College preparation">
+                </div>
+                <div class="reason-text">
+                    To prepare for my college programming course and stay ahead of the lessons.
+                </div>
+            </div>
+        </div>
+        <button class="reason-proceed-btn" id="reasonProceedBtn" disabled>Proceed</button>
+    </div>
+
+    <div class="outro-container" id="outroSection">
+        <h1 class="outro-message" id="outroMessage">Thank you for choosing Java Master !</h1>
+    </div>
+
+    <script>
+        const heading = document.getElementById('heading');
+        const nameInput = document.getElementById('nameInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const nameSection = document.getElementById('nameSection');
+        const welcomeSection = document.getElementById('welcomeSection');
+        const userName = document.getElementById('userName');
+        const welcomeTitle = document.getElementById('welcomeTitle');
+        const letsGoBtn = document.getElementById('letsGoBtn');
+        const purposeSection = document.getElementById('purposeSection');
+        const proceedBtn = document.getElementById('proceedBtn');
+        const purposeCards = document.querySelectorAll('.purpose-card');
+        const courseSection = document.getElementById('courseSection');
+        const yearLevel = document.getElementById('yearLevel');
+        const course = document.getElementById('course');
+        const skipBtn = document.getElementById('skipBtn');
+        const finalProceedBtn = document.getElementById('finalProceedBtn');
+        const schoolSection = document.getElementById('schoolSection');
+        const schoolName = document.getElementById('schoolName');
+        const branch = document.getElementById('branch');
+        const skipSchoolBtn = document.getElementById('skipSchoolBtn');
+        const proceedSchoolBtn = document.getElementById('proceedSchoolBtn');
+        const schoolDropdown = document.getElementById('schoolDropdown');
+        const branchDropdown = document.getElementById('branchDropdown');
+        const reasonSection = document.getElementById('reasonSection');
+        const reasonProceedBtn = document.getElementById('reasonProceedBtn');
+        const reasonCards = document.querySelectorAll('.reason-card');
+        const outroSection = document.getElementById('outroSection');
+        const outroMessage = document.getElementById('outroMessage');
+
+        // Check if user has already completed onboarding
+        if (localStorage.getItem('onboardingCompleted') === 'true') {
+            // User has already done onboarding, redirect to main page
+            window.location.href = 'My level.html';
+        }
+
+        let selectedPurpose = null;
+        let selectedReason = null;
+
+        // Function to check if course form is complete
+        function checkCourseFormComplete() {
+            const yearLevelValue = yearLevel.value;
+            const courseValue = course.value;
+            
+            if (yearLevelValue && courseValue) {
+                finalProceedBtn.disabled = false;
+                finalProceedBtn.style.background = 'black';
+                finalProceedBtn.style.color = 'white';
+                finalProceedBtn.style.cursor = 'pointer';
+            } else {
+                finalProceedBtn.disabled = true;
+                finalProceedBtn.style.background = 'rgba(0, 0, 0, 0.3)';
+                finalProceedBtn.style.color = 'rgba(255, 255, 255, 0.4)';
+                finalProceedBtn.style.cursor = 'not-allowed';
+            }
+        }
+
+        // Add event listeners to course form fields
+        yearLevel.addEventListener('change', checkCourseFormComplete);
+        course.addEventListener('change', checkCourseFormComplete);
+
+        // Function to check if school form is complete
+        function checkSchoolFormComplete() {
+            const schoolValue = schoolName.value.trim();
+            const branchValue = branch.value.trim();
+            
+            if (schoolValue && branchValue) {
+                proceedSchoolBtn.disabled = false;
+                proceedSchoolBtn.style.background = 'black';
+                proceedSchoolBtn.style.color = 'white';
+                proceedSchoolBtn.style.cursor = 'pointer';
+            } else {
+                proceedSchoolBtn.disabled = true;
+                proceedSchoolBtn.style.background = 'rgba(0, 0, 0, 0.3)';
+                proceedSchoolBtn.style.color = 'rgba(255, 255, 255, 0.4)';
+                proceedSchoolBtn.style.cursor = 'not-allowed';
+            }
+        }
+
+        // Add event listeners to school form fields
+        schoolName.addEventListener('input', checkSchoolFormComplete);
+        branch.addEventListener('input', checkSchoolFormComplete);
+
+        // Comprehensive school database with branches
+        const schoolDatabase = {
+            "STI": ["Alabang Campus", "Bacoor Campus", "Calamba Campus", "Caloocan Campus", "Cavite Campus", "Cubao Campus", "Dasmarinas Campus", "Fairview Campus", "Las Piñas Campus", "Lipa Campus", "Lucena Campus", "Makati Campus", "Manila Campus", "Novaliches Campus", "Ortigas Campus", "Quezon Avenue Campus", "Recto Campus", "Rosario Campus", "San Fernando Pampanga Campus", "Sta. Rosa Campus", "Taft Campus"],
+        };
+
+        // Extract schools list
+        const schools = Object.keys(schoolDatabase).sort();
+
+        // Searchable dropdown functionality
+        function setupSearchableDropdown(input, dropdown, data, isSchool = false) {
+            let selectedValue = '';
+
+            // Show dropdown on focus
+            input.addEventListener('focus', function() {
+                renderDropdown(data);
+                dropdown.classList.add('active');
+            });
+
+            // Filter on input
+            input.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const filtered = data.filter(item => 
+                    item.toLowerCase().includes(searchTerm)
+                );
+                renderDropdown(filtered);
+                dropdown.classList.add('active');
+                
+                // Clear branch selection if school input changes
+                if (isSchool && selectedValue !== this.value) {
+                    selectedValue = '';
+                    branch.value = '';
+                    branch.disabled = true;
+                }
+            });
+
+            // Render dropdown items
+            function renderDropdown(items) {
+                if (items.length === 0) {
+                    dropdown.innerHTML = '<div class="no-results">No results found</div>';
+                    return;
+                }
+
+                dropdown.innerHTML = items.map(item => 
+                    `<div class="dropdown-item" data-value="${item}">${item}</div>`
+                ).join('');
+
+                // Add click handlers to items
+                dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                        selectedValue = this.dataset.value;
+                        input.value = selectedValue;
+                        dropdown.classList.remove('active');
+                        
+                        // If school selected, update branches
+                        if (isSchool) {
+                            updateBranches(selectedValue);
+                        }
+                        
+                        // Trigger the form validation check
+                        checkSchoolFormComplete();
+                    });
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        }
+
+        // Update branches based on selected school
+        function updateBranches(selectedSchool) {
+            const branches = schoolDatabase[selectedSchool] || [];
+            
+            if (branches.length > 0) {
+                branch.disabled = false;
+                branch.value = '';
+                branch.placeholder = 'Search branch...';
+                
+                // Re-initialize branch dropdown with school-specific branches
+                setupBranchDropdown(branches);
+            } else {
+                branch.disabled = true;
+                branch.value = '';
+                branch.placeholder = 'No branches available';
+            }
+        }
+
+        // Setup branch dropdown
+        function setupBranchDropdown(branchData) {
+            setupSearchableDropdown(branch, branchDropdown, branchData, false);
+        }
+
+        // Initialize school dropdown
+        setupSearchableDropdown(schoolName, schoolDropdown, schools, true);
+        
+        // Disable branch initially
+        branch.disabled = true;
+        branch.placeholder = 'Select school first';
+
+        // Remove cursor after typing animation completes
+        setTimeout(() => {
+            heading.classList.add('typed');
+        }, 1500);
+
+        nameInput.addEventListener('input', function() {
+            if (this.value.trim().length > 0) {
+                submitBtn.disabled = false;
+                submitBtn.classList.add('active');
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.classList.remove('active');
+            }
+        });
+
+        submitBtn.addEventListener('click', function() {
+            if (!this.disabled) {
+                const name = nameInput.value.trim();
+                
+                // Hide name section
+                nameSection.classList.add('hide');
+                
+                // Show welcome section after fade out
+                setTimeout(() => {
+                    nameSection.style.display = 'none';
+                    welcomeSection.classList.add('show');
+                    userName.textContent = name;
+                    localStorage.setItem('userName', name);
+                    
+                    // Trigger animations sequentially
+                    const playerNameEl = document.getElementById('userName');
+                    playerNameEl.classList.add('animate');
+                    welcomeTitle.classList.add('animate');
+                    letsGoBtn.classList.add('show');
+                }, 500);
+            }
+        });
+
+        // Let's go button - navigate to purpose section
+        letsGoBtn.addEventListener('click', function() {
+            welcomeSection.classList.add('hide');
+            
+            setTimeout(() => {
+                welcomeSection.style.display = 'none';
+                purposeSection.classList.add('show');
+            }, 500);
+        });
+
+        // Purpose card selection
+        purposeCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                purposeCards.forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Store selected purpose
+                selectedPurpose = this.dataset.purpose;
+                
+                // Enable proceed button
+                proceedBtn.disabled = false;
+                proceedBtn.classList.add('active');
+            });
+        });
+
+        // Proceed button
+        proceedBtn.addEventListener('click', function() {
+            if (!this.disabled) {
+                console.log('Selected purpose:', selectedPurpose);
+                purposeSection.classList.add('hide');
+                
+                setTimeout(() => {
+                    purposeSection.style.display = 'none';
+                    courseSection.classList.add('show');
+                }, 500);
+            }
+        });
+
+        // Skip button
+        skipBtn.addEventListener('click', function() {
+            console.log('Skipped course selection');
+            courseSection.classList.add('hide');
+            
+            setTimeout(() => {
+                courseSection.style.display = 'none';
+                schoolSection.classList.add('show');
+            }, 500);
+        });
+
+        // Final proceed button
+        finalProceedBtn.addEventListener('click', function() {
+            if (!this.disabled) {
+                const selectedYear = yearLevel.value;
+                const selectedCourse = course.value;
+                console.log('Year level:', selectedYear);
+                console.log('Course:', selectedCourse);
+                courseSection.classList.add('hide');
+                
+                setTimeout(() => {
+                    courseSection.style.display = 'none';
+                    schoolSection.classList.add('show');
+                }, 500);
+            }
+        });
+
+        // Skip school button
+        skipSchoolBtn.addEventListener('click', function() {
+            console.log('Skipped school selection');
+            schoolSection.classList.add('hide');
+            
+            setTimeout(() => {
+                schoolSection.style.display = 'none';
+                reasonSection.classList.add('show');
+            }, 500);
+        });
+
+        // Proceed school button
+        proceedSchoolBtn.addEventListener('click', function() {
+            if (!this.disabled) {
+                const school = schoolName.value;
+                const branchValue = branch.value;
+                console.log('School:', school);
+                console.log('Branch:', branchValue);
+                schoolSection.classList.add('hide');
+                
+                setTimeout(() => {
+                    schoolSection.style.display = 'none';
+                    reasonSection.classList.add('show');
+                }, 500);
+            }
+        });
+
+        // Reason card selection
+        reasonCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                reasonCards.forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Store selected reason
+                selectedReason = this.dataset.reason;
+                
+                // Enable proceed button
+                reasonProceedBtn.disabled = false;
+                reasonProceedBtn.classList.add('active');
+            });
+        });
+
+        // Reason proceed button
+        reasonProceedBtn.addEventListener('click', function() {
+            if (!this.disabled) {
+                console.log('Selected reason:', selectedReason);
+
+                // Save all onboarding data to localStorage
+                const userName = nameInput.value.trim();
+                const yearLevel = document.getElementById('yearLevel').value;
+                const course = document.getElementById('course').value;
+                const school = schoolName.value;
+                const branchValue = branch.value;
+
+                // Save to localStorage
+                localStorage.setItem('profileName', userName);
+                if (yearLevel && course) {
+                    localStorage.setItem('profileGrade', `${yearLevel} year, ${course}`);
+                }
+                if (school) {
+                    if (branchValue) {
+                        localStorage.setItem('profileSchool', `${school} - ${branchValue}`);
+                    } else {
+                        localStorage.setItem('profileSchool', school);
+                    }
+                }
+
+                // Mark onboarding as completed
+                localStorage.setItem('onboardingCompleted', 'true');
+
+                reasonSection.classList.add('hide');
+
+                setTimeout(() => {
+                    reasonSection.style.display = 'none';
+                    outroSection.classList.add('show');
+                    
+                     // Wait for typing animation to complete (2 seconds), then wait 4 more seconds before redirect
+                    setTimeout(() => {
+                        setTimeout(() => {
+                            window.location.href = 'My level.html';
+                        }, 4000);
+                    }, 2000);
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>

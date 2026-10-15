@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Lobby</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+    <link rel="stylesheet" href="/css/Dashboard-navbar-style.css">
+    <link rel="stylesheet" href="/css/Lobby-style.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <!-- Logo -->
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="nav-sections">
+            
+            <a href="Home.html" class="nav-item">
+                <img src="/icons/home.png" alt="Home">
+                Home
+            </a>
+
+            <a href="Learn.html" class="nav-item">
+                <img src="/icons/toga cap.png" alt="Learn">
+                Learn
+            </a>
+
+            <a href="Progress.html" class="nav-item">
+                <img src="/icons/coffee.png" alt="Progress">
+                Progress
+            </a>
+
+            <a href="Profile.html" class="nav-item">
+                <img src="/icons/profile.png" alt="Profile">
+                Profile
+            </a>
+            <!-- ACTIVE: this is the Lobby page, so only Lobby has "active" -->
+            <a href="Lobby.html" class="nav-item active">
+                <img src="/icons/lobby.png" alt="Lobby">
+                Lobby
+            </a>
+        </div>
+
+        <!-- Study Button -->
+        <div class="action-buttons">
+            <a href="Study.html" class="action-btn study-button">
+                <img src="/icons/game console.png" alt="Study">
+                Study
+            </a>
+        </div>
+    </nav>
+
+    <!-- Top Bar (no visible bar: just the bell and profile floating on the page) -->
+    <div class="top-navbar">
+        <a href="Notifications.html" class="icon-button">
+            <img src="/icons/notification_bell_icon.png" alt="notification icon">
+            <span class="notification-badge hidden" id="notificationBadge"></span>
+        </a>
+
+        <!-- Profile Button with Dropdown -->
+        <div class="profile-container">
+            <button class="profile-button" id="profileButton">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+                <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+            </button>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="Profile.html" class="dropdown-item">
+                    <img src="/icons/profile.png" alt="profile icon">
+                    Profile
+                </a>
+                <a href="FAQ.html" class="dropdown-item">
+                    <img src="/icons/faq_icon.png" alt="faq icon">
+                    FAQ
+                </a>
+                <a href="About.html" class="dropdown-item logout" id="logoutBtn">
+                    <img src="/icons/logout_icon.png" alt="logout icon">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- END of SIDEBAR + TOP BAR (COPY #2 ends here) -->
+
+    <!-- line of codes for lobby page -->
+    <main class="lobby-main">
+        <p class="lobby-breadcrumb">Lobby</p>
+
+        <div class="lobby-content">
+
+            <!-- Top row: Play + Live Quiz -->
+            <div class="lobby-top">
+
+                <!-- Play -->
+                <section class="play-section">
+                    <h1 class="lobby-heading">Play</h1>
+
+                    <div class="play-buttons">
+                        <button type="button" class="play-btn host-btn" id="hostDeckBtn">Host a Deck</button>
+                        <button type="button" class="play-btn join-btn" id="joinDeckBtn">Join a Deck</button>
+                    </div>
+                </section>
+
+                <!-- Live Quiz card -->
+                <section class="live-quiz-card">
+                    <div class="live-quiz-info">
+                        <h2 class="live-quiz-title">Live Quiz</h2>
+                        <p class="live-quiz-desc">Join a live quiz hosted by your professor.</p>
+                    </div>
+
+                    <img src="/icons/live quiz.png" alt="Live Quiz" class="live-quiz-img">
+
+                    <button type="button" class="enter-code-btn" id="enterClassCodeBtn">Enter class code</button>
+                </section>
+            </div>
+
+            <!-- Your Decks -->
+            <section class="decks-section">
+                <h2 class="lobby-heading">Your Decks</h2>
+
+                <!-- Empty state (show when the user has no decks) -->
+                <div class="decks-empty" id="decksEmptyState">
+                    <img src="/icons/letter.png" alt="No Decks Yet" class="decks-empty-img">
+                    <h3 class="decks-empty-title">No Decks Yet</h3>
+                    <p class="decks-empty-text">You haven’t created any decks yet, start your first one now.</p>
+                    <button type="button" class="create-deck-btn" id="createDeckBtn">+ Create your first deck</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+<script src="/js/profile-dropdown.js"></script>
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/logo/java-master-logo" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(68, 68, 68, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 0;
+            max-width: 850px;
+            width: 90%;
+            display: grid;
+            grid-template-columns: 0.95fr 1.05fr;
+            gap: 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-height: 560px;
+        }
+
+        .form-section {
+            padding: 30px 30px 25px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 55px;
+        }
+
+        .form-section h1 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-section p {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 28px;
+            font-size: 0.8rem;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: white;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            padding-right: 45px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(255, 99, 132, 0.5);
+        }
+
+        .input-group input.error {
+            box-shadow: 0 0 0 2px #ff4757;
+            border: none;
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+            user-select: none;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .eye-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.72rem;
+            margin-top: 4px;
+            min-height: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        .forgot-password a {
+            color: #ff6b9d;
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #ff5252;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff4757 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        .create-account-link {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
+        .create-account-link a {
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .create-account-link a:hover {
+            text-decoration: underline;
+        }
+
+        .image-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            background: rgba(58, 58, 58, 0.5);
+        }
+
+        .image-section img {
+            width: 100%;
+            height: 100%;
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: rgba(68, 68, 68, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-content p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(255, 99, 132, 0.5);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff4757 100%);
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .modal-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 30px 20px;
+            }
+
+            .form-section {
+                padding: 30px 25px;
+            }
+
+            .image-section {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <img src="/images/Website Background.png" alt="Gradient Purple Background" class="background">
+    
+    <div class="container">
+        <div class="form-section">
+            <h1>Welcome</h1>
+            <p>Log in to continue to your dashboard</p>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username">username</label>
+                    <input type="text" id="username" name="username" required>
+                    <div class="error-message" id="usernameError">Username/password do not match</div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" required>
+                        <span class="eye-icon" id="togglePassword">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="error-message" id="passwordError">Username/password do not match</div>
+                </div>
+
+                <div class="forgot-password">
+                    <a href="#" id="forgotPasswordLink">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="login-btn">Log in</button>
+            </form>
+            
+            <div class="create-account-link">
+                Don't have an account? <a href="Sign up page.html">Create account</a>
+            </div>
+        </div>
+        
+        <div class="image-section">
+            <img src="/images/AbstractImage1.jpg" alt="Abstract Image">
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <h2>Reset Password</h2>
+            <p>Enter your username or email to receive password reset instructions.</p>
+            <input type="text" id="resetInput" class="modal-input" placeholder="Username or Email" required>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="resetBtn">Send Reset Link</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store user accounts (in a real app, this would be in a database)
+        const users = {
+            'admin': 'password123',
+            'user1': 'mypassword',
+            'testuser': 'test123'
+        };
+
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const usernameError = document.getElementById('usernameError');
+        const passwordError = document.getElementById('passwordError');
+        const togglePassword = document.getElementById('togglePassword');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+        const resetInput = document.getElementById('resetInput');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Toggle password visibility
+        togglePassword.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                `;
+            } else {
+                passwordInput.type = 'password';
+                this.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                `;
+            }
+        });
+
+        // Forgot password modal
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            forgotPasswordModal.classList.add('show');
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            forgotPasswordModal.classList.remove('show');
+            resetInput.value = '';
+        });
+
+        resetBtn.addEventListener('click', function() {
+            const input = resetInput.value.trim();
+            if (input) {
+                // In production, this would send a request to your backend
+                alert('Password reset instructions have been sent to your email!');
+                forgotPasswordModal.classList.remove('show');
+                resetInput.value = '';
+            } else {
+                alert('Please enter your username or email');
+            }
+        });
+
+        // Close modal when clicking outside
+        forgotPasswordModal.addEventListener('click', function(e) {
+            if (e.target === forgotPasswordModal) {
+                forgotPasswordModal.classList.remove('show');
+                resetInput.value = '';
+            }
+        });
+
+        // Handle form submission
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Hide previous error messages
+            usernameError.classList.remove('show');
+            passwordError.classList.remove('show');
+            usernameInput.classList.remove('error');
+            passwordInput.classList.remove('error');
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            // Check if username exists and password matches
+            if (users[username] && users[username] === password) {
+            // Store login credentials in localStorage
+            localStorage.setItem('loggedInUsername', username);
+            localStorage.setItem('loggedInPassword', password);
+            // Successful login - redirect to welcome page
+            window.location.href = 'Onboard.html';
+            } else {
+                // Failed login - show error messages
+                usernameInput.classList.add('error');
+                passwordInput.classList.add('error');
+                usernameError.classList.add('show');
+                passwordError.classList.add('show');
+            }
+        });
+
+        // Clear error messages when user starts typing
+        usernameInput.addEventListener('input', function() {
+            usernameError.classList.remove('show');
+            this.classList.remove('error');
+        });
+
+        passwordInput.addEventListener('input', function() {
+            passwordError.classList.remove('show');
+            this.classList.remove('error');
+        });
+    </script>
+</body>
+</html>

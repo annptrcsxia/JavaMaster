@@ -1,0 +1,340 @@
+/* STYLE FOR DASHBOARD NAV BAR */
+
+:root {
+    --u: calc(100vw / 1920);
+    --sidebar-width: calc(390 * var(--u));
+    --sidebar-bg: #483a33;
+    --sidebar-border: #3a2f29;
+    --page-bg: #1a1917;
+    --text-cream: #eadfd3;
+    --accent-orange: #FFA500;
+    --study-red: #c4512f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    background: var(--page-bg);
+    min-height: 100vh;
+    display: flex;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--sidebar-bg);
+    border-right: 2px solid var(--sidebar-border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    z-index: 150;
+}
+
+/* Logo */
+.logo-section {
+    height: calc(170 * var(--u));
+    padding: calc(45 * var(--u)) 0 0 calc(45 * var(--u));
+}
+
+.logo {
+    display: block;
+    width: calc(251 * var(--u));
+    height: auto;
+}
+
+/* Navigation links */
+.nav-sections {
+    display: flex;
+    flex-direction: column;
+    gap: calc(32 * var(--u));
+    margin-top: calc(32 * var(--u));
+}
+
+.nav-item {
+    --icon-size: 60;               /* icon box size in design px (set per item below) */
+    display: flex;
+    align-items: center;
+    height: calc(56 * var(--u));
+    color: var(--text-cream);
+    text-decoration: none;
+    font-size: calc(28 * var(--u));
+    font-weight: 600;
+    position: relative;
+    z-index: 0;
+    transition: color 0.2s ease;
+}
+
+/* Vertical rhythm copied from the mockup */
+.nav-item:nth-child(1) { --icon-size: 78; }  /* Home     */
+.nav-item:nth-child(2) { --icon-size: 72; }  /* Learn    */
+.nav-item:nth-child(3) { --icon-size: 52; }  /* Progress */
+.nav-item:nth-child(4) { --icon-size: 55; }  /* Profile  */
+.nav-item:nth-child(5) { --icon-size: 80; }  /* Lobby    */
+
+/* Icon is centered on x = 84 and the text always starts at x = 150 */
+.nav-item img {
+    flex-shrink: 0;
+    width: calc(var(--icon-size) * var(--u));
+    height: calc(var(--icon-size) * var(--u));
+    object-fit: contain;
+    margin-left: calc((84 - var(--icon-size) / 2) * var(--u));
+    margin-right: calc((66 - var(--icon-size) / 2) * var(--u));
+}
+
+/* ---------- HOVER + ACTIVE (current page) ----------
+   Hovering a link, or marking it with class="active" on the page you are on,
+   shows a dark rounded highlight behind it (rounded on the left, flush with the
+   sidebar edge on the right). Text stays cream/white. */
+.nav-item:hover,
+.nav-item.active {
+    color: #f6efe8;
+}
+
+.nav-item::before {
+    content: '';
+    position: absolute;
+    top: calc(-12 * var(--u));
+    bottom: calc(-12 * var(--u));
+    left: calc(14 * var(--u));
+    right: 0;
+    z-index: -1;
+    background-color: #352c27;
+    border: 1px solid #2b231f;
+    border-right: none;
+    border-radius: calc(28 * var(--u)) 0 0 calc(28 * var(--u));
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* Hover: faint highlight (20%)*/
+.nav-item:hover::before {
+    opacity: 0.4;
+}
+
+/* Current page: full highlight (also stays full while hovered) */
+.nav-item.active::before,
+.nav-item.active:hover::before {
+    opacity: 1;
+}
+
+/* ---------- Study button ---------- */
+.action-buttons {
+    padding: 0 calc(52 * var(--u));
+    margin-top: calc(32 * var(--u));
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(15 * var(--u));
+    width: 100%;
+    height: calc(63 * var(--u));
+    border-radius: calc(32 * var(--u));
+    font-size: calc(28 * var(--u));
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.study-button {
+    background-color: var(--study-red);
+    color: #f6ebe0;
+}
+
+/* 80px box so the visible console is about 42px; negative margins remove the padding gap */
+.study-button img {
+    width: calc(80 * var(--u));
+    height: calc(80 * var(--u));
+    object-fit: contain;
+    margin: 0 calc(-19 * var(--u));
+}
+
+.study-button:hover {
+    background-color: #d4613f;
+}
+
+.study-button:active {
+    transform: scale(0.98);
+}
+
+/* ---------- Top bar (no visible bar, items float on the page) ---------- */
+.top-navbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: var(--sidebar-width);
+    height: calc(166 * var(--u));
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 calc(83 * var(--u)) 0 calc(40 * var(--u));
+    gap: calc(26 * var(--u));
+    z-index: 100;
+}
+
+.icon-button {
+    position: relative;
+    display: inline-block;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.icon-button:hover {
+    opacity: 0.7;
+}
+
+.icon-button img {
+    display: block;
+    width: calc(51 * var(--u));
+    height: calc(51 * var(--u));
+    object-fit: contain;
+}
+
+.profile-container {
+    position: relative;
+}
+
+.profile-button {
+    display: flex;
+    align-items: center;
+    gap: calc(7 * var(--u));
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.profile-button:hover {
+    opacity: 0.8;
+}
+
+.profile-avatar {
+    width: calc(48 * var(--u));
+    height: calc(48 * var(--u));
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-button img.dropdown-icon {
+    width: calc(31 * var(--u));
+    height: calc(31 * var(--u));
+    margin-top: calc(7 * var(--u));
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.profile-button img.dropdown-icon.rotated {
+    transform: rotate(180deg);
+}
+
+/* ---------- Dropdown menu ---------- */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 18px);
+    right: 0;
+    min-width: 200px;
+    background-color: #262322;
+    border: 1px solid #3a3835;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 200;
+}
+
+.dropdown-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #e8e7e4;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: 1px solid #3a3835;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: #363230;
+    color: var(--accent-orange);
+}
+
+.dropdown-item img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+.dropdown-item.logout {
+    color: #ff6b6b;
+}
+
+.dropdown-item.logout:hover {
+    background-color: #3a2828;
+}
+
+/* ---------- Main content area (for each page to use) ---------- */
+.main-content {
+    margin-left: var(--sidebar-width);
+    margin-top: calc(110 * var(--u));
+    padding: 40px;
+    width: calc(100% - var(--sidebar-width));
+    min-height: 100vh;
+    background: var(--page-bg);
+}
+
+/* ---------- Notification badge ---------- */
+.notification-badge {
+    position: absolute;
+    top: calc(6 * var(--u));
+    right: calc(6 * var(--u));
+    width: 12px;
+    height: 12px;
+    background-color: #ff6b6b;
+    border-radius: 50%;
+    border: 2px solid var(--page-bg);
+    animation: pulse 2s infinite;
+}
+
+.notification-badge.hidden {
+    display: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .notification-badge { animation: none; }
+}

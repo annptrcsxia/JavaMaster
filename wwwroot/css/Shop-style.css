@@ -1,0 +1,380 @@
+/* ===== Shop page ===== */
+:root {
+    --shop-card: #2e2723;
+    --shop-card-hover: #352d28;
+    --shop-text: #e9ddd5;
+    --shop-muted: #8f7f76;
+    --shop-accent: #c4512e;
+    --shop-accent-dark: #5e2a1b;
+    --shop-outline: #6b4f3f;
+    --shop-select: #3f7fd0;
+    --shop-coin: #f5b43a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', 'Bricolage Grotesque', sans-serif;
+    min-height: 100vh;
+    color: var(--shop-text);
+}
+
+.main-content {
+    margin-left: 280px;
+    margin-top: 80px;
+    padding: 30px 40px 60px 40px;
+    min-height: calc(100vh - 80px);
+}
+
+/* Header */
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 56px;
+}
+
+.shop-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--shop-muted);
+}
+
+.user-coins {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: var(--shop-card);
+}
+
+.user-coins img { width: 22px; height: 22px; }
+.user-coins span { font-size: 18px; font-weight: 600; color: var(--shop-coin); }
+
+/* Section */
+.section-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--shop-text);
+    margin: 0 0 24px 4px;
+}
+
+.powerup-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 30px;
+    max-width: 1280px;
+}
+
+/* Power-up card */
+.powerup-card {
+    background: var(--shop-card);
+    border-radius: 28px;
+    padding: 52px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.powerup-icon {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.powerup-icon > img:first-child,
+.powerup-icon img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+/* soft floor shadow under the icon */
+.powerup-icon::before {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    width: 64px;
+    height: 12px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.35), transparent 70%);
+}
+
+.owned-badge {
+    position: absolute;
+    right: -4px;
+    bottom: 2px;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #d4d4da;
+    color: #2b2b2b;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.powerup-name {
+    margin: 30px 0 28px;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--shop-muted);
+}
+
+.buy-more-btn {
+    width: 100%;
+    height: 50px;
+    border-radius: 999px;
+    border: 2px solid var(--shop-outline);
+    background: transparent;
+    color: var(--shop-muted);
+    font: 500 18px 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.buy-more-btn:hover {
+    background: rgba(196, 81, 46, 0.12);
+    border-color: var(--shop-accent);
+    color: var(--shop-text);
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 8, 7, 0.72);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-content {
+    width: min(420px, 92%);
+    background: var(--shop-card);
+    border-radius: 30px;
+    padding: 40px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    animation: modalIn 0.22s ease;
+}
+
+@keyframes modalIn {
+    from { transform: translateY(16px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-content .powerup-icon { width: 110px; height: 110px; }
+.modal-content .powerup-icon img { width: 96px; height: 96px; }
+.modal-content .powerup-name { margin: 26px 0 24px; }
+
+.pack-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+}
+
+.pack-option {
+    background: transparent;
+    border: 2px solid var(--shop-outline);
+    border-radius: 16px;
+    padding: 12px 14px;
+    text-align: left;
+    color: var(--shop-muted);
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.pack-option:hover { border-color: #8a6a57; }
+
+.pack-option.selected {
+    border-color: var(--shop-select);
+    color: var(--shop-text);
+}
+
+.pack-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+
+.pack-price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.pack-price img { width: 20px; height: 20px; }
+
+.modal-error {
+    min-height: 22px;
+    margin: 12px 0 4px;
+    font-size: 13px;
+    color: #ee8c72;
+    text-align: center;
+}
+
+.confirm-btn {
+    width: 100%;
+    height: 58px;
+    border: none;
+    border-radius: 999px;
+    background: var(--shop-accent);
+    color: #fff;
+    font: 500 18px 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.confirm-btn:hover:not(:disabled) { background: #d25a36; }
+.confirm-btn:active:not(:disabled) { transform: scale(0.98); }
+
+.confirm-btn.purchased,
+.confirm-btn:disabled {
+    background: var(--shop-accent-dark);
+    cursor: default;
+}
+
+.confirm-btn.shake { animation: shake 0.35s; }
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+/* Keyboard focus */
+.buy-more-btn:focus-visible,
+.pack-option:focus-visible,
+.confirm-btn:focus-visible {
+    outline: 3px solid var(--shop-select);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .modal-content, .confirm-btn.shake { animation: none; }
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .powerup-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px) {
+    .main-content { margin-left: 0; padding: 24px 20px 80px; }
+    .powerup-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Compact page scale (the buy modal keeps its own size) ===== */
+.shop-header { max-width: 900px; margin-bottom: 36px; }
+.shop-title { font-size: 18px; }
+.user-coins { padding: 6px 14px; gap: 8px; }
+.user-coins img { width: 18px; height: 18px; }
+.user-coins span { font-size: 15px; }
+
+.section-title { font-size: 18px; margin: 0 0 16px 2px; }
+
+.powerup-grid { max-width: 900px; gap: 20px; }
+
+.powerup-card { border-radius: 20px; padding: 32px 16px 16px; }
+.powerup-card .powerup-icon { width: 68px; height: 68px; }
+.powerup-card .powerup-icon img { width: 56px; height: 56px; }
+.powerup-card .powerup-icon::before { width: 44px; height: 8px; bottom: -4px; }
+.powerup-card .owned-badge { min-width: 22px; height: 22px; padding: 0 6px; font-size: 11px; right: -2px; bottom: 0; }
+.powerup-card .powerup-name { margin: 20px 0 18px; font-size: 18px; }
+.powerup-card .buy-more-btn { height: 38px; font-size: 14px; border-width: 1.5px; }
+
+/* ===== Alignment per UI design: content sits right of the sidebar, cards span to the right edge ===== */
+.main-content {
+    margin-left: 312px;
+    padding: 30px 66px 60px 128px;
+}
+
+.shop-header,
+.powerup-grid { max-width: none; }
+
+.shop-section { padding-left: 26px; }   /* "Power ups" + cards sit slightly inside the "Shop" title */
+.powerup-grid { gap: 30px; }
+
+@media (max-width: 1100px) {
+    .main-content { padding: 30px 40px 60px 60px; }
+    .shop-section { padding-left: 0; }
+}
+
+@media (max-width: 768px) {
+    .main-content { margin-left: 0; padding: 24px 20px 80px; }
+}
+
+/* ===== Match Lobby page label format ("Shop" = Lobby breadcrumb, "Power ups" = "Play" heading) ===== */
+.main-content {
+    --u: clamp(0.55px, 0.052vw, 1px);   /* same scaling unit as Lobby */
+    margin-top: 0;
+    padding: calc(100 * var(--u)) calc(122 * var(--u)) calc(40 * var(--u)) calc(110 * var(--u));
+}
+
+.shop-header { margin-bottom: calc(28 * var(--u)); }
+
+.shop-title {
+    margin: 0;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: calc(26 * var(--u));
+    font-weight: 600;
+    color: #7c7068;
+}
+
+.shop-section { padding-left: calc(80 * var(--u)); }
+
+.section-title {
+    margin: 0 0 calc(28 * var(--u));
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: calc(36 * var(--u));   /* identical to .lobby-heading */
+    font-weight: 600;
+    color: #f1e6d3;
+}
+
+@media (max-width: 1100px) {
+    .shop-section { padding-left: 0; }
+}
+
+@media (max-width: 768px) {
+    .main-content { margin-left: 0; padding: 24px 20px 80px; }
+}
+
+/* ===== Final tweaks ===== */
+/* "Power ups" = exact .lobby-heading values */
+.section-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: calc(36 * var(--u));
+    font-weight: 600;
+    font-optical-sizing: auto;
+    color: #f1e6d3;
+}
+.shop-title { font-optical-sizing: auto; }
+
+/* Coin counter nudged down, clear of the avatar */
+.user-coins { position: relative; top: calc(26 * var(--u)); }
+
+/* "Power ups" label: slightly smaller to visually match the "Play" heading */
+.shop-section .section-title { font-size: calc(30 * var(--u)); }
+
+/* ===== Keep the sidebar / top bar in the site font (Poppins applies to Shop content only) ===== */
+body { font-family: 'Bricolage Grotesque', sans-serif; }
+.main-content,
+.modal-overlay { font-family: 'Poppins', 'Bricolage Grotesque', sans-serif; }
+.sidebar,
+.sidebar .nav-item,
+.sidebar .action-btn,
+.top-navbar,
+.dropdown-menu { font-family: 'Bricolage Grotesque', sans-serif; }

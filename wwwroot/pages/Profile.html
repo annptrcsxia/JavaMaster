@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+    <link rel="stylesheet" href="/css/Dashboard-navbar-style.css">
+    <link rel="stylesheet" href="/css/Profile-style.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <!-- Logo -->
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="nav-sections">
+            <a href="Home.html" class="nav-item">
+                <img src="/icons/home.png" alt="Home">
+                Home
+            </a>
+
+            <a href="Learn.html" class="nav-item">
+                <img src="/icons/toga cap.png" alt="Learn">
+                Learn
+            </a>
+
+            <a href="Progress.html" class="nav-item">
+                <img src="/icons/coffee.png" alt="Progress">
+                Progress
+            </a>
+
+            <!-- ACTIVE: this is the Profile page, so only Profile has "active" -->
+            <a href="Profile.html" class="nav-item active">
+                <img src="/icons/profile.png" alt="Profile">
+                Profile
+            </a>
+
+            <a href="Lobby.html" class="nav-item">
+                <img src="/icons/lobby.png" alt="Lobby">
+                Lobby
+            </a>
+        </div>
+
+        <!-- Study Button -->
+        <div class="action-buttons">
+            <a href="Study.html" class="action-btn study-button">
+                <img src="/icons/game console.png" alt="Study">
+                Study
+            </a>
+        </div>
+    </nav>
+
+    <!-- Top Bar (no visible bar: just the bell and profile floating on the page) -->
+    <div class="top-navbar">
+        <a href="Notifications.html" class="icon-button">
+            <img src="/icons/notification_bell_icon.png" alt="notification icon">
+            <span class="notification-badge hidden" id="notificationBadge"></span>
+        </a>
+
+        <!-- Profile Button with Dropdown -->
+        <div class="profile-container">
+            <button class="profile-button" id="profileButton">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+                <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+            </button>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="Profile.html" class="dropdown-item">
+                    <img src="/icons/profile.png" alt="profile icon">
+                    Profile
+                </a>
+                <a href="FAQ.html" class="dropdown-item">
+                    <img src="/icons/faq_icon.png" alt="faq icon">
+                    FAQ
+                </a>
+                <a href="About.html" class="dropdown-item logout" id="logoutBtn">
+                    <img src="/icons/logout_icon.png" alt="logout icon">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- END of SIDEBAR + TOP BAR -->
+
+
+    <!-- ============================================================
+         PROFILE PAGE CONTENT (not part of the template)
+         ============================================================ -->
+    <main class="main-content profile-page">
+
+        <!-- ===== Profile view ===== -->
+        <div class="profile-view active">
+            <h1 class="page-title">Profile</h1>
+
+            <!-- Avatar -->
+            <div class="avatar" id="profileAvatar">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar">
+            </div>
+
+            <!-- Name, school, year/course, joined date -->
+            <h2 class="profile-name"><span>@</span><span id="profileName">User01</span></h2>
+
+            <p class="info-line school-line">
+                <img src="/icons/school_icon.png" alt="school icon">
+                <span id="profileSchool">STI College - Dasmarinas</span>
+            </p>
+
+            <p class="info-line grade-line">
+                <img src="/icons/student.png" alt="student year and course">
+                <span id="profileGrade">2nd year, Information Technology</span>
+            </p>
+
+            <p class="joined-line">Joined <span id="joinedDate">September 23, 2025</span></p>
+
+            <!-- Edit button -->
+            <button class="edit-btn" onclick="showEditView()" aria-label="Edit profile">
+                <img src="/icons/edit_icon.png" alt="edit icon">
+            </button>
+
+            <!-- Tabs -->
+            <div class="tabs" role="tablist">
+                <button class="tab-btn active" data-tab="stats" role="tab" aria-selected="true">Stats</button>
+                <button class="tab-btn" data-tab="feed" role="tab" aria-selected="false">Feed</button>
+            </div>
+            <div class="tab-line"></div>
+
+            <!-- Stats tab -->
+            <section class="tab-panel" id="statsPanel">
+                <div class="stat-card rank-card">
+                    <img class="stat-icon" id="rankIconProfile" src="/rank titles/starter.png" alt="rank icon">
+                    <div class="stat-value" id="rankTitle">Starter</div>
+                    <div class="stat-label">Rank</div>
+                </div>
+
+                <div class="stat-card badge-card">
+                    <img class="stat-icon" src="/icons/badge.png" alt="badge">
+                    <div class="stat-value" id="badgeCount">0</div>
+                    <div class="stat-label">Badges</div>
+                </div>
+
+                <div class="stat-card streak-card">
+                    <img class="stat-icon" src="/images/coffee no smoke.png" alt="coffee icon">
+                    <div class="stat-value" id="bestStreak">0 Days</div>
+                    <div class="stat-label">Best Streak</div>
+                </div>
+            </section>
+
+            <!-- Feed tab (intentionally empty for now: reserved for future content) -->
+            <section class="tab-panel" id="feedPanel" hidden></section>
+        </div>
+
+        <!-- ===== Edit view ===== -->
+        <div class="edit-view">
+            <button class="back-btn" onclick="cancelEdit()" aria-label="Back">
+                <img src="/icons/back_arrow_icon.png" alt="back arrow">
+            </button>
+            <h1 class="page-title">Edit Profile</h1>
+
+            <div class="avatar-edit" id="editAvatar" onclick="showAvatarModal()">
+                <img src="/avatars/Avatar 1.png" alt="Edit Avatar">
+            </div>
+
+            <div class="edit-content">
+                <div class="form-group">
+                    <label for="nameInput">Name</label>
+                    <input type="text" id="nameInput" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="schoolInput">School</label>
+                    <select id="schoolInput">
+                        <option value="">Select school</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="gradeInput">Grade level</label>
+                    <select id="gradeInput">
+                        <option value="">Select grade level</option>
+                        <option value="1st year, Information Technology">1st year, Information Technology</option>
+                        <option value="2nd year, Information Technology">2nd year, Information Technology</option>
+                        <option value="3rd year, Information Technology">3rd year, Information Technology</option>
+                        <option value="4th year, Information Technology">4th year, Information Technology</option>
+                        <option value="1st year, Computer Science">1st year, Computer Science</option>
+                        <option value="2nd year, Computer Science">2nd year, Computer Science</option>
+                        <option value="3rd year, Computer Science">3rd year, Computer Science</option>
+                        <option value="4th year, Computer Science">4th year, Computer Science</option>
+                        <option value="Others">Others...</option>
+                    </select>
+                </div>
+
+                <button class="done-btn" onclick="saveProfile()">Done</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Avatar Selection Modal -->
+    <div class="modal" id="avatarModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeAvatarModal()">×</button>
+            <div class="modal-header">
+                <h3>Change Profile Picture</h3>
+                <p>click on an avatar to select it.</p>
+            </div>
+
+            <div class="avatar-grid" id="avatarGrid">
+                <div class="avatar-option" data-avatar="avatars/Avatar 1.png"><img src="/avatars/Avatar 1.png" alt="Avatar 1"></div>
+                <div class="avatar-option" data-avatar="avatars/Avatar 2.png"><img src="/avatars/Avatar 2.png" alt="Avatar 2"></div>
+                <div class="avatar-option" data-avatar="avatars/Avatar 3.png"><img src="/avatars/Avatar 3.png" alt="Avatar 3"></div>
+                <div class="avatar-option" data-avatar="avatars/Avatar 4.png"><img src="/avatars/Avatar 4.png" alt="Avatar 4"></div>
+                <div class="avatar-option" data-avatar="avatars/Avatar 5.png"><img src="/avatars/Avatar 5.png" alt="Avatar 5"></div>
+                <div class="avatar-option" data-avatar="avatars/Avatar 6.png"><img src="/avatars/Avatar 6.png" alt="Avatar 6"></div>
+                <div class="avatar-option" data-avatar="avatars/Avatar 7.png"><img src="/avatars/Avatar 7.png" alt="Avatar 7"></div>
+                <div class="avatar-option" data-avatar="avatars/Avatar 8.png"><img src="/avatars/Avatar 8.png" alt="Avatar 8"></div>
+                <div class="avatar-option" data-avatar="avatars/Avatar 9.png"><img src="/avatars/Avatar 9.png" alt="Avatar 9"></div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-btn" onclick="closeAvatarModal()">Cancel</button>
+                <button class="modal-btn confirm-btn" onclick="confirmAvatar()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/badge-manager.js"></script>
+    <script src="/js/notification-manager.js"></script>
+    <script src="/js/profile-dropdown.js"></script>
+    <script src="/js/edit-profile.js"></script>
+</body>
+</html>

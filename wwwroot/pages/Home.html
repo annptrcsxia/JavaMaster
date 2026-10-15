@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+    <link rel="stylesheet" href="/css/Dashboard-navbar-style.css">
+    <link rel="stylesheet" href="/css/Home-style.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <!-- Logo -->
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="nav-sections">
+            <!-- ACTIVE: this is the Home page, so only Home has "active" -->
+            <a href="Home.html" class="nav-item active">
+                <img src="/icons/home.png" alt="Home">
+                Home
+            </a>
+
+            <a href="Learn.html" class="nav-item">
+                <img src="/icons/toga cap.png" alt="Learn">
+                Learn
+            </a>
+
+            <a href="Progress.html" class="nav-item">
+                <img src="/icons/coffee.png" alt="Progress">
+                Progress
+            </a>
+
+            <a href="Profile.html" class="nav-item">
+                <img src="/icons/profile.png" alt="Profile">
+                Profile
+            </a>
+
+            <a href="Lobby.html" class="nav-item">
+                <img src="/icons/lobby.png" alt="Lobby">
+                Lobby
+            </a>
+        </div>
+
+        <!-- Study Button -->
+        <div class="action-buttons">
+            <a href="Study.html" class="action-btn study-button">
+                <img src="/icons/game console.png" alt="Study">
+                Study
+            </a>
+        </div>
+    </nav>
+
+    <!-- Top Bar (no visible bar: just the bell and profile floating on the page) -->
+    <div class="top-navbar">
+        <a href="Notifications.html" class="icon-button">
+            <img src="/icons/notification_bell_icon.png" alt="notification icon">
+            <span class="notification-badge hidden" id="notificationBadge"></span>
+        </a>
+
+        <!-- Profile Button with Dropdown -->
+        <div class="profile-container">
+            <button class="profile-button" id="profileButton">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+                <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+            </button>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="Profile.html" class="dropdown-item">
+                    <img src="/icons/profile.png" alt="profile icon">
+                    Profile
+                </a>
+                <a href="FAQ.html" class="dropdown-item">
+                    <img src="/icons/faq_icon.png" alt="faq icon">
+                    FAQ
+                </a>
+                <a href="About.html" class="dropdown-item logout" id="logoutBtn">
+                    <img src="/icons/logout_icon.png" alt="logout icon">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- END of SIDEBAR + TOP BAR (COPY #2 ends here) -->
+
+
+    <!-- ============================================================
+         HOME PAGE CONTENT (not part of the template)
+         ============================================================ -->
+    <main class="main-content home-page">
+
+        <h1 class="page-title">Home</h1>
+
+        <!-- Greeting: model + speech bubble -->
+        <img class="model" src="/model/James Gosling crossed arms.png" alt="James Gosling crossed arms">
+        <div class="speech-bubble" id="speechBubble">
+            <!-- outline + tail: drawn automatically by the script below -->
+            <svg class="speech-bubble-shape" id="bubbleShape" aria-hidden="true"><path id="bubblePath"></path></svg>
+            <!-- GREETING TEXT: filled in by the script below (see "GREETINGS" there) -->
+            <p id="greetingText">It's a brand new day @User01!</p>
+        </div>
+
+        <!-- Jump Back In -->
+        <h2 class="section-title">Jump Back In</h2>
+
+        <section class="course-card">
+            <img class="course-bg" src="/pixel art/topic cover.gif" alt="topic cover">
+
+            <div class="progress-track">
+                <div class="progress-fill" id="courseProgressFill"></div>
+            </div>
+            <span class="progress-label" id="courseProgressLabel">20%</span>
+
+            <h3 class="course-title">Java</h3>
+            <p class="course-next">Next exercise: Data types</p>
+
+            <a href="View course.html" class="view-course">View course</a>
+            <a href="Learn.html" class="continue-btn">Continue Learning</a>
+        </section>
+
+        <!-- Daily Challenge -->
+        <section class="daily-card">
+            <h2 class="daily-title">Daily<br>Challenge</h2>
+            <p class="daily-desc">a special, once-a-day trivia test or task that resets every 24 hours for all players.</p>
+            <a href="Daily Challenges.html" class="lets-go-btn">Let's go!</a>
+            <img class="daily-icon" src="/icons/target.png" alt="daily challenge">
+        </section>
+
+        <!-- Coins + Power ups -->
+        <section class="coins-card">
+            <img class="coin-icon" src="/icons/currency.png" alt="coins">
+            <span class="coin-amount" id="coinAmount">299</span>
+            <span class="coin-label">Coins</span>
+
+            <hr class="coins-divider">
+
+            <h3 class="powerups-title">Power ups</h3>
+
+            <div class="powerup powerup-heart">
+                <img src="/icons/heal potion.png" alt="hp">
+                <span class="powerup-badge" id="hpCount">12</span>
+            </div>
+            <div class="powerup powerup-key">
+                <img src="/icons/key.png" alt="hint">
+                <span class="powerup-badge" id="hintCount">6</span>
+            </div>
+            <div class="powerup powerup-kettle">
+                <img src="/icons/kettle.png" alt="Streak saver">
+                <span class="powerup-badge" id="streakCount">3</span>
+            </div>
+
+            <a href="Shop.html" class="shop-link">
+                Go to Shop
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M8 12h8M12 8l4 4-4 4"></path>
+                </svg>
+            </a>
+        </section>
+
+    </main>
+
+
+    <!-- ============================================================
+         COPY #3 (goes just before the closing body tag on EVERY page)
+         START of NAVBAR SCRIPTS (dropdown, logout, notification badge)
+         ============================================================ -->
+    <script src="/js/notification-manager.js"></script>
+    <script src="/js/profile-dropdown.js"></script>
+    <!-- END of NAVBAR SCRIPTS (COPY #3 ends here) -->
+
+    <!-- HOME PAGE ONLY: greeting, coins and course progress -->
+    <script>
+        /* ================= GREETINGS (edit these) =================
+           One message per day of the week. {user} becomes @Username.
+           The bubble resizes by itself, so any length works
+           (very long messages wrap onto more lines). */
+        var greetings = {
+            0: "Happy Sunday, {user}! A little practice goes a long way.",   // Sunday
+            1: "It's a brand new week, {user}! Let's get started!",          // Monday
+            2: "Welcome back, {user}! Ready for some Java?",                 // Tuesday
+            3: "Halfway through the week, {user}. Keep it going!",           // Wednesday
+            4: "It's a brand new day, {user}!",                              // Thursday
+            5: "Happy Friday, {user}! Finish the week strong.",              // Friday
+            6: "Happy Saturday, {user}! Ready for a quick challenge?"        // Saturday
+        };
+
+        // You can also set any message yourself at any time, e.g. setGreeting("Great job, {user}!");
+        // The message is typed out letter by letter inside the bubble.
+        var TYPING_DELAY = 400;   // ms to wait before typing starts
+        var TYPING_SPEED = 40;    // ms per letter (lower = faster)
+        var typingTimer = null;
+
+        function setGreeting(message) {
+            var name = localStorage.getItem('loggedInUsername') || 'User01';
+            var text = message.replace('{user}', '@' + name);
+            var el = document.getElementById('greetingText');
+
+            clearTimeout(typingTimer);
+            el.setAttribute('aria-label', text);
+            el.textContent = '';
+
+            // Every letter is placed right away (hidden) so the bubble already has its final
+            // size and does not jump while typing; the letters are then revealed one by one.
+            var letters = [];
+            text.split('').forEach(function (ch) {
+                var span = document.createElement('span');
+                span.className = 'greeting-char';
+                span.setAttribute('aria-hidden', 'true');
+                span.textContent = ch;
+                el.appendChild(span);
+                letters.push(span);
+            });
+            drawBubble();
+
+            // Respect "reduce motion" settings: show the whole message at once
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                letters.forEach(function (s) { s.classList.add('shown'); });
+                return;
+            }
+
+            var i = 0;
+            function typeNext() {
+                if (i > 0) letters[i - 1].classList.remove('cursor');
+                if (i >= letters.length) return;
+                letters[i].classList.add('shown', 'cursor');
+                i++;
+                if (i === letters.length) {
+                    // finished: let the cursor blink for a moment, then hide it
+                    typingTimer = setTimeout(function () { letters[i - 1].classList.remove('cursor'); }, 1500);
+                } else {
+                    typingTimer = setTimeout(typeNext, TYPING_SPEED);
+                }
+            }
+            typingTimer = setTimeout(typeNext, TYPING_DELAY);
+        }
+
+        /* Draws the bubble outline and its pointed tail to fit the text.
+           Do not edit unless you want a different bubble shape. */
+        function drawBubble() {
+            var bubble = document.getElementById('speechBubble');
+            var svg = document.getElementById('bubbleShape');
+            var path = document.getElementById('bubblePath');
+            var k = window.innerWidth / 1920;          // size of one design pixel
+            var w = bubble.offsetWidth, h = bubble.offsetHeight;
+            var hs = 2 * k, r = 28 * k;                // half border, corner radius
+            var d = [
+                'M', r + hs, hs,
+                'H', w - r - hs,
+                'A', r, r, 0, 0, 1, w - hs, r + hs,
+                'V', h - r - hs,
+                'A', r, r, 0, 0, 1, w - r - hs, h - hs,
+                'H', 44 * k,
+                'Q', 22 * k, h - hs + 2 * k, -7 * k, h + 4 * k,     // tail bottom edge to the tip
+                'Q', -1 * k, h - 9 * k, hs, h - 25 * k,             // tail tip back up to the left edge
+                'V', r + hs,
+                'A', r, r, 0, 0, 1, r + hs, hs,
+                'Z'
+            ].join(' ');
+            path.setAttribute('d', d);
+            path.setAttribute('stroke-width', 4 * k);
+            svg.setAttribute('width', w + 12 * k);
+            svg.setAttribute('height', h + 9 * k);
+            svg.setAttribute('viewBox', [-12 * k, 0, w + 12 * k, h + 9 * k].join(' '));
+        }
+
+        // Pick today's greeting, then keep the bubble fitted if the text, fonts or window size change
+        setGreeting(greetings[new Date().getDay()]);
+        new ResizeObserver(drawBubble).observe(document.getElementById('speechBubble'));
+        if (document.fonts) document.fonts.ready.then(drawBubble);
+
+        // Coins (same 'coins' key used elsewhere in the site)
+        var coins = localStorage.getItem('coins');
+        if (coins !== null) document.getElementById('coinAmount').textContent = coins;
+
+        // Course progress: change this number (0-100) or load it from your saved data
+        var progress = 20;
+        document.getElementById('courseProgressFill').style.width = progress + '%';
+        document.getElementById('courseProgressLabel').textContent = progress + '%';
+    </script>
+</body>
+</html>

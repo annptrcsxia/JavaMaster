@@ -1,0 +1,248 @@
+/* STYLE FOR THE PROGRESS PAGE CONTENT
+   Load this AFTER Dashboard-navbar-style.css (it uses the --u unit defined there:
+   1 unit = 1/1920 of the screen width, so every number below is a pixel value
+   from the 1920x1080 mockup). Elements are placed with the mockup's coordinates. */
+
+:root {
+    --card-bg: #2f2723;
+    --bar-track: #54423b;
+    --bar-fill: #e8a43c;
+    --text-tan: #d9b98a;
+    --text-muted: #a89c92;
+}
+
+/* Content canvas: covers the whole 1920x1080 design area; the sidebar sits on top of it */
+.main-content.progress-page {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: max(100vh, calc(1080 * var(--u)));
+    min-height: 0;
+    background: var(--page-bg);
+    color: #f1e6da;
+    overflow: hidden;
+    flex: none;               /* never let the flex <body> squeeze the page */
+}
+
+.progress-page > * {
+    position: absolute;
+}
+
+/* ---------- Page title ---------- */
+.page-title {
+    left: calc(500 * var(--u));
+    top: calc(93 * var(--u));
+    font-size: calc(26 * var(--u));
+    line-height: calc(32 * var(--u));
+    font-weight: 600;
+    color: #7c7068;
+}
+
+/* ---------- Streak card ---------- */
+.streak-card {
+    left: calc(564 * var(--u));
+    top: calc(168 * var(--u));
+    width: calc(1135 * var(--u));
+    height: calc(539 * var(--u));
+    border-radius: calc(58 * var(--u));
+    background: var(--card-bg);
+    box-shadow: 0 calc(10 * var(--u)) calc(30 * var(--u)) rgba(0, 0, 0, 0.45);
+}
+
+/* Everything inside a card is positioned relative to the card */
+.streak-card > *,
+.rank-card > * {
+    position: absolute;
+}
+
+.coffee-icon {
+    left: calc(66 * var(--u));
+    top: calc(90 * var(--u));
+    width: calc(325 * var(--u));
+    height: calc(358 * var(--u));
+    object-fit: contain;
+}
+
+.streak-title {
+    left: calc(431 * var(--u));
+    top: calc(69 * var(--u));
+    font-size: calc(64 * var(--u));
+    line-height: calc(82 * var(--u));
+    font-weight: 700;
+    color: var(--text-tan);
+}
+
+/* scalloped badge with the streak number in the middle */
+.streak-badge {
+    left: calc(745 * var(--u));
+    top: calc(2 * var(--u));
+    width: calc(300 * var(--u));
+    height: calc(300 * var(--u));
+}
+
+.star-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.streak-number {
+    position: absolute;
+    left: 47%;
+    top: 48%;
+    transform: translate(-50%, -50%);
+    font-size: calc(92 * var(--u));
+    line-height: 1;
+    font-weight: 700;
+    color: #3b2d29;
+}
+
+.streak-bar {
+    left: calc(430 * var(--u));
+    top: calc(284 * var(--u));
+    width: calc(543 * var(--u));
+    height: calc(26 * var(--u));
+    border-radius: 999px;
+    background: var(--bar-track);
+    overflow: hidden;
+}
+
+.streak-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--bar-fill);
+    transition: width 0.5s ease;
+}
+
+.streak-fill.started {
+    min-width: calc(33 * var(--u));     /* small visible pill as soon as the streak starts */
+}
+
+.streak-label {
+    left: calc(987 * var(--u));
+    top: calc(284 * var(--u));
+    font-size: calc(20 * var(--u));
+    line-height: calc(24 * var(--u));
+    color: #cdbfb0;
+}
+
+.start-streak-text {
+    left: calc(431 * var(--u));
+    top: calc(357 * var(--u));
+    font-size: calc(24 * var(--u));
+    line-height: calc(30 * var(--u));
+    color: var(--text-muted);
+}
+
+.streak-btn {
+    top: calc(405 * var(--u));
+    height: calc(62 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: calc(28 * var(--u));
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.streak-btn:active {
+    transform: scale(0.98);
+}
+
+.learn-btn {
+    left: calc(405 * var(--u));
+    width: calc(250 * var(--u));
+    background: #5b3fe0;
+}
+
+.learn-btn:hover {
+    background: #6c52ee;
+}
+
+.daily-btn {
+    left: calc(669 * var(--u));
+    width: calc(353 * var(--u));
+    background: #c4512f;
+    color: #f6ebe0;
+}
+
+.daily-btn:hover {
+    background: #d4613f;
+}
+
+/* ---------- Rank card ---------- */
+.rank-card {
+    left: calc(564 * var(--u));
+    top: calc(751 * var(--u));
+    width: calc(1135 * var(--u));
+    height: calc(167 * var(--u));
+    border-radius: calc(42 * var(--u));
+    background: var(--card-bg);
+    box-shadow: 0 calc(10 * var(--u)) calc(30 * var(--u)) rgba(0, 0, 0, 0.45);
+}
+
+.rank-icon {
+    left: calc(50 * var(--u));
+    top: calc(6 * var(--u));
+    width: calc(128 * var(--u));
+    height: calc(160 * var(--u));
+    object-fit: contain;
+}
+
+.rank-name {
+    left: calc(203 * var(--u));
+    top: calc(23 * var(--u));
+    font-size: calc(36 * var(--u));
+    line-height: calc(44 * var(--u));
+    font-weight: 700;
+    color: var(--text-tan);
+}
+
+.rank-sub {
+    left: calc(203 * var(--u));
+    top: calc(62 * var(--u));
+    font-size: calc(22 * var(--u));
+    line-height: calc(26 * var(--u));
+    color: var(--text-muted);
+}
+
+.xp-pill {
+    left: calc(802 * var(--u));
+    top: calc(25 * var(--u));
+    width: calc(227 * var(--u));
+    height: calc(66 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #E8C888;
+    color: #2a2320;
+    font-size: calc(26 * var(--u));
+    font-weight: 500;
+}
+
+.xp-bar {
+    left: calc(203 * var(--u));
+    top: calc(104 * var(--u));
+    width: calc(826 * var(--u));
+    height: calc(26 * var(--u));
+    border-radius: 999px;
+    background: var(--bar-track);
+    overflow: hidden;
+}
+
+.xp-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--bar-fill);
+    transition: width 0.5s ease;
+}
+
+.xp-fill.started {
+    min-width: calc(33 * var(--u));
+}

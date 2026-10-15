@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Notifications</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="icon" href="/logo/java-master-logo" type="image/png">
+    <link rel="stylesheet" href="Dashboard-navbar-style.css">
+    
+    <style>
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 80px;
+            padding: 40px 60px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .notifications-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notifications-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .clear-all-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .clear-all-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .notifications-container {
+            max-width: 900px;
+        }
+
+        .notification-card {
+            background: linear-gradient(135deg, #f5f0f8 0%, #ebe4f0 100%);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .notification-card.unread::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #ff4444;
+            border-radius: 50%;
+        }
+
+        .notification-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-content p {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+            color: #554c4c;
+            line-height: 1.5;
+        }
+
+        .notification-time {
+            font-size: 14px;
+            color: #8b7a99;
+            margin-top: 6px;
+        }
+        
+        .notification-card:active {
+            transform: translateY(0);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ffffff;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Notification Badge Styles */
+        .icon-button {
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 12px;
+            height: 12px;
+            background-color: #ff4444;
+            border-radius: 50%;
+            border: 2px solid #4a2d5c;
+            animation: pulse 2s infinite;
+        }
+
+        .notification-badge.hidden {
+            display: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .notifications-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .notifications-header h1 {
+                font-size: 28px;
+            }
+
+            .notification-card {
+                padding: 20px;
+                gap: 16px;
+            }
+
+            .notification-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 28px;
+            }
+
+            .notification-content p {
+                font-size: 16px;
+            }
+        }
+
+        /* Clear All Confirmation Modal */
+        .clear-all-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .clear-all-modal.active {
+            display: flex;
+        }
+
+        .clear-all-modal-content {
+            background: #e8e4f0;
+            border-radius: 30px;
+            padding: 40px 50px;
+            width: 450px;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .clear-all-modal-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4742;
+            margin-bottom: 20px;
+        }
+
+        .clear-all-modal-message {
+            font-size: 18px;
+            color: #76726c;
+            margin-bottom: 35px;
+            line-height: 1.5;
+        }
+
+        .clear-all-modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .clear-all-btn-modal {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            padding: 14px 40px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .clear-all-cancel {
+            background: white;
+            color: #522546;
+            border: 3px solid #522546;
+        }
+
+        .clear-all-cancel:hover {
+            background: #f5f0f5;
+        }
+
+        .clear-all-confirm {
+            background: #522546;
+            color: white;
+        }
+
+        .clear-all-confirm:hover {
+            background: #6a2f5a;
+        }
+
+        @media (max-width: 768px) {
+            .clear-all-modal-content {
+                width: 90%;
+                padding: 30px 35px;
+            }
+
+            .clear-all-modal-title {
+                font-size: 26px;
+            }
+
+            .clear-all-modal-message {
+                font-size: 16px;
+            }
+
+            .clear-all-btn-modal {
+                font-size: 18px;
+                padding: 12px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <!-- Logo -->
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+
+        <!-- Navigation Sections -->
+        <div class="nav-sections">
+            <a href="My level.html" class="nav-item">
+                <img src="/icons/level_icon.png" alt="level icon">
+                My level
+            </a>
+
+            <a href="Progress.html" class="nav-item">
+                <img src="/icons/coffee_icon.png" alt="coffee icon">
+                Progress
+            </a>
+
+            <a href="Profile.html" class="nav-item">
+                <img src="/icons/profile_icon.png" alt="profile icon">
+                Profile
+            </a>
+
+            <a href="Modules.html" class="nav-item">
+                <img src="/icons/decks_icon.png" alt="decks icon">
+                Modules
+            </a>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="Learn.html" class="action-btn learn-button">Learn</a>
+            <a href="Daily Challenges.html" class="action-btn daily-challenges-button">Daily Challenges</a>
+        </div>
+
+        <!-- Coins and Shop -->
+        <div class="bottom-section">
+            <div class="coins-section">
+                <span class="coins-label">My coins</span>
+                <div class="coins-amount">
+                    <img src="/icons/currency_icon.png" alt="coins icon">
+                    <span id="sidebar-coins">80</span>
+                </div>
+            </div>
+            <div class="shop-section">
+                <img src="/icons/shop_icon.png" alt="shop icon" class="shop-icon">
+                <a href="Shop.html" class="shop-button">Shop</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Top Navigation Bar -->
+<div class="top-navbar">
+    <a href="Settings.html" class="icon-button">
+        <img src="/icons/settings_icon.png" alt="settings icon">
+    </a>
+    <a href="Notifications.html" class="icon-button">
+        <img src="/icons/notification_bell_icon.png" alt="notification icon">
+        <span class="notification-badge hidden" id="notificationBadge"></span>
+    </a>
+    
+    <!-- Profile Button with Dropdown Container -->
+    <div class="profile-container">
+        <button class="profile-button" id="profileButton">
+            <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+            <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+        </button>
+        
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="Profile.html" class="dropdown-item">
+                <img src="/icons/profile_icon.png" alt="profile icon">
+                Profile
+            </a>
+            <a href="FAQ.html" target="_blank" class="dropdown-item">
+                <img src="/icons/faq_icon.png" alt="faq icon">
+                FAQ
+            </a>
+            <a href="overview.html" class="dropdown-item logout" id="logoutBtn">
+                <img src="/icons/logout_icon.png" alt="logout icon">
+                Log out
+            </a>
+        </div>
+    </div>
+</div>
+
+    <!-- Main Content Area For NOTIFICATIONS -->
+    <main class="main-content">
+        <div class="notifications-header">
+            <h1>Notifications</h1>
+            <button class="clear-all-btn" id="clearAllBtn">Clear All</button>
+        </div>
+
+        <div class="notifications-container" id="notificationsContainer">
+            <!-- Notifications will be dynamically loaded here -->
+        </div>
+    </main>
+
+        <div class="clear-all-modal" id="clearAllModal">
+        <div class="clear-all-modal-content">
+            <h2 class="clear-all-modal-title">Clear All Notifications?</h2>
+            <p class="clear-all-modal-message">Are you sure you want to clear all notifications? This action cannot be undone.</p>
+            
+            <div class="clear-all-modal-buttons">
+                <button class="clear-all-btn-modal clear-all-cancel" onclick="cancelClearAll()">Cancel</button>
+                <button class="clear-all-btn-modal clear-all-confirm" onclick="confirmClearAll()">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="/js/notification-manager.js"></script>
+    <script src="coins-sync.js"></script>
+    <script>
+
+        // Dropdown functionality
+        const profileButton = document.getElementById('profileButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const dropdownIcon = profileButton.querySelector('.dropdown-icon');
+
+        // Toggle dropdown on button click
+        profileButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+            dropdownIcon.classList.toggle('rotated');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.profile-button') && !e.target.closest('.dropdown-menu')) {
+                dropdownMenu.classList.remove('active');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+
+        // Load and display notifications from localStorage
+        function loadNotifications() {
+            const container = document.getElementById('notificationsContainer');
+                const notifications = NotificationManager.getAll();
+
+                if (notifications.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔔</div>
+                            <h2>No notifications yet</h2>
+                            <p>When you have new notifications, they'll appear here</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = notifications.map(notif => `
+                    <div class="notification-card ${!notif.read ? 'unread' : ''}" data-id="${notif.id}">
+                        <div class="notification-icon">${notif.icon}</div>
+                        <div class="notification-content">
+                            <p>${notif.message}</p>
+                            <div class="notification-time">${NotificationManager.formatTime(notif.timestamp)}</div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // Format timestamp to readable time
+        function formatTime(timestamp) {
+            const now = new Date();
+            const notifTime = new Date(timestamp);
+            const diffMs = now - notifTime;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            return notifTime.toLocaleDateString();
+        }
+
+        // Mark all notifications as read
+        function markAsRead() {
+            const stored = localStorage.getItem('notifications');
+            if (stored) {
+                const notifications = JSON.parse(stored);
+                notifications.forEach(n => n.read = true);
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+                updateBadge();
+            }
+        }
+
+        // Update notification badge
+        function updateBadge() {
+            const stored = localStorage.getItem('notifications');
+            const notifications = stored ? JSON.parse(stored) : [];
+            const hasUnread = notifications.some(n => !n.read);
+            
+            const badge = document.getElementById('notificationBadge');
+            if (badge) {
+                if (hasUnread) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        // Clear all notifications
+        document.getElementById('clearAllBtn').addEventListener('click', () => {
+            showClearAllModal();
+            });
+
+            function showClearAllModal() {
+                document.getElementById('clearAllModal').classList.add('active');
+            }
+
+            function cancelClearAll() {
+                document.getElementById('clearAllModal').classList.remove('active');
+            }
+
+            function confirmClearAll() {
+                NotificationManager.clearAll();
+                loadNotifications();
+                document.getElementById('clearAllModal').classList.remove('active');
+            }
+
+            // Close modal when clicking outside
+            document.getElementById('clearAllModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    cancelClearAll();
+                }
+            });
+
+        // Initialize default notifications if none exist (for testing)
+        function initializeDefaults() {
+            const stored = localStorage.getItem('notifications');
+            if (!stored || JSON.parse(stored).length === 0) {
+                const defaultNotifications = [
+                    {
+                        id: Date.now() + 1,
+                        message: "Day 1 streak! You're brewing up some serious Java skills.",
+                        icon: "☕",
+                        type: "streak",
+                        timestamp: new Date().toISOString(),
+                        read: false
+                    },
+                    {
+                        id: Date.now() + 2,
+                        message: "You completed today's challenge! +10 XP added to your level.",
+                        icon: "🎉",
+                        type: "challenge",
+                        timestamp: new Date().toISOString(),
+                        read: false
+                    },
+                    {
+                        id: Date.now() + 3,
+                        message: "You earned 30 coins from today's streak. Spend them wisely!",
+                        icon: "💰",
+                        type: "coins",
+                        timestamp: new Date().toISOString(),
+                        read: false
+                    },
+                    {
+                        id: Date.now() + 4,
+                        message: "Hint used! Don't forget to buy more in the shop.",
+                        icon: "💡",
+                        type: "hint",
+                        timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+                        read: false
+                    },
+                    {
+                        id: Date.now() + 5,
+                        message: "Need to refill more hearts? Buy more in the shop.",
+                        icon: "❤️",
+                        type: "hearts",
+                        timestamp: new Date(Date.now() - 18000000).toISOString(), // 5 hours ago
+                        read: false
+                    }
+                ];
+                localStorage.setItem('notifications', JSON.stringify(defaultNotifications));
+            }
+        }
+
+        // Initialize on page load
+        NotificationManager.initializeDefaults();
+        NotificationManager.updateBadge();
+        loadNotifications();
+        
+        // Mark notifications as read after 1 second (user has viewed the page)
+        setTimeout(() => {
+            NotificationManager.markAllRead();
+            loadNotifications(); // Reload to remove unread indicators
+        }, 1000);
+
+        
+        // Listen for changes from other tabs/windows
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'coins') {
+                    loadCoinsDisplay();
+                }
+            });
+
+
+            // Load coins when page loads
+        window.addEventListener('DOMContentLoaded', loadCoinsDisplay);
+
+        // Logout functionality - clear session data before redirect
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                // Clear login session data
+                localStorage.removeItem('loggedInUsername');
+                localStorage.removeItem('loggedInPassword');
+                
+                // The link will naturally redirect to overview.html
+                // No need to prevent default or manually redirect
+            });
+        }
+
+        // Initialize notification badge
+        window.addEventListener('DOMContentLoaded', function() {
+            NotificationManager.updateBadge();
+        });
+
+        // Close modal when clicking outside (add this if not already there)
+        document.getElementById('clearAllModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cancelClearAll();
+            }
+        });
+    </script>
+    </script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Progress</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+    <link rel="stylesheet" href="/css/Dashboard-navbar-style.css">
+    <link rel="stylesheet" href="/css/Progress-style.css">
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <!-- Logo -->
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="nav-sections">
+            <a href="Home.html" class="nav-item">
+                <img src="/icons/home.png" alt="Home">
+                Home
+            </a>
+
+            <a href="Learn.html" class="nav-item">
+                <img src="/icons/toga cap.png" alt="Learn">
+                Learn
+            </a>
+
+            <!-- ACTIVE: this is the Progress page, so only Progress has "active" -->
+            <a href="Progress.html" class="nav-item active">
+                <img src="/icons/coffee.png" alt="Progress">
+                Progress
+            </a>
+
+            <a href="Profile.html" class="nav-item">
+                <img src="/icons/profile.png" alt="Profile">
+                Profile
+            </a>
+
+            <a href="Lobby.html" class="nav-item">
+                <img src="/icons/lobby.png" alt="Lobby">
+                Lobby
+            </a>
+        </div>
+
+        <!-- Study Button -->
+        <div class="action-buttons">
+            <a href="Study.html" class="action-btn study-button">
+                <img src="/icons/game console.png" alt="Study">
+                Study
+            </a>
+        </div>
+    </nav>
+
+    <!-- Top Bar (no visible bar: just the bell and profile floating on the page) -->
+    <div class="top-navbar">
+        <a href="Notifications.html" class="icon-button">
+            <img src="/icons/notification_bell_icon.png" alt="notification icon">
+            <span class="notification-badge hidden" id="notificationBadge"></span>
+        </a>
+
+        <!-- Profile Button with Dropdown -->
+        <div class="profile-container">
+            <button class="profile-button" id="profileButton">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+                <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+            </button>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="Profile.html" class="dropdown-item">
+                    <img src="/icons/profile.png" alt="profile icon">
+                    Profile
+                </a>
+                <a href="FAQ.html" class="dropdown-item">
+                    <img src="/icons/faq_icon.png" alt="faq icon">
+                    FAQ
+                </a>
+                <a href="About.html" class="dropdown-item logout" id="logoutBtn">
+                    <img src="/icons/logout_icon.png" alt="logout icon">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- END of SIDEBAR + TOP BAR (COPY #2 ends here) -->
+
+
+    <!-- ============================================================
+         PROGRESS PAGE CONTENT (not part of the template)
+         ============================================================ -->
+    <main class="main-content progress-page">
+
+        <h1 class="page-title">Progress</h1>
+
+        <!-- Streak card -->
+        <section class="streak-card">
+            <img id="coffeeIcon" src="/images/cup no streak.png" alt="cup of coffee" class="coffee-icon">
+
+            <h2 class="streak-title">Streak<br>days</h2>
+
+            <div class="streak-badge">
+                <img src="/icons/star_icon.png" alt="star icon" class="star-icon">
+                <span class="streak-number" id="streakNumber">0</span>
+            </div>
+
+            <div class="streak-bar">
+                <div class="streak-fill" id="streakProgress" style="width: 0%"></div>
+            </div>
+            <span class="streak-label" id="streakLabel">0/100%</span>
+
+            <p class="start-streak-text">Start your streak with:</p>
+
+            <a href="Learn.html" class="streak-btn learn-btn">Learn</a>
+            <a href="Daily Challenges.html" class="streak-btn daily-btn">Daily Challenges</a>
+        </section>
+
+        <!-- Rank card -->
+        <section class="rank-card">
+            <img id="rankIcon" src="/rank titles/starter.png" alt="rank icon" class="rank-icon">
+
+            <h3 class="rank-name" id="levelTitle">Starter</h3>
+            <p class="rank-sub">Rank</p>
+
+            <span class="xp-pill" id="levelXP">0/300 XP</span>
+
+            <div class="xp-bar">
+                <div class="xp-fill" id="xpProgress" style="width: 0%"></div>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ============================================================
+         PROGRESS PAGE SCRIPTS (navbar scripts + streak / XP logic)
+         ============================================================ -->
+    <script src="/js/notification-manager.js"></script>
+    <script src="/js/coins-sync.js"></script>
+    <script>
+        // Dropdown functionality
+        const profileButton = document.getElementById('profileButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const dropdownIcon = profileButton.querySelector('.dropdown-icon');
+
+        profileButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+            dropdownIcon.classList.toggle('rotated');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.profile-button') && !e.target.closest('.dropdown-menu')) {
+                dropdownMenu.classList.remove('active');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+
+        // Load the saved profile avatar from localStorage
+        function loadNavbarAvatar() {
+            const savedAvatar = localStorage.getItem('profileAvatar') || '/avatars/Avatar 1.png';
+            const navbarAvatarElement = document.getElementById('navbarAvatar');
+
+            if (navbarAvatarElement) {
+                navbarAvatarElement.src = savedAvatar;
+            }
+        }
+
+        loadNavbarAvatar();
+
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'profileAvatar') {
+                loadNavbarAvatar();
+            }
+        });
+
+        // Ranks (XP thresholds only; no level numbers)
+        const ranks = [
+            { name: 'Starter',  min: 0,    max: 300,    icon: '/rank titles/starter.png' },
+            { name: 'Beginner', min: 300,  max: 700,    icon: '/rank titles/beginner.png' },
+            { name: 'Rising',   min: 700,  max: 1200,   icon: '/rank titles/rising.png' },
+            { name: 'Skilled',  min: 1200, max: 1800,   icon: '/rank titles/skilled.png' },
+            { name: 'Pro',      min: 1800, max: 3000,   icon: '/rank titles/pro.png' },
+            { name: 'Elite',    min: 3000, max: 4500,   icon: '/rank titles/elite.png' },
+            { name: 'Boss',     min: 4500, max: 6500,   icon: '/rank titles/boss.png' },
+            { name: 'Legend',   min: 6500, max: 999999, icon: '/rank titles/legend.png' }
+        ];
+
+        // Load saved data from localStorage
+        let streakDays = parseInt(localStorage.getItem('streakDays')) || 0;
+        let totalXP = parseInt(localStorage.getItem('totalXP')) || 0;
+        let lastPlayDate = localStorage.getItem('lastPlayDate') || '';
+
+        function getCurrentRank() {
+            const r = [...ranks].reverse().find(x => totalXP >= x.min) || ranks[0];
+            return { name: r.name, xpRange: [r.min, r.max], iconPath: r.icon };
+        }
+
+        function updateCoffeeIcon() {
+            const coffeeIcon = document.getElementById('coffeeIcon');
+            const today = new Date().toDateString();
+
+            if (lastPlayDate === today) {
+                coffeeIcon.src = '/images/coffee streak.gif';
+            } else {
+                coffeeIcon.src = '/images/cup no streak.png';
+            }
+        }
+
+        function updateUI() {
+            const currentLevel = getCurrentRank();
+            const xpProgress = ((totalXP - currentLevel.xpRange[0]) / (currentLevel.xpRange[1] - currentLevel.xpRange[0])) * 100;
+            const streakProgress = (streakDays / 100) * 100;
+
+            // Streak: number in the badge, progress bar and "x/100%" label
+            // (the "started" class gives the bar a small minimum width once the streak has begun)
+            const streakFill = document.getElementById('streakProgress');
+            document.getElementById('streakNumber').textContent = streakDays;
+            document.getElementById('streakLabel').textContent = `${streakDays}/100%`;
+            streakFill.style.width = Math.min(streakProgress, 100) + '%';
+            streakFill.classList.toggle('started', streakDays > 0);
+
+            updateCoffeeIcon();
+
+            // Rank: name ("Starter"), XP pill ("50/180 XP"), XP bar and rank icon
+            const xpFill = document.getElementById('xpProgress');
+            document.getElementById('levelTitle').textContent = currentLevel.name;
+            document.getElementById('levelXP').textContent = `${totalXP}/${currentLevel.xpRange[1]} XP`;
+            xpFill.style.width = Math.min(xpProgress, 100) + '%';
+            xpFill.classList.toggle('started', totalXP > 0);
+
+            document.getElementById('rankIcon').src = currentLevel.iconPath;
+
+            localStorage.setItem('streakDays', streakDays);
+            localStorage.setItem('totalXP', totalXP);
+            localStorage.setItem('lastPlayDate', lastPlayDate);
+        }
+
+        function checkStreakStatus() {
+            const today = new Date().toDateString();
+
+            if (lastPlayDate === '') {
+                streakDays = 0;
+            } else {
+                const lastDate = new Date(lastPlayDate);
+                const todayDate = new Date();
+                const dayDifference = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+
+                if (dayDifference === 1 && lastPlayDate !== today) {
+                    // Consecutive day - increment streak
+                    streakDays++;
+                    lastPlayDate = today;
+
+                    // Trigger streak notification
+                    NotificationManager.add(
+                        `Day ${streakDays} streak! You're brewing up some serious Java skills.`,
+                        "☕",
+                        "streak"
+                    );
+
+                    // Award coins for streak
+                    const coinsEarned = 30;
+                    let currentCoins = parseInt(localStorage.getItem('coins')) || 80;
+                    currentCoins += coinsEarned;
+                    localStorage.setItem('coins', currentCoins);
+
+                    // Trigger coins notification
+                    NotificationManager.add(
+                        `You earned ${coinsEarned} coins from today's streak. Spend them wisely!`,
+                        "💰",
+                        "coins"
+                    );
+
+                } else if (dayDifference > 1) {
+                    // Streak broken
+                    streakDays = 0;
+                }
+            }
+            updateUI();
+        }
+
+        // Listen for coin changes from other tabs/windows
+        // (only runs if coins-sync.js provides loadCoinsDisplay; the sidebar no longer shows coins)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'coins' && typeof loadCoinsDisplay === 'function') {
+                loadCoinsDisplay();
+            }
+        });
+
+        checkStreakStatus();
+
+        // Initialize notification badge
+        NotificationManager.updateBadge();
+
+        // Logout functionality - clear session data before redirect
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                // Clear login session data
+                localStorage.removeItem('loggedInUsername');
+                localStorage.removeItem('loggedInPassword');
+                // The link will naturally redirect; no need to prevent default
+            });
+        }
+    </script>
+</body>
+</html>

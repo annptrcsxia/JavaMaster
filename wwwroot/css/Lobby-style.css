@@ -1,0 +1,251 @@
+/* =========================================================
+   Java Master - Lobby page (UI only)
+   Sidebar + top bar are styled in Dashboard-navbar-style.css
+
+   Everything on this page scales with the screen width using
+   one unit (--u), so it fits laptops and big monitors alike.
+   1 "design px" = 1 * var(--u)  (1px at 1920px wide, ~0.8px at 1536px)
+   ========================================================= */
+
+:root {
+    /* Width of your fixed sidebar (see Dashboard-navbar-style.css) */
+    --lobby-sidebar-width: 312px;
+
+    --lobby-bg: #1b1816;
+    --lobby-text: #f1e6d3;
+    --lobby-text-muted: #8a7a70;
+    --lobby-text-soft: #d9c7b6;
+
+    --lobby-teal: #167a89;
+    --lobby-purple: #7b3b6b;
+    --lobby-teal-dark: #2e5f66;
+    --lobby-brown-card: #633a2f;
+    --lobby-cream: #f3e8d8;
+    --lobby-cream-text: #3b2a24;
+}
+
+html,
+body {
+    overflow-x: hidden; /* no sideways scrollbar */
+}
+
+body {
+    background-color: var(--lobby-bg);
+    font-family: 'Bricolage Grotesque', sans-serif;
+}
+
+/* ---------- Main content area ---------- */
+.lobby-main {
+    --u: clamp(0.55px, 0.052vw, 1px);
+
+    margin-left: var(--lobby-sidebar-width);
+    /* fill the whole area beside the sidebar (stops it from shrinking
+       to its content, which pushed the Live Quiz card to the middle) */
+    width: calc(100% - var(--lobby-sidebar-width));
+    /* right padding lines the Live Quiz card up with the profile avatar */
+    padding: calc(100 * var(--u)) calc(122 * var(--u)) calc(40 * var(--u)) calc(110 * var(--u));
+    box-sizing: border-box;
+    color: var(--lobby-text);
+}
+
+.lobby-breadcrumb {
+    margin: 0;
+    font-size: calc(26 * var(--u));
+    font-weight: 600;
+    color: #7c7068; /* same gray as the Profile page title */
+}
+
+.lobby-content {
+    padding-left: calc(80 * var(--u));
+}
+
+.lobby-heading {
+    margin: 0;
+    font-size: calc(36 * var(--u));
+    font-weight: 600;
+    color: var(--lobby-text);
+}
+
+/* ---------- Top row: Play + Live Quiz ---------- */
+.lobby-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: calc(32 * var(--u));
+    margin-top: calc(20 * var(--u));
+}
+
+/* ---------- Play section ---------- */
+.play-section {
+    padding-top: calc(12 * var(--u));
+}
+
+.play-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: calc(16 * var(--u));
+    margin-top: calc(40 * var(--u));
+}
+
+.play-btn {
+    width: calc(320 * var(--u));
+    height: calc(60 * var(--u));
+    border: none;
+    border-radius: calc(14 * var(--u));
+    font-family: inherit;
+    font-size: calc(28 * var(--u));
+    font-weight: 600;
+    color: var(--lobby-text);
+    cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+.play-btn:hover {
+    filter: brightness(1.12);   /* lightens the button color only */
+}
+
+.play-btn:focus-visible,
+.enter-code-btn:focus-visible,
+.create-deck-btn:focus-visible {
+    outline: 3px solid var(--lobby-cream);
+    outline-offset: 3px;
+}
+
+.host-btn {
+    background-color: var(--lobby-teal);
+}
+
+.join-btn {
+    background-color: var(--lobby-purple);
+}
+
+/* ---------- Live Quiz card ---------- */
+.live-quiz-card {
+    position: relative;
+    flex-shrink: 0;
+    margin-top: calc(14 * var(--u));
+    width: calc(574 * var(--u));
+    height: calc(261 * var(--u));
+    box-sizing: border-box;
+    padding: calc(36 * var(--u)) calc(32 * var(--u)) calc(32 * var(--u)) calc(40 * var(--u));
+    background-color: var(--lobby-brown-card);
+    border-radius: calc(60 * var(--u));
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.live-quiz-info {
+    max-width: calc(300 * var(--u));
+}
+
+.live-quiz-title {
+    margin: 0;
+    font-size: calc(40 * var(--u));
+    font-weight: 600;
+    color: var(--lobby-text);
+}
+
+.live-quiz-desc {
+    margin: calc(8 * var(--u)) 0 0;
+    font-size: calc(19 * var(--u));
+    line-height: 1.2;
+    color: var(--lobby-text-soft);
+}
+
+.live-quiz-img {
+    position: absolute;
+    /* centered on the right side of the card; change the width to resize */
+    left: 74.7%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(320 * var(--u));
+    height: auto;
+    pointer-events: none;
+}
+
+.enter-code-btn {
+    position: absolute;
+    left: calc(27 * var(--u));
+    bottom: calc(33 * var(--u));
+    height: calc(60 * var(--u));
+    padding: 0 calc(24 * var(--u));
+    border: none;
+    border-radius: calc(30 * var(--u));
+    background-color: var(--lobby-cream);
+    font-family: inherit;
+    font-size: calc(28 * var(--u));
+    font-weight: 600;
+    color: var(--lobby-cream-text);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.enter-code-btn:hover {
+    background-color: #fff6e8;  /* lightens the button color only */
+}
+
+/* ---------- Your Decks ---------- */
+.decks-section {
+    margin-top: calc(48 * var(--u));
+}
+
+.decks-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: calc(32 * var(--u));
+}
+
+.decks-empty-img {
+    width: calc(172 * var(--u));
+    height: auto;
+}
+
+.decks-empty-title {
+    margin: calc(14 * var(--u)) 0 0;
+    font-size: calc(30 * var(--u));
+    font-weight: 500;
+    color: var(--lobby-text);
+}
+
+.decks-empty-text {
+    margin: calc(4 * var(--u)) 0 0;
+    max-width: calc(320 * var(--u));
+    font-size: calc(19 * var(--u));
+    line-height: 1.2;
+    color: var(--lobby-text-soft);
+}
+
+.create-deck-btn {
+    margin-top: calc(28 * var(--u));
+    height: calc(60 * var(--u));
+    padding: 0 calc(43 * var(--u));
+    border: none;
+    border-radius: calc(12 * var(--u));
+    background-color: var(--lobby-teal-dark);
+    font-family: inherit;
+    font-size: calc(25 * var(--u));
+    font-weight: 600;
+    color: var(--lobby-text);
+    cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+.create-deck-btn:hover {
+    filter: brightness(1.15);   /* lightens the button color only */
+}
+
+/* ---------- Narrow screens (tablet / small windows) ---------- */
+@media (max-width: 1000px) {
+    .lobby-top {
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .play-btn,
+    .enter-code-btn,
+    .create-deck-btn {
+        transition: none;
+    }
+}

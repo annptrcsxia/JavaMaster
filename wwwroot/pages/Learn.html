@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Learn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500&family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+    <link rel="stylesheet" href="/css/Dashboard-navbar-style.css">
+    <link rel="stylesheet" href="/css/Learn-style.css">
+</head>
+<body>
+    <!-- Sidebar Navigation (fixed) -->
+    <nav class="sidebar">
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+
+        <div class="nav-sections">
+            <a href="Home.html" class="nav-item">
+                <img src="/icons/home.png" alt="Home">
+                Home
+            </a>
+            <a href="Learn.html" class="nav-item active">
+                <img src="/icons/toga cap.png" alt="Learn">
+                Learn
+            </a>
+            <a href="Progress.html" class="nav-item">
+                <img src="/icons/coffee.png" alt="Progress">
+                Progress
+            </a>
+            <a href="Profile.html" class="nav-item">
+                <img src="/icons/profile.png" alt="Profile">
+                Profile
+            </a>
+            <a href="Lobby.html" class="nav-item">
+                <img src="/icons/lobby.png" alt="Lobby">
+                Lobby
+            </a>
+        </div>
+
+        <div class="action-buttons">
+            <a href="Study.html" class="action-btn study-button">
+                <img src="/icons/game console.png" alt="Study">
+                Study
+            </a>
+        </div>
+    </nav>
+
+    <!-- Top Bar (fixed) -->
+    <div class="top-navbar">
+        <a href="Notifications.html" class="icon-button">
+            <img src="/icons/notification_bell_icon.png" alt="notification icon">
+            <span class="notification-badge hidden" id="notificationBadge"></span>
+        </a>
+        <!-- Profile Button with Dropdown -->
+        <div class="profile-container">
+            <button class="profile-button" id="profileButton">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+                <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+            </button>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="Profile.html" class="dropdown-item">
+                    <img src="/icons/profile.png" alt="profile icon">
+                    Profile
+                </a>
+                <a href="FAQ.html" class="dropdown-item">
+                    <img src="/icons/faq_icon.png" alt="faq icon">
+                    FAQ
+                </a>
+                <a href="About.html" class="dropdown-item logout" id="logoutBtn">
+                    <img src="/icons/logout_icon.png" alt="logout icon">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="page-title">Learn</h1>
+
+    <!-- Scrollable content: Introduction to Java -->
+    <div class="main-content">
+        <div class="lesson-path-container">
+
+            <div class="module-header">
+                <h2>Introduction to Java</h2>
+            </div>
+
+            <div class="lesson-path" id="lessonPath">
+                <div class="path-stage" id="pathStage">
+                    <svg class="path-svg" id="pathSvg"></svg>
+
+                    <!-- 1 · Hello World (starts as current) -->
+                    <div class="lesson-node current" data-step="1" data-type="lesson"
+                         data-href="/lesson/Lesson 1.html" data-out="right"
+                         style="--x:510; --y:60" tabindex="0" role="button">
+                        <img src="/nodes/Current node.png" alt="Hello World">
+                        <div class="lesson-label left" style="--gap:80px; --lw:190px; --sw:140px">
+                            <span class="title">Hello World</span>
+                            <span class="sub">Your journey starts here.</span>
+                        </div>
+                    </div>
+
+                    <!-- 2 · Variables -->
+                    <div class="lesson-node locked" data-step="2" data-type="lesson"
+                         data-href="Lesson 2.html" data-in="top" data-out="bottom"
+                         style="--x:832; --y:279" tabindex="0" role="button">
+                        <img src="/nodes/Lock node.png" alt="Variables">
+                        <div class="lesson-label right" style="--lw:200px; --sw:130px">
+                            <span class="title">Variables</span>
+                            <span class="sub">A named container for data.</span>
+                        </div>
+                    </div>
+
+                    <!-- 3 · Data Types -->
+                    <div class="lesson-node locked" data-step="3" data-type="lesson"
+                         data-href="Lesson 3.html" data-in="right" data-out="left"
+                         style="--x:558; --y:528" tabindex="0" role="button">
+                        <img src="/nodes/Lock node.png" alt="Data Types">
+                        <div class="lesson-label bottom" style="--lw:260px; --sw:190px">
+                            <span class="title">Data Types</span>
+                            <span class="sub">Structuring values with data types</span>
+                        </div>
+                    </div>
+
+                    <!-- 4 · Java Basics 1 (practice) -->
+                    <div class="lesson-node locked" data-step="4" data-type="practice"
+                         data-href="Practice 1.html" data-in="top" data-out="bottom"
+                         style="--x:282; --y:803" tabindex="0" role="button">
+                        <img src="/nodes/Practice node.png" alt="Java Basics 1 practice">
+                        <div class="lesson-label left" style="--lw:130px; --sw:130px">
+                            <span class="title">Java Basics 1</span>
+                            <span class="sub">Practice</span>
+                        </div>
+                    </div>
+
+                    <!-- 5 · Operators & Expressions -->
+                    <div class="lesson-node locked" data-step="5" data-type="lesson"
+                         data-href="Lesson 4.html" data-in="top" data-out="right"
+                         style="--x:282; --y:1223" tabindex="0" role="button">
+                        <img src="/nodes/Lock node.png" alt="Operators and Expressions">
+                        <div class="lesson-label left" style="--lw:200px; --sw:165px">
+                            <span class="title">Operators &amp; Expressions</span>
+                            <span class="sub">Calculate and compare values</span>
+                        </div>
+                    </div>
+
+                    <!-- 6 · Java Basics 2 (practice) -->
+                    <div class="lesson-node locked" data-step="6" data-type="practice"
+                         data-href="Practice 2.html" data-in="left" data-out="bottom"
+                         style="--x:738; --y:1223" tabindex="0" role="button">
+                        <img src="/nodes/Practice node.png" alt="Java Basics 2 practice">
+                        <div class="lesson-label right" style="--lw:130px; --sw:130px">
+                            <span class="title">Java Basics 2</span>
+                            <span class="sub">Practice</span>
+                        </div>
+                    </div>
+
+                    <!-- 7 · Test -->
+                    <div class="lesson-node locked" data-step="7" data-type="test"
+                         data-href="Test 1.html" data-in="right"
+                         style="--x:489; --y:1578" tabindex="0" role="button">
+                        <img src="/nodes/Test node.png" alt="Test">
+                        <div class="lesson-label left" style="--lw:190px; --sw:165px">
+                            <span class="title">Test</span>
+                            <span class="sub">Test your problem-solving skill here</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next (locked) section -->
+            <div class="next-section">
+                <p class="eyebrow">Next section</p>
+                <h3>Java Fundamentals</h3>
+                <p>Core concepts for writing basic programs.</p>
+                <img src="/icons/opportunity.png" alt="Locked section door">
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/badge-manager.js"></script>
+    <script src="/js/notification-manager.js"></script>
+    <script src="/js/coins-sync.js"></script>
+    <script>
+        /* ---------- Profile dropdown ---------- */
+        const profileButton = document.getElementById('profileButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const dropdownIcon = profileButton.querySelector('.dropdown-icon');
+
+        profileButton.addEventListener('click', function (e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+            dropdownIcon.classList.toggle('rotated');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.profile-button') && !e.target.closest('.dropdown-menu')) {
+                dropdownMenu.classList.remove('active');
+                dropdownIcon.classList.remove('rotated');
+            }
+        });
+
+        /* ---------- Avatar ---------- */
+        function loadNavbarAvatar() {
+            const savedAvatar = localStorage.getItem('profileAvatar') || '/avatars/Avatar 1.png';
+            const el = document.getElementById('navbarAvatar');
+            if (el) el.src = savedAvatar;
+        }
+        loadNavbarAvatar();
+
+        window.addEventListener('storage', function (e) {
+            if (e.key === 'profileAvatar') loadNavbarAvatar();
+            if (e.key === 'coins' && typeof loadCoinsDisplay === 'function') loadCoinsDisplay();
+            if (e.key === 'completedLessons' || e.key === 'currentLesson') {
+                loadLessonProgress();
+            }
+        });
+
+        /* ---------- Lesson path ---------- */
+        const STAGE_W = 1280;
+        const STAGE_H = 1860;
+        const MAX_SCALE = 0.8;   // overall zoom of the path (lower = smaller)
+        const NODE_IMAGES = {
+            lesson:   { completed: '/nodes/Unlock node.png', current: '/nodes/Current node.png', locked: '/nodes/Lock node.png' },
+            practice: '/nodes/Practice node.png',
+            test:     '/nodes/Test node.png'
+        };
+
+        const stage  = document.getElementById('pathStage');
+        const holder = document.getElementById('lessonPath');
+        const svg    = document.getElementById('pathSvg');
+        const nodes  = Array.from(document.querySelectorAll('.lesson-node'));
+
+        /*
+          Progress is stored by step number (1-7):
+            currentLesson    -> step the learner is on (default 1)
+            completedLessons -> array of finished steps
+        */
+        function loadLessonProgress() {
+            const completed = JSON.parse(localStorage.getItem('completedLessons') || '[]');
+            const current   = parseInt(localStorage.getItem('currentLesson') || '1', 10);
+
+            nodes.forEach(node => {
+                const step = parseInt(node.dataset.step, 10);
+                const type = node.dataset.type;
+                const img  = node.querySelector(':scope > img');
+
+                node.classList.remove('locked', 'current', 'completed');
+
+                let state;
+                if (completed.includes(step))      state = 'completed';
+                else if (step === current)         state = 'current';
+                else                               state = 'locked';
+
+                node.classList.add(state);
+                node.dataset.state = state;
+                img.src = type === 'lesson' ? NODE_IMAGES.lesson[state] : NODE_IMAGES[type];
+            });
+
+            drawPath();
+        }
+
+        function anchor(node, side) {
+            const l = node.offsetLeft, t = node.offsetTop;
+            const w = node.offsetWidth, h = node.offsetHeight;
+            const faceY = t + h * 0.45;           // centre of the key face (excludes the 3D base)
+            switch (side) {
+                case 'right':  return { x: l + w,     y: faceY, dir: 'h' };
+                case 'left':   return { x: l,         y: faceY, dir: 'h' };
+                case 'top':    return { x: l + w / 2, y: t,     dir: 'v' };
+                default:       return { x: l + w / 2, y: t + h, dir: 'v' };
+            }
+        }
+
+        function drawPath() {
+            svg.innerHTML = '';
+            for (let i = 1; i < nodes.length; i++) {
+                const prev = nodes[i - 1], next = nodes[i];
+                const a = anchor(prev, prev.dataset.out);
+                const b = anchor(next, next.dataset.in);
+                let d;
+
+                if (a.dir === 'h' && b.dir === 'v') {
+                    d = `M ${a.x} ${a.y} H ${b.x} V ${b.y}`;
+                } else if (a.dir === 'v' && b.dir === 'h') {
+                    d = `M ${a.x} ${a.y} V ${b.y} H ${b.x}`;
+                } else if (a.dir === 'h' && Math.abs(a.y - b.y) < 16) {
+                    d = `M ${a.x} ${a.y} H ${b.x}`;      // same row: perfectly straight
+                } else if (a.dir === 'h') {
+                    const mx = (a.x + b.x) / 2;
+                    d = `M ${a.x} ${a.y} H ${mx} V ${b.y} H ${b.x}`;
+                } else if (Math.abs(a.x - b.x) < 1) {
+                    d = `M ${a.x} ${a.y} V ${b.y}`;
+                } else {
+                    const my = (a.y + b.y) / 2;
+                    d = `M ${a.x} ${a.y} V ${my} H ${b.x} V ${b.y}`;
+                }
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', d);
+                path.setAttribute('class', 'path-line' + (prev.dataset.state === 'completed' ? ' completed' : ''));
+                svg.appendChild(path);
+            }
+        }
+
+        /* Scale the 1280px design down to fit narrower screens */
+        function fitStage() {
+            const available = holder.clientWidth;
+            const s = Math.min(MAX_SCALE, available / STAGE_W);
+            const offsetX = (available - STAGE_W * s) / 2;
+            stage.style.transform = `translateX(${offsetX}px) scale(${s})`;
+            holder.style.height = (STAGE_H * s) + 'px';
+        }
+
+        /* Click / keyboard */
+        nodes.forEach(node => {
+            const open = () => {
+                if (node.classList.contains('locked')) {
+                    node.classList.remove('shake');
+                    void node.offsetWidth;            // restart animation
+                    node.classList.add('shake');
+                    return;
+                }
+                window.location.href = node.dataset.href;
+            };
+            node.addEventListener('click', open);
+            node.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+            });
+            node.addEventListener('animationend', e => {
+                if (e.animationName === 'shake') node.classList.remove('shake');
+            });
+        });
+
+        window.addEventListener('load', () => { fitStage(); loadLessonProgress(); });
+        window.addEventListener('resize', fitStage);
+
+        /* ---------- Logout ---------- */
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function () {
+                localStorage.removeItem('loggedInUsername');
+                localStorage.removeItem('loggedInPassword');
+            });
+        }
+
+        /* ---------- Coins + notifications ---------- */
+        window.addEventListener('DOMContentLoaded', function () {
+            if (typeof loadCoinsDisplay === 'function') loadCoinsDisplay();
+            NotificationManager.updateBadge();
+        });
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+/* ============================================================
+   Learn-style.css  -  "Introduction to Java" lesson path
+   Side nav + top nav are fixed (Dashboard-navbar-style.css);
+   only .main-content scrolls.
+   ============================================================ */
+
+:root {
+    --bg: #1a1917;
+    --pill-bg: #B07343;
+    --pill-border: #6E4A3A;
+    --pill-text: #FFF1DC;
+
+    --label-title: #D6AE7B;
+    --label-sub: #A89684;
+
+    --line: #5A3424;
+    --line-done: #E09F3E;
+
+    --active-ring: #5B3FE0;
+
+    --stage-w: 1280px;      /* design width of the path (JS scales it down on small screens) */
+    --node-w: 260px;
+    --label-gap: 80px;      /* space between a node and its side label (clears the active ring) */
+}
+
+body {
+    background: var(--bg);
+    margin: 0;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    overflow-x: hidden;
+    color: #e8e7e4;
+}
+
+.page-title {
+    position: absolute;
+    left: calc(500 * var(--u));
+    top: calc(93 * var(--u));
+    z-index: 1;
+    margin: 0;
+    font-size: calc(26 * var(--u));
+    line-height: calc(32 * var(--u));
+    font-weight: 600;
+    color: #7c7068;
+}
+
+/* ---------- Scrollable content area ---------- */
+.main-content {
+    margin-left: 280px;
+    margin-top: 80px;
+    padding: 40px 60px 0;
+    min-height: calc(100vh - 80px);
+    background: var(--bg);
+    box-sizing: border-box;
+    font-family: 'Inter', 'Bricolage Grotesque', sans-serif;
+}
+
+.lesson-path-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    padding: 20px 0 80px;
+}
+
+/* ---------- Module header pill ---------- */
+.module-header {
+    background: var(--pill-bg);
+    border: 4px solid var(--pill-border);
+    border-radius: 999px;
+    width: 600px;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 26px 40px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.module-header h2 {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(24px, 2.6vw, 38px);
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--pill-text);
+}
+
+/* ---------- Path stage ---------- */
+.lesson-path {
+    position: relative;
+    width: 100%;
+    margin-top: 24px;
+    height: 1860px;               /* JS overwrites this after scaling */
+}
+
+.path-stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--stage-w);
+    height: 1860px;
+    transform-origin: 0 0;
+}
+
+.path-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.path-line {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 14;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+}
+
+.path-line.completed {
+    stroke: var(--line-done);
+}
+
+/* ---------- Nodes ---------- */
+.lesson-node {
+    position: absolute;
+    left: calc(var(--x) * 1px);
+    top: calc(var(--y) * 1px);
+    width: var(--node-w);
+    z-index: 1;
+    cursor: pointer;
+    transition: transform 0.25s ease, filter 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+/* The active node (and its purple ring) always sits on top of the other nodes and the path */
+.lesson-node.current {
+    z-index: 5;
+}
+
+.lesson-node > img {
+    width: 100%;
+    height: auto;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.lesson-node.locked {
+    cursor: not-allowed;
+}
+
+.lesson-node:not(.locked):hover {
+    transform: scale(1.05);
+}
+
+.lesson-node:focus-visible {
+    outline: 3px dashed var(--label-title);
+    outline-offset: 12px;
+    border-radius: 30px;
+}
+
+/* Practice / Test nodes have no "current" artwork, so brighten them when they are the active step */
+.lesson-node.current[data-type="practice"] > img,
+.lesson-node.current[data-type="test"] > img {
+    filter: brightness(1.35) saturate(1.3);
+}
+
+/* Completed Practice / Test get a small check badge */
+.lesson-node.completed[data-type="practice"]::after,
+.lesson-node.completed[data-type="test"]::after {
+    content: '\2713';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--line-done);
+    color: #2c1608;
+    font: 700 24px/44px 'Poppins', sans-serif;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Tap on a locked node */
+.lesson-node.shake {
+    animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-8px); }
+    75%      { transform: translateX(8px); }
+}
+
+/* ============================================================
+   ACTIVE STATE  -  350 x 350 rectangle, radius 44, #5B3FE0
+   Four "Flicker" variants recreated as one keyframe loop.
+
+   Figma timing                         ms (hold -> transition)
+   Flicker 1 -> 2 : delay 700, dur 500  700 -> 500
+   Flicker 2 -> 3 : delay 500, dur 500  500 -> 500
+   Flicker 3 -> 4 : delay 600, dur 500  600 -> 500
+   Flicker 4 -> 1 : delay 900, dur 600  900 -> 600
+   Total loop = 4800ms, easing linear (smart animate)
+   ============================================================ */
+.lesson-node.current::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 350px;
+    height: 350px;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    border: 8px solid var(--active-ring);
+    border-radius: 44px;
+    pointer-events: none;
+    z-index: 3;                   /* above the node image, label and path */
+    animation: ring-flicker 4800ms linear infinite;
+}
+
+@keyframes ring-flicker {
+    /* Flicker 1 - hold 700ms */
+    0%, 14.583% {
+        opacity: 1;
+        box-shadow: 0 0 26px rgba(91, 63, 224, 0.55);
+    }
+    /* Flicker 2 - reached at 1200ms, hold 500ms */
+    25%, 35.417% {
+        opacity: 0.45;
+        box-shadow: 0 0 6px rgba(91, 63, 224, 0.2);
+    }
+    /* Flicker 3 - reached at 2200ms, hold 600ms */
+    45.833%, 58.333% {
+        opacity: 0.85;
+        box-shadow: 0 0 16px rgba(91, 63, 224, 0.4);
+    }
+    /* Flicker 4 - reached at 3300ms, hold 900ms */
+    68.75%, 87.5% {
+        opacity: 0.3;
+        box-shadow: 0 0 0 rgba(91, 63, 224, 0);
+    }
+    /* back to Flicker 1 over 600ms */
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 26px rgba(91, 63, 224, 0.55);
+    }
+}
+
+/* ---------- Labels ---------- */
+.lesson-label {
+    position: absolute;
+    width: max-content;
+    max-width: var(--lw, 200px);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.lesson-label.left {
+    right: calc(100% + var(--gap, var(--label-gap)));
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.lesson-label.right {
+    left: calc(100% + var(--gap, var(--label-gap)));
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.lesson-label.bottom {
+    left: 46px;
+    top: calc(100% + 44px);       /* clears the bottom edge of the active ring */
+}
+
+.lesson-label .title {
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--label-title);
+}
+
+.lesson-label .sub {
+    display: block;
+    max-width: var(--sw, 140px);
+    margin-top: 4px;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--label-sub);
+}
+
+/* ---------- Next section card ---------- */
+.next-section {
+    position: relative;
+    width: 600px;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 10px auto 0;
+    padding: 32px 36px;
+    min-height: 260px;
+    background: #2E2723;
+    border-radius: 28px;
+    overflow: hidden;
+}
+
+.next-section .eyebrow {
+    margin: 0;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--label-sub);
+}
+
+.next-section h3 {
+    margin: 22px 0 18px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--label-title);
+}
+
+.next-section p {
+    margin: 0;
+    max-width: 280px;
+    font-size: 18px;
+    line-height: 1.35;
+    color: var(--label-sub);
+}
+
+.next-section img {
+    position: absolute;
+    right: 56px;
+    bottom: 30px;
+    width: 150px;
+    height: auto;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .main-content {
+        margin-left: 0;
+        padding: 30px 16px 0;
+    }
+    .module-header {
+        padding: 22px 20px;
+    }
+    .next-section {
+        padding: 28px 24px;
+        min-height: 250px;
+    }
+    .next-section h3 { font-size: 26px; }
+    .next-section p { font-size: 17px; max-width: 55%; }
+    .next-section img { width: 110px; right: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lesson-node.current::before { animation: none; }
+    .lesson-node { transition: none; }
+}
