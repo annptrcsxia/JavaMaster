@@ -513,3 +513,11 @@
 .confirm-btn:hover {
     background: #d4613f;
 }
+/* ---------- Fix: top bar was blocking the back button ---------- */
+.top-navbar {
+    pointer-events: none;
+}
+.top-navbar .icon-button,
+.top-navbar .profile-container {
+    pointer-events: auto;
+}

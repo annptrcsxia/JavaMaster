@@ -61,16 +61,20 @@
             </button>
 
             <div class="dropdown-menu" id="dropdownMenu">
-                <a href="Profile.html" class="dropdown-item">
-                    <img src="/icons/profile.png" alt="profile icon">
+                <a href="Profile.html" class="dropdown-item" role="menuitem">
+                    <img src="/icons/profile.png" alt="">
                     Profile
                 </a>
-                <a href="FAQ.html" class="dropdown-item">
-                    <img src="/icons/faq_icon.png" alt="faq icon">
-                    FAQ
+                <a href="Settings.html" class="dropdown-item" role="menuitem">
+                    <img src="/icons/settings_icon.png" alt="">
+                    Settings
                 </a>
-                <a href="About.html" class="dropdown-item logout" id="logoutBtn">
-                    <img src="/icons/logout_icon.png" alt="logout icon">
+                <a href="FAQ.html" class="dropdown-item" role="menuitem">
+                    <img src="/icons/faq_icon.png" alt="">
+                    Help
+                </a>
+                <a href="/" class="dropdown-item logout" id="logoutBtn" role="menuitem">
+                    <img src="/icons/logout_icon.png" alt="">
                     Log out
                 </a>
             </div>
@@ -183,6 +187,7 @@
     <script src="/js/badge-manager.js"></script>
     <script src="/js/notification-manager.js"></script>
     <script src="/js/coins-sync.js"></script>
+    <script src="/js/study-modal.js"></script>
     <script>
         /* ---------- Profile dropdown ---------- */
         const profileButton = document.getElementById('profileButton');

@@ -7,7 +7,6 @@
     --sidebar-border: #3a2f29;
     --page-bg: #1a1917;
     --text-cream: #eadfd3;
-    --accent-orange: #FFA500;
     --study-red: #c4512f;
 }
 
@@ -247,18 +246,19 @@ body {
 /* ---------- Dropdown menu ---------- */
 .dropdown-menu {
     position: absolute;
-    top: calc(100% + 18px);
+    top: calc(100% + 24 * var(--u));
     right: 0;
-    min-width: 200px;
+    width: max-content;
+    min-width: max(200px, calc(235 * var(--u)));
     background-color: #262322;
     border: 1px solid #3a3835;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    border-radius: max(18px, calc(24 * var(--u)));
+    box-shadow: 0 calc(4 * var(--u)) calc(15 * var(--u)) rgba(0, 0, 0, 0.5);
     overflow: hidden;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
+    transform: translateY(calc(-10 * var(--u)));
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
     z-index: 200;
 }
 
@@ -271,13 +271,14 @@ body {
 .dropdown-item {
     display: flex;
     align-items: center;
-    padding: 15px 20px;
-    color: #e8e7e4;
+    padding: max(14px, calc(18 * var(--u))) max(24px, calc(30 * var(--u)));
+    color: #f1ece6;
     text-decoration: none;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: max(17px, calc(21 * var(--u)));
+    line-height: 1.25;
+    font-weight: 500;
     border-bottom: 1px solid #3a3835;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dropdown-item:last-child {
@@ -286,21 +287,24 @@ body {
 
 .dropdown-item:hover {
     background-color: #363230;
-    color: var(--accent-orange);
 }
 
 .dropdown-item img {
-    width: 24px;
-    height: 24px;
-    margin-right: 12px;
+    flex-shrink: 0;
+    width: max(22px, calc(26 * var(--u)));
+    height: max(22px, calc(26 * var(--u)));
+    margin-right: max(14px, calc(18 * var(--u)));
+    object-fit: contain;
 }
 
+/* Log out is white like the other items in the prototype.
+   The .logout class is kept so you can still style it separately later. */
 .dropdown-item.logout {
-    color: #ff6b6b;
+    color: #f1ece6;
 }
 
 .dropdown-item.logout:hover {
-    background-color: #3a2828;
+    background-color: #363230;
 }
 
 /* ---------- Main content area (for each page to use) ---------- */
@@ -336,5 +340,167 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .notification-badge { animation: none; }
+    .study-overlay.active,
+    .study-overlay.active .study-modal { animation: none; }
+}
+/* ---------- Study mode pop-up ---------- */
+.study-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;                  /* above the sidebar and top bar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 8, 7, 0.7);
+    opacity: 0;
+    visibility: hidden;
+}
+
+.study-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    animation: study-fade-in 0.25s ease;
+}
+
+.study-modal {
+    width: min(calc(1293 * var(--u)), 94vw);
+    padding: calc(40 * var(--u)) calc(28 * var(--u));
+    border-radius: calc(44 * var(--u));
+    background: var(--sidebar-bg);
+    box-shadow: 0 calc(12 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, 0.55);
+}
+
+.study-overlay.active .study-modal {
+    animation: study-pop-in 0.25s ease;
+}
+
+@keyframes study-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes study-pop-in {
+    from { transform: scale(0.96); }
+    to   { transform: scale(1); }
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.study-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: calc(24 * var(--u));
+}
+
+.study-option {
+    height: calc(328 * var(--u));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: calc(6 * var(--u));
+    border: max(2px, calc(3 * var(--u))) solid #65503f;
+    border-radius: calc(32 * var(--u));
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.study-option:hover {
+    border-color: #8f5f45;
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Selected card: burnt orange outline */
+.study-option.selected {
+    border-color: var(--study-red);
+}
+
+.study-option img {
+    width: calc(150 * var(--u));
+    height: calc(150 * var(--u));
+    object-fit: contain;
+    margin-bottom: calc(10 * var(--u));
+}
+
+.study-option-title {
+    font-size: max(18px, calc(26 * var(--u)));
+    font-weight: 600;
+    color: #ecd5b0;
+}
+
+.study-option-sub {
+    font-size: max(12px, calc(16 * var(--u)));
+    color: #b9a899;
+}
+
+/* Buttons */
+.study-start,
+.study-cancel {
+    display: block;
+    width: 100%;
+    height: calc(70 * var(--u));
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: max(18px, calc(28 * var(--u)));
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.study-start {
+    margin-top: calc(40 * var(--u));
+    border: none;
+    background: var(--study-red);
+    color: #ffffff;
+}
+
+.study-start:hover {
+    background: #d4613f;
+}
+
+.study-cancel {
+    margin-top: calc(14 * var(--u));
+    border: max(2px, calc(3 * var(--u))) solid #65503f;
+    background: transparent;
+    color: var(--study-red);
+}
+
+.study-cancel:hover {
+    background: rgba(196, 81, 47, 0.12);
+}
+
+.study-start:active,
+.study-cancel:active {
+    transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .study-overlay,
+    .study-modal,
+    .study-options.shake { transition: none; animation: none; }
+}
+@media (max-width: 760px) {
+    .study-options {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .study-option {
+        height: auto;
+        padding: 16px 0;
+    }
+
+    .study-option img {
+        width: 90px;
+        height: 90px;
+    }
 }

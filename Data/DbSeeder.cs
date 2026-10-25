@@ -1,3 +1,4 @@
+using JavaMaster.Api.Services;
 using System.Text.Json;
 using JavaMaster.Api.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -10,32 +11,78 @@ public static class DbSeeder
 
     public static async Task SeedAsync(AppDbContext db)
     {
-        // Ranks are seeded first, on their own check, so they still get created
-        // even when the learn content below has already been seeded.
+        // 1. Ranks
         if (!await db.Ranks.AnyAsync())
         {
-            db.Users.Add(new User // TEMPORARY test user, removed when Microsoft login is built
-                {
-                MicrosoftObjectId = "test-user",
-                Email = "test.student@example.com",
-                FullName = "Test Student",
-                Coins = 80
-                });
+            db.Ranks.AddRange(
+                new Rank { Name = "Starter",  MinXp = 0,    MaxXp = 300,    IconFile = "starter.png" },
+                new Rank { Name = "Beginner", MinXp = 300,  MaxXp = 700,    IconFile = "beginner.png" },
+                new Rank { Name = "Rising",   MinXp = 700,  MaxXp = 1200,   IconFile = "rising.png" },
+                new Rank { Name = "Skilled",  MinXp = 1200, MaxXp = 1800,   IconFile = "skilled.png" },
+                new Rank { Name = "Pro",      MinXp = 1800, MaxXp = 3000,   IconFile = "pro.png" },
+                new Rank { Name = "Elite",    MinXp = 3000, MaxXp = 4500,   IconFile = "elite.png" },
+                new Rank { Name = "Boss",     MinXp = 4500, MaxXp = 6500,   IconFile = "boss.png" },
+                new Rank { Name = "Legend",   MinXp = 6500, MaxXp = 999999, IconFile = "legend.png" });
             await db.SaveChangesAsync();
-            if (!await db.Ranks.AnyAsync())
-            {
-                db.Ranks.AddRange(
-                    new Rank { Name = "Starter",  MinXp = 0,    MaxXp = 300,    IconFile = "starter.png" },
-                    new Rank { Name = "Beginner", MinXp = 300,  MaxXp = 700,    IconFile = "beginner.png" },
-                    new Rank { Name = "Rising",   MinXp = 700,  MaxXp = 1200,   IconFile = "rising.png" },
-                    new Rank { Name = "Skilled",  MinXp = 1200, MaxXp = 1800,   IconFile = "skilled.png" },
-                    new Rank { Name = "Pro",      MinXp = 1800, MaxXp = 3000,   IconFile = "pro.png" },
-                    new Rank { Name = "Elite",    MinXp = 3000, MaxXp = 4500,   IconFile = "elite.png" },
-                    new Rank { Name = "Boss",     MinXp = 4500, MaxXp = 6500,   IconFile = "boss.png" },
-                    new Rank { Name = "Legend",   MinXp = 6500, MaxXp = 999999, IconFile = "legend.png" });
-                await db.SaveChangesAsync();
-            }
+        }
 
+        // 2. Shop items
+        if (!await db.ShopItems.AnyAsync())
+        {
+            db.ShopItems.AddRange(
+                new ShopItem { Code = "HINT", Name = "Hints",
+                    Description = "Removes one wrong option. Decks only.",
+                    Price5Pack = 30, Price10Pack = 55 },
+                new ShopItem { Code = "HEAL_POTION", Name = "Heal potions",
+                    Description = "Restores your HP to full. Decks only.",
+                    Price5Pack = 50, Price10Pack = 90 },
+                new ShopItem { Code = "STREAK_REPAIR", Name = "Streak repairs",
+                    Description = "Brings back your streak after one missed day.",
+                    Price5Pack = 150, Price10Pack = 275 });
+            await db.SaveChangesAsync();
+        }
+
+        // 3. Starting items for any user who has none yet (covers the existing test user)
+        var usersWithoutKit = await db.Users
+            .Where(u => !db.UserInventory.Any(i => i.UserId == u.Id)).ToListAsync();
+        foreach (var u in usersWithoutKit)
+            await StartingKit.GiveAsync(db, u);
+
+        // 4. Daily challenge pool (runs once)
+        if (!await db.Questions.AnyAsync(q => q.Purpose == QuestionPurpose.Daily))
+        {
+            var dailyTopic = await db.Topics.FirstOrDefaultAsync(t => t.Title == "Daily Challenge")
+                             ?? new Topic { Title = "Daily Challenge" };
+
+            Question Daily(string prompt, string[] options, int correct, string explanation) => new Question
+            {
+                Topic = dailyTopic, Type = QuestionType.MultipleChoice, Purpose = QuestionPurpose.Daily,
+                Prompt = prompt,
+                Payload = Json(new { options = options.Select((t, i) => new { id = ((char)('a' + i)).ToString(), text = t }).ToArray() }),
+                AnswerKey = Json(new { correctOptionId = ((char)('a' + correct)).ToString(), correctMessage = "Great job!" }),
+                Explanation = explanation
+            };
+
+            db.Questions.AddRange(
+                Daily("What data type is used to store a single 16-bit Unicode character?",
+                    new[] { "String", "char", "int", "byte" }, 1,
+                    "The char data type stores a single 16-bit Unicode character. Unlike String, which stores many characters, char holds exactly one."),
+                Daily("What is the default value of a boolean variable in a class?",
+                    new[] { "true", "false", "null", "0" }, 1,
+                    "The default value of a boolean declared in a class is false. It is assigned automatically if you give no initial value."),
+                Daily("What package must be imported to use the Scanner class?",
+                    new[] { "java.io.*", "java.input.*", "java.scanner.*", "java.util.*" }, 3,
+                    "Scanner is part of the java.util package. Import java.util.* or java.util.Scanner to use it."),
+                Daily("Which control statement is used to execute one block from many choices?",
+                    new[] { "if", "switch", "loop", "select" }, 1,
+                    "The switch statement runs one block of code out of many choices, based on the value of a variable."),
+                Daily("How do you create an array of integers with 5 elements?",
+                    new[] { "int arr[] = new int[5];", "int arr = new int(5);", "int[5] arr;", "array int[5];" }, 0,
+                    "In Java you create an array with int arr[] = new int[5]; or int[] arr = new int[5];. This allocates memory for 5 integers."));
+            await db.SaveChangesAsync();
+        }
+
+        // 5. Learn path (runs once)
         if (await db.LearnSections.AnyAsync()) return;
 
         async Task<Topic> GetTopic(string title)
@@ -143,4 +190,4 @@ public static class DbSeeder
         db.LearnSections.AddRange(intro, teaser);
         await db.SaveChangesAsync();
     }
-}}
+}

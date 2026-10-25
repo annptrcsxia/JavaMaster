@@ -113,6 +113,37 @@ namespace JavaMaster.Api.Migrations
                     b.ToTable("NodeQuestions");
                 });
 
+            modelBuilder.Entity("JavaMaster.Api.Entities.Purchase", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PackSize")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShopItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalPrice")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Purchases");
+                });
+
             modelBuilder.Entity("JavaMaster.Api.Entities.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -230,6 +261,44 @@ namespace JavaMaster.Api.Migrations
                     b.ToTable("Ranks");
                 });
 
+            modelBuilder.Entity("JavaMaster.Api.Entities.ShopItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Price10Pack")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Price5Pack")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("ShopItems");
+                });
+
             modelBuilder.Entity("JavaMaster.Api.Entities.Topic", b =>
                 {
                     b.Property<int>("Id")
@@ -324,6 +393,43 @@ namespace JavaMaster.Api.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("JavaMaster.Api.Entities.UserDailyChallenge", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "Date");
+
+                    b.ToTable("UserDailyChallenges");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.UserInventory", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShopItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "ShopItemId");
+
+                    b.HasIndex("ShopItemId");
+
+                    b.ToTable("UserInventory");
+                });
+
             modelBuilder.Entity("JavaMaster.Api.Entities.UserNodeProgress", b =>
                 {
                     b.Property<int>("UserId")
@@ -395,6 +501,25 @@ namespace JavaMaster.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.UserInventory", b =>
+                {
+                    b.HasOne("JavaMaster.Api.Entities.ShopItem", "ShopItem")
+                        .WithMany()
+                        .HasForeignKey("ShopItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JavaMaster.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ShopItem");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("JavaMaster.Api.Entities.UserNodeProgress", b =>

@@ -70,16 +70,20 @@
             </button>
 
             <div class="dropdown-menu" id="dropdownMenu">
-                <a href="Profile.html" class="dropdown-item">
-                    <img src="/icons/profile.png" alt="profile icon">
+                <a href="Profile.html" class="dropdown-item" role="menuitem">
+                    <img src="/icons/profile.png" alt="">
                     Profile
                 </a>
-                <a href="FAQ.html" class="dropdown-item">
-                    <img src="/icons/faq_icon.png" alt="faq icon">
-                    FAQ
+                <a href="Settings.html" class="dropdown-item" role="menuitem">
+                    <img src="/icons/settings_icon.png" alt="">
+                    Settings
                 </a>
-                <a href="About.html" class="dropdown-item logout" id="logoutBtn">
-                    <img src="/icons/logout_icon.png" alt="logout icon">
+                <a href="FAQ.html" class="dropdown-item" role="menuitem">
+                    <img src="/icons/faq_icon.png" alt="">
+                    Help
+                </a>
+                <a href="/" class="dropdown-item logout" id="logoutBtn" role="menuitem">
+                    <img src="/icons/logout_icon.png" alt="">
                     Log out
                 </a>
             </div>
@@ -127,13 +131,13 @@
             <h2 class="daily-title">Daily<br>Challenge</h2>
             <p class="daily-desc">a special, once-a-day trivia test or task that resets every 24 hours for all players.</p>
             <a href="Daily Challenges.html" class="lets-go-btn">Let's go!</a>
-            <img class="daily-icon" src="/icons/target.png" alt="daily challenge">
+            <img class="daily-icon" src="/icons/3d-target.png" alt="daily challenge">
         </section>
 
         <!-- Coins + Power ups -->
         <section class="coins-card">
             <img class="coin-icon" src="/icons/currency.png" alt="coins">
-            <span class="coin-amount" id="coinAmount">299</span>
+            <span class="coin-amount" id="coinAmount">-</span>
             <span class="coin-label">Coins</span>
 
             <hr class="coins-divider">
@@ -142,15 +146,15 @@
 
             <div class="powerup powerup-heart">
                 <img src="/icons/heal potion.png" alt="hp">
-                <span class="powerup-badge" id="hpCount">12</span>
+                <span class="powerup-badge" id="hpCount">-</span>
             </div>
             <div class="powerup powerup-key">
                 <img src="/icons/key.png" alt="hint">
-                <span class="powerup-badge" id="hintCount">6</span>
+                <span class="powerup-badge" id="hintCount">-</span>
             </div>
             <div class="powerup powerup-kettle">
                 <img src="/icons/kettle.png" alt="Streak saver">
-                <span class="powerup-badge" id="streakCount">3</span>
+                <span class="powerup-badge" id="streakCount">-</span>
             </div>
 
             <a href="Shop.html" class="shop-link">
@@ -169,8 +173,10 @@
          COPY #3 (goes just before the closing body tag on EVERY page)
          START of NAVBAR SCRIPTS (dropdown, logout, notification badge)
          ============================================================ -->
+    <script src="/js/api.js"></script>
     <script src="/js/notification-manager.js"></script>
     <script src="/js/profile-dropdown.js"></script>
+    <script src="/js/study-modal.js"></script>
     <!-- END of NAVBAR SCRIPTS (COPY #3 ends here) -->
 
     <!-- HOME PAGE ONLY: greeting, coins and course progress -->
@@ -273,14 +279,39 @@
         new ResizeObserver(drawBubble).observe(document.getElementById('speechBubble'));
         if (document.fonts) document.fonts.ready.then(drawBubble);
 
-        // Coins (same 'coins' key used elsewhere in the site)
-        var coins = localStorage.getItem('coins');
-        if (coins !== null) document.getElementById('coinAmount').textContent = coins;
+        
+        // Player numbers come from the server: coins, power-ups, and Learn progress
+        async function loadHome() {
+            try {
+                const me = await JM.me();
+                document.getElementById('coinAmount').textContent = me.coins;
+                document.getElementById('hpCount').textContent = me.inventory.HEAL_POTION ?? 0;
+                document.getElementById('hintCount').textContent = me.inventory.HINT ?? 0;
+                document.getElementById('streakCount').textContent = me.inventory.STREAK_REPAIR ?? 0;
+            } catch (e) {
+                console.error('Could not load player data', e);
+            }
 
-        // Course progress: change this number (0-100) or load it from your saved data
-        var progress = 20;
-        document.getElementById('courseProgressFill').style.width = progress + '%';
-        document.getElementById('courseProgressLabel').textContent = progress + '%';
+            try {
+                const path = await api('/learn/path');
+                const section = path.find(s => s.nodes.length > 0);
+                if (section) {
+                    const done = section.nodes.filter(n => n.status === 'Completed').length;
+                    const percent = Math.round(done / section.nodes.length * 100);
+                    const next = section.nodes.find(n => n.status === 'Unlocked');
+                    document.getElementById('courseProgressFill').style.width = percent + '%';
+                    document.getElementById('courseProgressLabel').textContent = percent + '%';
+                    document.querySelector('.course-next').textContent =
+                        next ? 'Next exercise: ' + next.title : 'Course complete!';
+                }
+            } catch (e) {
+                console.error('Could not load Learn progress', e);
+            }
+        }
+        loadHome();
+
+        // Refresh when the player comes back with the Back button
+        window.addEventListener('pageshow', function (e) { if (e.persisted) loadHome(); });
     </script>
 </body>
 </html>

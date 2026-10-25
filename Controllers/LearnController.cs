@@ -12,28 +12,10 @@ namespace JavaMaster.Api.Controllers;
 public class LearnController : ControllerBase
 {
     private readonly AppDbContext _db;
-    public LearnController(AppDbContext db) => _db = db;
+    private readonly ICurrentUserService _me;
+    public LearnController(AppDbContext db, ICurrentUserService me) { _db = db; _me = me; }
 
     public record AnswerRequest(int NodeId, JsonElement Answer);
-
-    // TEMPORARY: until Microsoft login exists, everyone is the seeded test user.
-    private async Task<User> CurrentUser()
-    {
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.MicrosoftObjectId == "test-user");
-        if (user == null)
-        {
-            user = new User
-            {
-                MicrosoftObjectId = "test-user",
-                Email = "test.student@example.com",
-                FullName = "Test Student",
-                Coins = 80
-            };
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
-        }
-        return user;
-    }
 
     // Finds a node, whether this user may play it, and which node comes next.
     private async Task<(LearnNode? node, bool unlocked, LearnNode? next)> Locate(int userId, int nodeId)
@@ -52,7 +34,7 @@ public class LearnController : ControllerBase
     [HttpGet("path")]
     public async Task<IActionResult> GetPath()
     {
-        var user = await CurrentUser();
+        var user = await _me.GetAsync();
         var done = await _db.UserNodeProgress
             .Where(p => p.UserId == user.Id && p.Status == ProgressStatus.Completed)
             .Select(p => p.LearnNodeId).ToListAsync();
@@ -88,7 +70,7 @@ public class LearnController : ControllerBase
     [HttpGet("nodes/{nodeId}")]
     public async Task<IActionResult> GetNode(int nodeId)
     {
-        var user = await CurrentUser();
+        var user = await _me.GetAsync();
         var (node, unlocked, _) = await Locate(user.Id, nodeId);
         if (node == null) return NotFound();
         if (!unlocked) return StatusCode(403, new { error = "This node is locked." });
@@ -121,7 +103,7 @@ public class LearnController : ControllerBase
         if (req.Answer.ValueKind == JsonValueKind.Undefined)
             return BadRequest(new { error = "Missing answer." });
 
-        var user = await CurrentUser();
+        var user = await _me.GetAsync();
         var (node, unlocked, _) = await Locate(user.Id, req.NodeId);
         if (node == null) return NotFound();
         if (!unlocked) return StatusCode(403, new { error = "This node is locked." });
@@ -156,7 +138,7 @@ public class LearnController : ControllerBase
     [HttpPost("nodes/{nodeId}/complete")]
     public async Task<IActionResult> Complete(int nodeId)
     {
-        var user = await CurrentUser();
+        var user = await _me.GetAsync();
         var (node, unlocked, next) = await Locate(user.Id, nodeId);
         if (node == null) return NotFound();
         if (!unlocked) return StatusCode(403, new { error = "This node is locked." });
@@ -182,21 +164,14 @@ public class LearnController : ControllerBase
 
         // Repeat plays earn a quarter of the reward, so nobody can farm one lesson.
         var firstTime = progress == null || progress.Status != ProgressStatus.Completed;
-        var xp = firstTime ? node.XpReward : Math.Max(1, node.XpReward / 4);
-        var coins = firstTime ? node.CoinReward : Math.Max(1, node.CoinReward / 4);
+        var xp = firstTime ? node.XpReward : 0;
+        var coins = firstTime ? node.CoinReward : 0;
 
         user.TotalXp += xp;
         user.XpUpdatedAt = DateTime.UtcNow;
         user.Coins += coins;
 
-        // Streak counts calendar days in Philippine time (UTC+8).
-        var today = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(8));
-        if (user.LastActivityDate != today)
-        {
-            user.CurrentStreak = user.LastActivityDate == today.AddDays(-1) ? user.CurrentStreak + 1 : 1;
-            user.LongestStreak = Math.Max(user.LongestStreak, user.CurrentStreak);
-            user.LastActivityDate = today;
-        }
+        var streakBonus = StreakService.RecordActivity(user);
 
         if (progress == null)
         {
@@ -215,7 +190,7 @@ public class LearnController : ControllerBase
             rankBefore = rankBefore.Name, rankAfter = rankAfter.Name,
             rankIcon = "/rank titles/" + rankAfter.IconFile,
             rankMinXp = rankAfter.RankMinXp, rankMaxXp = rankAfter.RankMaxXp,
-            coinsEarned = coins, coinsTotal = user.Coins,
+            coinsEarned = coins, streakBonus, coinsTotal = user.Coins,
             streak = user.CurrentStreak,
             nextNodeId = next?.Id,
             outroText = node.OutroText

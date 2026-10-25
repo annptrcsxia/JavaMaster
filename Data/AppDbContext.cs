@@ -16,6 +16,10 @@ public class AppDbContext : DbContext
     public DbSet<UserNodeProgress> UserNodeProgress => Set<UserNodeProgress>();
     public DbSet<Rank> Ranks => Set<Rank>();
     public DbSet<QuestionAttempt> QuestionAttempts => Set<QuestionAttempt>();
+    public DbSet<ShopItem> ShopItems => Set<ShopItem>();
+    public DbSet<UserInventory> UserInventory => Set<UserInventory>();
+    public DbSet<Purchase> Purchases => Set<Purchase>();
+    public DbSet<UserDailyChallenge> UserDailyChallenges => Set<UserDailyChallenge>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -49,6 +53,20 @@ public class AppDbContext : DbContext
         {
             e.HasKey(x => new { x.UserId, x.LearnNodeId });
             e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+        });
+        b.Entity<ShopItem>(e =>
+        {
+            e.Property(s => s.Code).HasMaxLength(30);
+            e.HasIndex(s => s.Code).IsUnique();
+        });
+
+        b.Entity<UserInventory>(e =>
+        {
+            e.HasKey(x => new { x.UserId, x.ShopItemId });
+        });
+        b.Entity<UserDailyChallenge>(e =>
+        {
+            e.HasKey(x => new { x.UserId, x.Date });   // one row per player per day
         });
     }
 }

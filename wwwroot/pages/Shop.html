@@ -72,7 +72,7 @@
                         <img src="/icons/heal potion.png" alt="hp">
                         <span class="owned-badge">0</span>
                     </div>
-                    <h3 class="powerup-name">Hearts</h3>
+                    <h3 class="powerup-name">Heal potions</h3>
                     <button class="buy-more-btn" type="button">Buy more</button>
                 </article>
 
@@ -90,7 +90,7 @@
                         <img src="/icons/kettle.png" alt="streak saver">
                         <span class="owned-badge">0</span>
                     </div>
-                    <h3 class="powerup-name">Streak repair</h3>
+                    <h3 class="powerup-name">Streak repairs</h3>
                     <button class="buy-more-btn" type="button">Buy more</button>
                 </article>
 
@@ -105,7 +105,7 @@
                 <img id="modal-icon" src="" alt="">
                 <span class="owned-badge" id="modal-owned">0</span>
             </div>
-            <h3 class="powerup-name" id="modal-title">Hearts</h3>
+            <h3 class="powerup-name" id="modal-title">Heal potions</h3>
 
             <div class="pack-options">
                 <button type="button" class="pack-option selected" data-pack="0">
@@ -123,6 +123,7 @@
         </div>
     </div>
 
+    <script src="/js/api.js"></script>
     <script src="/js/notification-manager.js"></script>
     <script src="/js/coins-sync.js"></script>
     <script>
@@ -145,7 +146,7 @@
 
         function loadNavbarAvatar() {
             const el = document.getElementById('navbarAvatar');
-            if (el) el.src = localStorage.getItem('profileAvatar') || 'avatars/Avatar 1.png';
+            if (el) el.src = localStorage.getItem('profileAvatar') || '/avatars/Avatar 1.png';
         }
         loadNavbarAvatar();
 
@@ -154,15 +155,17 @@
             localStorage.removeItem('loggedInPassword');
         });
 
-        /* ---------- Shop data ---------- */
-        // Each power-up: display name, localStorage key, and its two packs.
-        const POWERUPS = {
-            heart:  { name: 'Hearts',        key: 'heartRecharges', icon: 'icons/heal potion.png',  packs: [{ qty: 5, price: 150 }, { qty: 10, price: 300 }] },
-            hint:   { name: 'Hints',         key: 'playerHints',    icon: 'icons/key.png',    packs: [{ qty: 5, price: 75 },  { qty: 10, price: 140 }] },
-            streak: { name: 'Streak repair', key: 'streakSavers',   icon: 'icons/kettle.png', packs: [{ qty: 5, price: 50 },  { qty: 10, price: 100 }] }
+        /* ---------- Shop data (from the server) ---------- */
+        // Names, prices, and owned counts come from the server. Only the icons and the card-to-item map live here.
+        const ICONS = {
+            HEAL_POTION:   '/icons/heal potion.png',
+            HINT:          '/icons/key.png',
+            STREAK_REPAIR: '/icons/kettle.png'
         };
+        const CODE_OF = { heart: 'HEAL_POTION', hint: 'HINT', streak: 'STREAK_REPAIR' };
+        const PACK_SIZES = [5, 10];
 
-        const coinSound = new Audio('sounds/coins_sound-efx.mp3');
+        const coinSound = new Audio('/sounds/coins_sound-efx.mp3');
         coinSound.preload = 'auto';
 
         const modal = document.getElementById('purchase-modal');
@@ -170,99 +173,123 @@
         const errorEl = document.getElementById('modal-error');
         const packButtons = [...document.querySelectorAll('.pack-option')];
 
-        let userCoins = 0;
+        let shopData = null;      // the latest answer from /api/shop
         let currentType = null;
-        let currentPack = 0;
+        let currentPack = 0;      // 0 = 5 pack, 1 = 10 pack
         let resetTimer = null;
+        let buying = false;
 
-        const getOwned = type => parseInt(localStorage.getItem(POWERUPS[type].key) || '0', 10);
+        const itemOf = type => shopData.items.find(i => i.code === CODE_OF[type]);
+        const priceOf = (item, packIndex) => packIndex === 0 ? item.price5Pack : item.price10Pack;
 
-        function readCoins() {
-            const saved = localStorage.getItem('coins');
-            if (saved === null) {           // new player: starter bonus
-                localStorage.setItem('coins', '80');
-                return 80;
+        async function loadShop() {
+            try {
+                shopData = await JM.shop();
+                renderShop();
+            } catch (e) {
+                console.error('Could not load the shop', e);
             }
-            return parseInt(saved, 10) || 0;
         }
 
         function renderShop() {
-            userCoins = readCoins();
-            document.getElementById('user-coins').textContent = userCoins;
+            if (!shopData) return;
+            document.getElementById('user-coins').textContent = shopData.coins;
             const sidebarCoins = document.getElementById('sidebar-coins');
-            if (sidebarCoins) sidebarCoins.textContent = userCoins;
+            if (sidebarCoins) sidebarCoins.textContent = shopData.coins;
 
             document.querySelectorAll('.powerup-card').forEach(card => {
-                card.querySelector('.owned-badge').textContent = getOwned(card.dataset.type);
+                const item = itemOf(card.dataset.type);
+                card.querySelector('.owned-badge').textContent = item ? item.owned : 0;
             });
-            if (currentType) document.getElementById('modal-owned').textContent = getOwned(currentType);
+            if (currentType) document.getElementById('modal-owned').textContent = itemOf(currentType).owned;
         }
 
         /* ---------- Modal ---------- */
+        function showError(message) {
+            errorEl.textContent = message;
+            confirmBtn.classList.remove('shake');
+            void confirmBtn.offsetWidth;   // restart animation
+            confirmBtn.classList.add('shake');
+        }
+
         function resetConfirmButton() {
             clearTimeout(resetTimer);
-            const pack = POWERUPS[currentType].packs[currentPack];
-            confirmBtn.textContent = `Buy ${pack.qty} pack`;
+            confirmBtn.classList.remove('shake');
+            confirmBtn.textContent = `Buy ${PACK_SIZES[currentPack]} pack`;
             confirmBtn.classList.remove('purchased');
             confirmBtn.disabled = false;
         }
 
         function selectPack(index) {
             currentPack = index;
+            confirmBtn.classList.remove('shake');
             packButtons.forEach((b, i) => b.classList.toggle('selected', i === index));
             errorEl.textContent = '';
             resetConfirmButton();
         }
 
         function openModal(type) {
+            if (!shopData) return;           // data not loaded yet
             currentType = type;
-            const p = POWERUPS[type];
-            document.getElementById('modal-icon').src = p.icon;
-            document.getElementById('modal-icon').alt = p.name;
-            document.getElementById('modal-title').textContent = p.name;
+            const item = itemOf(type);
+            const card = document.querySelector(`.powerup-card[data-type="${type}"]`);
+            const name = card.querySelector('.powerup-name').textContent;
+            document.getElementById('modal-icon').src = ICONS[item.code];
+            document.getElementById('modal-icon').alt = name;
+            document.getElementById('modal-title').textContent = name;
             packButtons.forEach((b, i) => {
-                b.querySelector('.pack-label').textContent = `${p.packs[i].qty} pack`;
-                b.querySelector('.pack-price span').textContent = p.packs[i].price;
+                b.querySelector('.pack-label').textContent = `${PACK_SIZES[i]} pack`;
+                b.querySelector('.pack-price span').textContent = priceOf(item, i);
             });
             renderShop();
             selectPack(0);
             modal.classList.add('active');
             modal.setAttribute('aria-hidden', 'false');
             confirmBtn.focus();
+            confirmBtn.classList.remove('shake');
         }
 
         function closeModal() {
             modal.classList.remove('active');
             modal.setAttribute('aria-hidden', 'true');
             clearTimeout(resetTimer);
+            confirmBtn.classList.remove('shake');
+            errorEl.textContent = ''; 
             currentType = null;
         }
 
-        function confirmPurchase() {
-            if (!currentType || confirmBtn.disabled) return;
-            const pack = POWERUPS[currentType].packs[currentPack];
-            userCoins = readCoins();
+        async function confirmPurchase() {
+            if (!currentType || confirmBtn.disabled || buying) return;
+            const item = itemOf(currentType);
+            const price = priceOf(item, currentPack);
 
-            if (userCoins < pack.price) {
-                errorEl.textContent = `You need ${pack.price - userCoins} more coins for this pack.`;
-                confirmBtn.classList.remove('shake');
-                void confirmBtn.offsetWidth;   // restart animation
-                confirmBtn.classList.add('shake');
+            if (shopData.coins < price) {
+                showError(`You need ${price - shopData.coins} more coins for this pack.`);
                 return;
             }
 
-            localStorage.setItem('coins', userCoins - pack.price);
-            localStorage.setItem(POWERUPS[currentType].key, getOwned(currentType) + pack.qty);
+            buying = true;
+            try {
+                // The server checks the coins and the 30-item limit again, then saves the purchase
+                const result = await JM.buy(item.code, PACK_SIZES[currentPack]);
+                shopData.coins = result.coins;
+                item.owned = result.owned;
 
-            coinSound.currentTime = 0;
-            coinSound.play().catch(() => {});   // ignore autoplay/missing-file errors
+                coinSound.currentTime = 0;
+                coinSound.play().catch(() => {});
 
-            errorEl.textContent = '';
-            renderShop();
-            confirmBtn.textContent = 'Purchased';
-            confirmBtn.classList.add('purchased');
-            confirmBtn.disabled = true;
-            resetTimer = setTimeout(resetConfirmButton, 1800);
+                errorEl.textContent = '';
+                renderShop();
+                confirmBtn.textContent = 'Purchased';
+                confirmBtn.classList.add('purchased');
+                confirmBtn.disabled = true;
+                resetTimer = setTimeout(resetConfirmButton, 1800);
+            } catch (e) {
+                showError(e.message);
+                loadShop();      // refresh the numbers in case they changed
+            } finally {
+                buying = false;
+            }
         }
 
         document.querySelectorAll('.powerup-card').forEach(card => {
@@ -270,15 +297,14 @@
         });
         packButtons.forEach((b, i) => b.addEventListener('click', () => selectPack(i)));
         confirmBtn.addEventListener('click', confirmPurchase);
+        confirmBtn.addEventListener('animationend', () => confirmBtn.classList.remove('shake'));
         modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-        window.addEventListener('storage', e => {
-            if (['coins', 'heartRecharges', 'playerHints', 'streakSavers'].includes(e.key)) renderShop();
-            if (e.key === 'profileAvatar') loadNavbarAvatar();
-        });
+        window.addEventListener('storage', e => { if (e.key === 'profileAvatar') loadNavbarAvatar(); });
+        window.addEventListener('pageshow', e => { if (e.persisted) loadShop(); });
 
-        renderShop();
+        loadShop();
         window.addEventListener('DOMContentLoaded', () => NotificationManager.updateBadge());
     </script>
 </body>

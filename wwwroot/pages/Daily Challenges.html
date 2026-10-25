@@ -1,919 +1,415 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java Master - Daily Challenge</title>
-    <link rel="icon" href="/logo/java-master-logo" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-    * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Master - Daily Challenge</title>
+<link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            background: linear-gradient(135deg, #4a1a4a 0%, #2d1b3d 100%);
-            font-family: 'Bricolage Grotesque', sans-serif;
-            min-height: 100vh;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: white;
-            overflow: hidden;
-        }
+body {
+    background: #3e3a36;
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    color: #f3e6d8;
+    overflow: hidden;
+    position: relative;
+}
 
-        /* Top Bar */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 30px;
-            margin-bottom: 40px;
-        }
+/* ---------- Top bar ---------- */
+.top-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between;
+    padding: 28px 40px; z-index: 5;
+}
+.top-bar button { background: none; border: none; cursor: pointer; display: flex; }
+.top-bar img { width: 34px; height: 34px; }
 
-        .back-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+/* ---------- Stage + question ---------- */
+#stage {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 140px; overflow-y: auto;
+}
+#stage.center { padding-top: 0; }
 
-        .settings-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
+.title { font-size: 32px; font-weight: 700; margin-bottom: 20px; }
+.question {
+    width: min(540px, 88vw); text-align: center;
+    font-size: 17px; line-height: 1.35; margin-bottom: 22px;
+}
 
-        .settings-button img {
-            width: 40px;
-            height: 40px;
-        }
+/* ---------- Options ---------- */
+.opts {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    width: min(740px, 90vw);
+}
+.opt {
+    background: #f1e3d8; color: #3e3a36;
+    border: 3px solid #b9694f; border-radius: 16px;
+    padding: 22px 16px; font: 600 16px 'Inter', sans-serif;
+    cursor: pointer; transition: .2s;
+}
+.opt:hover { transform: translateY(-2px); }
+.opt.sel { border-color: #4a9eff; }
+.opt.ok { background: #d9ffb3; border-color: #7ed321; color: #4c9a0a; }
+.opt.bad { background: #ffe0e4; border-color: #e0525f; color: #e0303f; }
 
+.feedback {
+    width: min(600px, 90vw); min-height: 66px; margin: 14px 0 6px;
+    text-align: center; font-size: 14px; line-height: 1.4; color: #cdb9a6;
+    display: flex; align-items: center; justify-content: center;
+}
 
+.mainbtn {
+    width: 265px; padding: 20px; border: none; border-radius: 14px;
+    background: #c97f60; color: #fff; font: 700 20px 'Inter', sans-serif;
+    cursor: pointer; transition: background .2s;
+}
+.mainbtn:hover:not(:disabled) { background: #d68c6d; }
+.mainbtn:disabled { background: #7a5a4e; cursor: not-allowed; }
 
-        /* Quiz Content */
-        .quiz-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 40px 40px 40px;
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
-        }
+/* ---------- Settings modal ---------- */
+.modal {
+    display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .7);
+    z-index: 50; align-items: center; justify-content: center;
+}
+.modal.on { display: flex; }
+.card {
+    background: #3f2e28; border-radius: 28px; padding: 40px 44px;
+    width: min(420px, 90vw); text-align: center; position: relative;
+}
+.card h2 { font-size: 24px; font-weight: 600; margin-bottom: 36px; }
+.card .x {
+    position: absolute; top: 14px; right: 22px; background: none; border: none;
+    font-size: 28px; font-weight: 300; color: #f3e6d8; cursor: pointer;
+}
+.row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; font-size: 17px; }
+.tg { position: relative; width: 56px; height: 30px; }
+.tg input { display: none; }
+.tg span { position: absolute; inset: 0; background: #4a2a14; border-radius: 30px; transition: .3s; cursor: pointer; }
+.tg span:before {
+    content: ""; position: absolute; width: 22px; height: 22px; left: 4px; bottom: 4px;
+    background: #8a7568; border-radius: 50%; transition: .3s;
+}
+.tg input:checked + span:before { background: #e0700f; transform: translateX(26px); }
 
-        .question {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+/* ---------- Completed screen ---------- */
+.done {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; height: 100%;
+}
+.done img { width: 190px; margin-bottom: 22px; }
+.done h1 { font-size: 26px; margin-bottom: 26px; }
+.rew { display: flex; gap: 70px; align-items: center; margin-bottom: 34px; font-weight: 600; font-size: 20px; color: #d9b78f; }
+.rew .l { display: grid; grid-template-columns: auto auto; gap: 6px 150px; text-align: left; }
+.rew .l b:nth-child(even) { text-align: right; }
+.earn { text-align: center; color: #f3e6d8; font-size: 19px; }
+.earn div { color: #f59e0b; font-size: 30px; font-weight: 700; }
+.note { margin-bottom: 30px; font-size: 16px; color: #a89684; }
+.rbtn {
+    width: 306px; padding: 20px; border: none; border-radius: 14px;
+    background: #5b3fe0; color: #fff; font: 700 20px 'Inter', sans-serif; cursor: pointer;
+}
+.rbtn.claimed { background: #432da3; cursor: default; }
 
-        .hint-button {
-            align-self: flex-end;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 2px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: background 0.3s;
-        }
+/* ---------- Gold coin canvas ---------- */
+#coins { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
 
-        .hint-button:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .hint-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .hint-button:disabled:hover {
-            background: none;
-        }
-
-        .hint-icon {
-            width: 28px;
-            height: 28px;
-            background: #7c8a9e;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .hint-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #f4e4c1;
-            color: #322641;
-            font-size: 14px;
-            font-weight: 700;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #322641;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Multiple Choice Styles */
-        .options-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .option {
-            background: white;
-            color: #2d1b3d;
-            padding: 20px 30px;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: 600;
-            border: 4px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .option:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .option.hidden {
-            visibility: hidden;
-        }
-
-        .option.selected {
-            border-color: #4a9eff;
-            background: #e8f4ff;
-        }
-
-        .option.correct {
-            border-color: #4caf50;
-            background: #e8f5e9;
-        }
-
-        .option.incorrect {
-            border-color: #f44336;
-            background: #ffebee;
-        }
-
-        /* Feedback Section */
-        .feedback {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 10px 0;
-            font-size: 18px;
-            color: #d4c4d9;
-            min-height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Submit Button */
-        .submit-button {
-            background: #ac98b1;
-            color: white;
-            font-size: 22px;
-            font-weight: 700;
-            padding: 18px 80px;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-family: 'Bricolage Grotesque', sans-serif;
-        }
-
-        .submit-button.active {
-            background: #b261c8;
-        }
-
-        .submit-button.active:hover {
-            background: #9b4fb0;
-        }
-
-        .submit-button:disabled {
-            background: #6d5a72;
-            cursor: not-allowed;
-        }
-
-        /* Quiz Settings Modal */
-        .quiz-settings-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .quiz-settings-modal.active {
-            display: flex;
-        }
-
-        .quiz-settings-content {
-            background: #e8e4f0;
-            border-radius: 30px;
-            padding: 40px 50px;
-            width: 500px;
-            position: relative;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .quiz-settings-close {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            background: none;
-            border: none;
-            font-size: 32px;
-            color: #76726c;
-            cursor: pointer;
-            font-weight: 300;
-            line-height: 1;
-        }
-
-        .quiz-settings-close:hover {
-            color: #4a4742;
-        }
-
-        .quiz-settings-title {
-            font-size: 32px;
-            font-weight: 700;
-            color: #4a4742;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .quiz-setting-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .quiz-setting-label {
-            font-size: 22px;
-            color: #76726c;
-            font-weight: 500;
-        }
-
-        /* Toggle Switch for Quiz Settings */
-        .quiz-toggle-switch {
-            position: relative;
-            width: 60px;
-            height: 32px;
-            cursor: pointer;
-        }
-
-        .quiz-toggle-switch input {
-            display: none;
-        }
-
-        .quiz-toggle-slider {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #c4b8c9;
-            border-radius: 34px;
-            transition: 0.3s;
-        }
-
-        .quiz-toggle-slider:before {
-            content: "";
-            position: absolute;
-            height: 24px;
-            width: 24px;
-            left: 4px;
-            bottom: 4px;
-            background: #f4f4f4;
-            border-radius: 50%;
-            transition: 0.3s;
-        }
-
-        .quiz-toggle-switch input:checked + .quiz-toggle-slider {
-            background: #522546;
-        }
-
-        .quiz-toggle-switch input:checked + .quiz-toggle-slider:before {
-            transform: translateX(28px);
-        }
-
-        @media (max-width: 768px) {
-            .options-container {
-                grid-template-columns: 1fr;
-            }
-
-            .question {
-                font-size: 22px;
-            }
-
-            .option {
-                font-size: 16px;
-                padding: 16px 24px;
-            }
-
-            .quiz-settings-content {
-                width: 90%;
-                padding: 30px 35px;
-            }
-        }
-
-        .insufficient-notification {
-            position: fixed;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            transition: all 0.4s ease;
-            z-index: 1000;
-            max-width: 400px;
-        }
-
-        .insufficient-notification.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .challenge-title {
-            text-align: center;
-            font-size: 36px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-    </style>
+@media (max-width: 600px) {
+    .opts { grid-template-columns: 1fr; }
+    .rew { gap: 30px; flex-direction: column; }
+    .rew .l { gap: 6px 60px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .opt, .tg span, .tg span:before { transition: none; }
+}
+</style>
 </head>
 <body>
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <button class="back-button" onclick="goBack()">
-            <img src="/icons/goback.png" alt="Go Back" style="width: 36px; height: 36px;">
-        </button>
-        
-        <h1 class="challenge-title">DAILY CHALLENGE</h1>
+<audio id="bgMusic" loop><source src="/sounds/BG_music.mp3" type="audio/mpeg"></audio>
+<audio id="correctSound"><source src="/sounds/correct_sound-efx.wav" type="audio/wav"></audio>
+<audio id="wrongSound"><source src="/sounds/wrong_sound-efx.wav" type="audio/wav"></audio>
+<audio id="completedSound"><source src="/sounds/completed_sound-efx.wav" type="audio/wav"></audio>
 
-        <button class="settings-button" onclick="openQuizSettings()">
-            <img src="/icons/settings_icon.png" alt="Settings">
-        </button>
-    </div>
+<div class="top-bar" id="topBar">
+    <button onclick="goBack()"><img src="/icons/goback.png" alt="Go Back"></button>
+    <button onclick="openModal('settingsModal')"><img src="/icons/settings_icon.png" alt="Settings"></button>
+</div>
 
+<div id="stage"></div>
 
+<div class="modal" id="settingsModal"><div class="card">
+    <button class="x" onclick="closeModal('settingsModal')">×</button>
+    <h2>Settings</h2>
+    <div class="row">Background Music<label class="tg"><input type="checkbox" id="bgT" checked onchange="toggleBg(this)"><span></span></label></div>
+    <div class="row">Sound effects<label class="tg"><input type="checkbox" id="sfxT" checked onchange="toggleSfx(this)"><span></span></label></div>
+</div></div>
 
-    <!-- Quiz Content -->
-    <div class="quiz-container" id="quizContainer">
-        <!-- Question content will be dynamically loaded here -->
-    </div>
+<canvas id="coins" aria-hidden="true"></canvas>
 
-    <!-- Quiz Settings Modal -->
-    <div class="quiz-settings-modal" id="quizSettingsModal">
-        <div class="quiz-settings-content">
-            <button class="quiz-settings-close" onclick="closeQuizSettings()">×</button>
-            <h2 class="quiz-settings-title">Quiz Settings</h2>
-            
-            <div class="quiz-setting-row">
-                <span class="quiz-setting-label">Background music</span>
-                <label class="quiz-toggle-switch">
-                    <input type="checkbox" id="quizBgMusicToggle" onchange="toggleQuizBackgroundMusic(this)" checked>
-                    <span class="quiz-toggle-slider"></span>
-                </label>
-            </div>
+<script src="/js/api.js"></script>
+<script>
+/* ---------- Game state ---------- */
+let selectedIndex = -1, isAnswered = false, checking = false;
+let dailyQuestion = null, reward = null, claimed = false;
 
-            <div class="quiz-setting-row">
-                <span class="quiz-setting-label">Sound effects</span>
-                <label class="quiz-toggle-switch">
-                    <input type="checkbox" id="quizSoundEffectsToggle" onchange="toggleQuizSoundEffects(this)" checked>
-                    <span class="quiz-toggle-slider"></span>
-                </label>
-            </div>
+const questionPool = [
+    {
+        question: 'What data type is used to store a single 16-bit Unicode character?',
+        options: ['String', 'char', 'int', 'byte'],
+        correctAnswer: 1, wrongAnswers: [0, 2, 3],
+        explanation: 'The char data type is used to store a single 16-bit Unicode character in Java. Unlike String which stores multiple characters, char holds exactly one character.'
+    },
+    {
+        question: 'What is the default value of a Boolean variable in a class?',
+        options: ['true', 'false', 'null', '0'],
+        correctAnswer: 1, wrongAnswers: [0, 2, 3],
+        explanation: 'In Java, the default value of a Boolean variable declared in a class is false. This is automatically assigned if no initial value is provided.'
+    },
+    {
+        question: 'What package must be imported to use the Scanner class?',
+        options: ['java.io.*', 'java.input.*', 'java.scanner.*', 'java.util.*'],
+        correctAnswer: 3, wrongAnswers: [0, 1, 2],
+        explanation: 'The Scanner class is part of the java.util package. You must import java.util.* or java.util.Scanner to use it for reading user input.'
+    },
+    {
+        question: 'Which control statement is used to execute one block from many choices?',
+        options: ['if', 'switch', 'loop', 'select'],
+        correctAnswer: 1, wrongAnswers: [0, 2, 3],
+        explanation: 'The switch statement allows you to execute one block of code from multiple choices based on the value of a variable. It\'s more efficient than multiple if-else statements for many conditions.'
+    },
+    {
+        question: 'How do you create an array of integers with 5 elements?',
+        options: ['int arr[] = new int[5];', 'int arr = new int(5);', 'int[5] arr;', 'array int[5];'],
+        correctAnswer: 0, wrongAnswers: [1, 2, 3],
+        explanation: 'In Java, you create an array using the syntax: int arr[] = new int[5]; or int[] arr = new int[5];. This allocates memory for 5 integer elements.'
+    }
+];
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const pref = k => { try { return localStorage.getItem(k) !== 'false'; } catch (e) { return true; } };
+function openModal(id) { $(id).classList.add('on'); }
+function closeModal(id) { $(id).classList.remove('on'); }
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('on'); }));
+
+/* ---------- Audio ---------- */
+function playBg() {
+    if (!pref('bgMusicEnabled')) return;
+    const a = $('bgMusic'); a.volume = .3;
+    a.play().catch(() => document.addEventListener('click', () => { if (pref('bgMusicEnabled')) a.play(); }, { once: true }));
+}
+function stopBg() { const a = $('bgMusic'); a.pause(); a.currentTime = 0; }
+function sfx(id) {
+    if (!pref('soundEffectsEnabled')) return;
+    const a = $(id); a.currentTime = 0; a.play().catch(() => {});
+}
+function toggleBg(cb) {
+    try { localStorage.setItem('bgMusicEnabled', cb.checked); } catch (e) {}
+    cb.checked ? playBg() : $('bgMusic').pause();
+}
+function toggleSfx(cb) {
+    try { localStorage.setItem('soundEffectsEnabled', cb.checked); } catch (e) {}
+    if (cb.checked) sfx('correctSound');
+}
+
+/* ---------- Question ---------- */
+function loadQuestion() {
+    const q = dailyQuestion;
+    const options = q.payload.options;
+    $('stage').innerHTML = `
+        <h1 class="title">Daily Challenge</h1>
+        <p class="question">${esc(q.prompt)}</p>
+        <div class="opts">${options.map((o, i) => `<button class="opt" onclick="pick(${i})">${esc(o.text)}</button>`).join('')}</div>
+        <div class="feedback" id="feedback"></div>
+        <button class="mainbtn" id="mainBtn" onclick="check()" disabled>Check</button>`;
+    selectedIndex = -1; isAnswered = false;
+}
+
+function pick(i) {
+    if (isAnswered) return;
+    const opts = document.querySelectorAll('.opt');
+    opts.forEach((o, k) => o.classList.toggle('sel', k === i));
+    selectedIndex = i;
+    $('mainBtn').disabled = false;
+}
+
+async function check() {
+    const btn = $('mainBtn'), opts = document.querySelectorAll('.opt'), fb = $('feedback');
+    if (btn.textContent === 'Try Again') {
+        opts.forEach(o => o.classList.remove('sel', 'bad', 'ok'));
+        selectedIndex = -1; isAnswered = false;
+        fb.textContent = ''; btn.textContent = 'Check'; btn.disabled = true;
+        return;
+    }
+    if (selectedIndex < 0 || checking) return;
+
+    checking = true; btn.disabled = true;
+    try {
+        // The server checks the answer and, if it is correct, grants the reward
+        const optionId = dailyQuestion.payload.options[selectedIndex].id;
+        const res = await JM.dailyAnswer({ optionId });
+        isAnswered = true;
+        opts.forEach(o => o.classList.remove('sel'));
+
+        if (res.correct) {
+            opts[selectedIndex].classList.add('ok');
+            reward = res.reward;
+            sfx('correctSound');
+            setTimeout(showCompletionScreen, 800);
+        } else {
+            opts[selectedIndex].classList.add('bad');
+            fb.textContent = res.message;
+            btn.textContent = 'Try Again';
+            btn.disabled = false;
+            sfx('wrongSound');
+        }
+    } catch (e) {
+        if (e.status === 409) { showAlreadyCompleted(); return; }   // finished in another tab
+        fb.textContent = e.message;
+        btn.disabled = false;
+    } finally {
+        checking = false;
+    }
+}
+
+/* ---------- Completed screen ---------- */
+function showCompletionScreen() {
+    stopBg(); sfx('completedSound');
+    $('topBar').style.display = 'none';
+    const st = $('stage'); st.classList.add('center');
+    const bonus = reward.streakBonus > 0
+        ? `<b>Streak bonus</b><b>+${reward.streakBonus}</b>` : '';
+    st.innerHTML = `<div class="done"><img src="/icons/victory.png" alt="victory"><h1>COMPLETED!</h1>
+        <div class="rew">
+            <div class="l"><b id="rankName">${esc(reward.rankBefore)}</b><b id="xpNum">${reward.xpBefore}</b><b>Coins</b><b>+${reward.coinsEarned}</b>${bonus}</div>
+            <div class="earn">EARNED<div>${reward.xpEarned} XP</div></div>
         </div>
-    </div>
+        <button class="rbtn" id="rewardBtn" onclick="getReward()">Get Reward</button></div>`;
+}
 
-        <div class="insufficient-notification" id="insufficientNotification">
-            <span id="notificationText"></span>
-        </div>
+function showAlreadyCompleted() {
+    $('topBar').style.display = 'none';
+    const st = $('stage'); st.classList.add('center');
+    st.innerHTML = `<div class="done"><img src="/icons/green_check.png" alt="Complete" style="width:120px">
+        <h1>Challenge Complete!</h1>
+        <p class="note">Come back tomorrow for a new challenge!</p>
+        <button class="rbtn" onclick="goBack()">Go Back</button></div>`;
+}
 
-    <!-- Audio Elements -->
-    <audio id="bgMusic" loop>
-        <source src="/sounds/BG_music.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="correctSound">
-        <source src="/sounds/correct_sound-efx.wav" type="audio/wav">
-    </audio>
-    <audio id="wrongSound">
-        <source src="/sounds/wrong_sound-efx.wav" type="audio/wav">
-    </audio>
-    <audio id="completedSound">
-        <source src="/sounds/completed_sound-efx.wav" type="audio/wav">
-    </audio>
-    
+/* ---------- Reward: the server already saved it, this only plays the animation ---------- */
+function getReward() {
+    if (claimed) return; claimed = true;
+    const b = $('rewardBtn');
+    b.textContent = 'Reward Claimed'; b.classList.add('claimed'); b.disabled = true;
+    const r = b.getBoundingClientRect();
+    coinBurst(r.left + r.width / 2, r.top + r.height / 2);
+    countUp($('xpNum'), reward.xpBefore, reward.xpAfter, 1200);
+    if (reward.rankAfter !== reward.rankBefore)
+        setTimeout(() => { $('rankName').textContent = reward.rankAfter; }, 1250);
+    setTimeout(() => { location.href = '/pages/Home.html'; }, 2300);
+}
 
-    <script>
-        // ============================================
-        // GAME STATE
-        // ============================================
-        let currentQuestion = 0;
-        const totalQuestions = 1;
-        let selectedOptionIndex = -1;
-        let isAnswered = false;
-        let hintsUsedThisQuestion = 0;
-        let maxHints = 3;
-        let removedOptions = [];
-        let soundEffectsEnabled = true;
-        let bgMusicEnabled = true;
+function countUp(el, from, to, d) {
+    const t0 = performance.now();
+    (function f(n) {
+        const t = Math.min((n - t0) / d, 1), e = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(from + (to - from) * e);
+        if (t < 1) requestAnimationFrame(f);
+    })(t0);
+}
 
-        // Full Question Pool
-        const questionPool = [
-            {
-                type: 'multiple-choice',
-                question: 'What data type is used to store a single 16-bit Unicode character?',
-                options: [
-                    'String',
-                    'char',
-                    'int',
-                    'byte'
-                ],
-                correctAnswer: 1,
-                wrongAnswers: [0, 2, 3],
-                explanation: 'The char data type is used to store a single 16-bit Unicode character in Java. Unlike String which stores multiple characters, char holds exactly one character.'
-            },
-            {
-                type: 'multiple-choice',
-                question: 'What is the default value of a Boolean variable in a class?',
-                options: [
-                    'true',
-                    'false',
-                    'null',
-                    '0'
-                ],
-                correctAnswer: 1,
-                wrongAnswers: [0, 2, 3],
-                explanation: 'In Java, the default value of a Boolean variable declared in a class is false. This is automatically assigned if no initial value is provided.'
-            },
-            {
-                type: 'multiple-choice',
-                question: 'What package must be imported to use the Scanner class?',
-                options: [
-                    'java.io.*',
-                    'java.input.*',
-                    'java.scanner.*',
-                    'java.util.*'
-                ],
-                correctAnswer: 3,
-                wrongAnswers: [0, 1, 2],
-                explanation: 'The Scanner class is part of the java.util package. You must import java.util.* or java.util.Scanner to use it for reading user input.'
-            },
-            {
-                type: 'multiple-choice',
-                question: 'Which control statement is used to execute one block from many choices?',
-                options: [
-                    'if',
-                    'switch',
-                    'loop',
-                    'select'
-                ],
-                correctAnswer: 1,
-                wrongAnswers: [0, 2, 3],
-                explanation: 'The switch statement allows you to execute one block of code from multiple choices based on the value of a variable. It\'s more efficient than multiple if-else statements for many conditions.'
-            },
-            {
-                type: 'multiple-choice',
-                question: 'How do you create an array of integers with 5 elements?',
-                options: [
-                    'int arr[] = new int[5];',
-                    'int arr = new int(5);',
-                    'int[5] arr;',
-                    'array int[5];'
-                ],
-                correctAnswer: 0,
-                wrongAnswers: [1, 2, 3],
-                explanation: 'In Java, you create an array using the syntax: int arr[] = new int[5]; or int[] arr = new int[5];. This allocates memory for 5 integer elements.'
-            }
-        ];
+/* ---------- Navigation ---------- */
+function goBack() {
+    window.location.replace('/pages/Home.html');
+}
 
-        let dailyQuestion = null;
+/* ---------- Gold coin burst (from Lesson 1) ---------- */
+const cv = $('coins'), ctx = cv.getContext('2d');
+let W, H, coinList = [], sparks = [], playing = false, t0 = null, tl = null;
+const DURATION = 2000, rand = (a, b) => a + Math.random() * (b - a), gold = ["#FFF2A1", "#FFDC57", "#E7A91D", "#D28A0B", "#FFF0A0"];
+function resize() { const d = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
+function burst(x, y) {
+    sparks.push({ x, y, r: rand(22, 34), life: 1 });
+    const n = Math.round(Math.min(100, Math.max(55, W / 10)));
+    for (let i = 0; i < n; i++) {
+        const a = rand(-Math.PI, Math.PI), sp = rand(2.5, 10.5);
+        coinList.push({ x: x + rand(-7, 7), y: y + rand(-7, 7), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - rand(1, 3), r: rand(7, 13), depth: rand(.65, 1.2), angle: rand(0, 6.28), spin: rand(-.2, .2), rot: rand(-.1, .1), color: gold[Math.floor(Math.random() * gold.length)], age: 0, wobble: rand(0, 6.28) });
+    }
+}
+function drawCoin(c) {
+    const p = Math.max(.12, Math.abs(Math.cos(c.angle))), rx = c.r * p * c.depth, ry = c.r * c.depth;
+    ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.rot);
+    ctx.beginPath(); ctx.ellipse(1.2, 1.8, rx + 1.3, ry + 1.3, 0, 0, 6.283); ctx.fillStyle = "#805008"; ctx.fill();
+    const g = ctx.createLinearGradient(-rx, -ry, rx, ry);
+    g.addColorStop(0, "#FFF4A4"); g.addColorStop(.22, "#FFD94B"); g.addColorStop(.48, c.color); g.addColorStop(.72, "#D28A0B"); g.addColorStop(1, "#FFF0A0");
+    ctx.beginPath(); ctx.ellipse(0, 0, Math.max(.8, rx), ry, 0, 0, 6.283); ctx.fillStyle = g; ctx.fill();
+    ctx.lineWidth = Math.max(.6, c.r * .09); ctx.strokeStyle = "rgba(255,245,166,.95)"; ctx.stroke();
+    if (p > .38) {
+        ctx.beginPath(); ctx.ellipse(0, 0, Math.max(.4, rx * .72), ry * .72, 0, 0, 6.283); ctx.lineWidth = Math.max(.45, c.r * .055); ctx.strokeStyle = "rgba(155,93,5,.7)"; ctx.stroke();
+        ctx.save(); ctx.scale(p, 1); ctx.font = `bold ${Math.max(7, c.r * 1.25)}px Arial`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillStyle = "rgba(133,79,0,.7)"; ctx.fillText("$", .6, 1); ctx.fillStyle = "rgba(255,249,190,.98)"; ctx.fillText("$", -.3, -.4); ctx.restore();
+    }
+    ctx.beginPath(); ctx.ellipse(-rx * .28, -ry * .36, Math.max(.5, rx * .2), Math.max(.45, ry * .11), -.35, 0, 6.283); ctx.fillStyle = "rgba(255,255,226,.78)"; ctx.fill();
+    ctx.restore();
+}
+function glow() {
+    ctx.clearRect(0, 0, W, H);
+    const f = Math.max(0, 1 - (performance.now() - t0) / 420);
+    if (f > 0) { const g = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * .42); g.addColorStop(0, `rgba(255,195,45,${f * .14})`); g.addColorStop(1, "rgba(255,195,45,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
+}
+function updSparks(dt) {
+    for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i]; s.life -= .045 * dt; s.r *= Math.pow(1.09, dt);
+        if (s.life <= 0) { sparks.splice(i, 1); continue; }
+        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r);
+        g.addColorStop(0, `rgba(255,226,106,${s.life * .65})`); g.addColorStop(.25, `rgba(255,177,20,${s.life * .2})`); g.addColorStop(1, "rgba(255,170,0,0)");
+        ctx.fillStyle = g; ctx.fillRect(s.x - s.r, s.y - s.r, s.r * 2, s.r * 2);
+    }
+}
+function updCoins(dt) {
+    for (let i = coinList.length - 1; i >= 0; i--) {
+        const c = coinList[i]; c.age += dt;
+        c.vy += .105 * dt; c.vx *= Math.pow(.998, dt); c.x += c.vx * dt; c.y += c.vy * dt;
+        c.angle += c.spin * dt; c.rot += c.spin * .13 * dt; c.wobble += .04 * dt; c.x += Math.sin(c.wobble) * .18 * dt;
+        ctx.globalAlpha = Math.max(0, Math.min(Math.min(1, c.age / 5), Math.min(1, (120 - c.age) / 30)));
+        drawCoin(c); ctx.globalAlpha = 1;
+        if (c.age >= 120 || c.y > H + 60 || c.x < -70 || c.x > W + 70) coinList.splice(i, 1);
+    }
+}
+function loop(ts) {
+    if (!playing) return;
+    if (tl === null) tl = ts;
+    if (ts - t0 >= DURATION) { playing = false; coinList = []; sparks = []; ctx.clearRect(0, 0, W, H); return; }
+    const dt = Math.min(2, Math.max(0, (ts - tl) / 16.67)); tl = ts;
+    glow(); updSparks(dt); updCoins(dt); requestAnimationFrame(loop);
+}
+function coinBurst(x, y) { coinList = []; sparks = []; t0 = performance.now(); tl = null; playing = true; burst(x, y); requestAnimationFrame(loop); }
+addEventListener('resize', resize); resize();
 
-        // ============================================
-        // FUNCTIONS
-        // ============================================
-
-        function getTodaysQuestion() {
-            const today = new Date();
-            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-            
-            const lastCompleted = localStorage.getItem('lastDailyChallengeDate');
-            const todayString = today.toDateString();
-            
-            if (lastCompleted === todayString) {
-                return null;
-            }
-            
-            const questionIndex = dayOfYear % questionPool.length;
-            return questionPool[questionIndex];
-        }
-
-        function generateMultipleChoice(question) {
-            return `
-                <h1 class="question">${question.question}</h1>
-        
-                <button class="hint-button" id="hintBtn" onclick="showMultipleChoiceHint()" style="align-self: flex-end; position: relative;">
-                    <span class="hint-icon">?</span>
-                    Hint
-                    <span class="hint-count" id="hintCount" style="position: absolute; top: -8px; right: -8px; background: #f4e4c1; color: #322641; font-size: 14px; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border: 2px solid #322641; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">${maxHints}</span>
-                </button>
-
-                <div class="options-container" id="optionsContainer">
-                    ${question.options.map((opt, i) => `<button class="option" onclick="selectOption(${i})">${opt}</button>`).join('')}
-                </div>
-
-                <div class="feedback" id="feedback"></div>
-
-                <button class="submit-button" id="submitBtn" onclick="submitMultipleChoice()">Submit</button>
-            `;
-        }
-
-        function selectOption(index) {
-            if (isAnswered) return;
-            
-            const options = document.querySelectorAll('.option');
-            options.forEach(opt => opt.classList.remove('selected'));
-            
-            if (!options[index].classList.contains('hidden')) {
-                options[index].classList.add('selected');
-                selectedOptionIndex = index;
-                
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.classList.add('active');
-            }
-        }
-
-        function showMultipleChoiceHint() {
-            // Check if player has no hints left globally
-            if (maxHints <= 0) {
-                showInsufficientNotification('Insufficient hints! Buy more from the Shop.');
-                return;
-            }
-            
-            // Check if already used 2 hints for this question
-            if (hintsUsedThisQuestion >= 2) {
-                showInsufficientNotification('Maximum 2 hints per question!');
-                return;
-            }
-            
-            // Check if already answered
-            if (isAnswered) {
-                return;
-            }
-            
-            const question = dailyQuestion;
-            const options = document.querySelectorAll('.option');
-            
-            let availableWrongAnswers = question.wrongAnswers.filter(idx => !removedOptions.includes(idx));
-            
-            if (availableWrongAnswers.length > 0) {
-                const randomWrong = availableWrongAnswers[Math.floor(Math.random() * availableWrongAnswers.length)];
-                options[randomWrong].classList.add('hidden');
-                removedOptions.push(randomWrong);
-                
-                if (selectedOptionIndex === randomWrong) {
-                    selectedOptionIndex = -1;
-                    const submitBtn = document.getElementById('submitBtn');
-                    submitBtn.classList.remove('active');
-                }
-                
-                hintsUsedThisQuestion++;  // ← Increment per-question counter
-                maxHints--;  // ← Decrement global hint pool
-                updateHintDisplay();
-                localStorage.setItem('playerHints', maxHints);
-                
-                // Disable hint button if used 2 hints this question OR no hints left globally
-                if (hintsUsedThisQuestion >= 2 || maxHints <= 0) {
-                    const hintBtn = document.getElementById('hintBtn');
-                    hintBtn.disabled = true;
-                }
-            }
-        }
-
-        function updateHintDisplay() {
-            const hintCount = document.getElementById('hintCount');
-            
-            if (hintCount) {
-                hintCount.textContent = maxHints;
-            }
-        }
-
-        function showInsufficientNotification(message) {
-            const notification = document.getElementById('insufficientNotification');
-            const notificationText = document.getElementById('notificationText');
-            
-            notificationText.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000); // Show for 4 seconds
-        }
-
-        function submitMultipleChoice() {
-            if (selectedOptionIndex === -1) return;
-
-            const question = dailyQuestion;
-            const options = document.querySelectorAll('.option');
-            const feedback = document.getElementById('feedback');
-            const submitBtn = document.getElementById('submitBtn');
-
-            if (submitBtn.textContent === 'Try again') {
-                options.forEach(opt => opt.classList.remove('selected', 'incorrect', 'correct'));
-                selectedOptionIndex = -1;
-                feedback.textContent = '';
-                submitBtn.textContent = 'Submit';
-                submitBtn.classList.remove('active');
-                isAnswered = false;
-                return;
-            }
-
-            isAnswered = true;
-            options.forEach(opt => opt.classList.remove('selected'));
-
-            if (selectedOptionIndex === question.correctAnswer) {
-                options[selectedOptionIndex].classList.add('correct');
-                feedback.textContent = '';
-                playCorrectSound();
-                
-                setTimeout(() => {
-                    showCompletionScreen();
-                }, 800);
-            } else {
-                options[selectedOptionIndex].classList.add('incorrect');
-                feedback.textContent = question.explanation;
-                submitBtn.textContent = 'Try again';
-                submitBtn.classList.add('active');
-                playWrongSound();
-            }
-        }
-
-        function showCompletionScreen() {
-            playCompletedSound();
-            stopBackgroundMusic();
-            
-            document.querySelector('.top-bar').style.display = 'none';
-            
-            const container = document.getElementById('quizContainer');
-            container.style.justifyContent = 'center';
-            
-            container.innerHTML = `
-                <div style="text-align: center; max-width: 600px; margin: 0 auto;">
-                    <img src="/icons/victory.png" alt="Victory" style="width: 200px; margin-bottom: 30px;">
-                    
-                    <h1 style="font-size: 48px; font-weight: 800; margin-bottom: 40px; color: white;">COMPLETED!</h1>
-                    
-                    <div style="display: flex; justify-content: space-between; gap: 40px; margin-bottom: 50px;">
-                        <div style="text-align: left;">
-                            <div style="font-size: 20px; font-weight: 600; color: #d4c4d9; margin-bottom: 5px;">Level 1 Starter</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #d4c4d9;">Coins</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 24px; font-weight: 700; color: white; margin-bottom: 5px;">x10</div>
-                            <div style="font-size: 24px; font-weight: 700; color: white;">+5</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 18px; font-weight: 600; color: #ffdfa6; margin-bottom: 8px;">EARNED</div>
-                            <div style="font-size: 36px; font-weight: 800; color: #e8c4ff;">10 XP</div>
-                        </div>
-                    </div>
-                    
-                    <button class="submit-button active" onclick="getReward()">Get Reward</button>
-                </div>
-            `;
-        }
-
-        function getReward() {
-            const today = new Date().toDateString();
-            
-            // Mark challenge as completed today
-            localStorage.setItem('lastDailyChallengeDate', today);
-            
-            // Update streak
-            const lastPlayDate = localStorage.getItem('lastPlayDate') || '';
-            let streakDays = parseInt(localStorage.getItem('streakDays') || '0');
-            
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayString = yesterday.toDateString();
-            
-            if (lastPlayDate === yesterdayString) {
-                // Continued streak from yesterday
-                streakDays += 1;
-            } else if (lastPlayDate === today) {
-                // Already played today, keep current streak
-                // Don't increment
-            } else {
-                // First time or broke streak
-                streakDays = 1;
-            }
-            
-            // Update last play date to today
-            localStorage.setItem('lastPlayDate', today);
-            localStorage.setItem('streakDays', streakDays.toString());
-            
-            // Add coins
-            let coins = parseInt(localStorage.getItem('coins') || '0');
-            coins += 5;
-            localStorage.setItem('coins', coins);
-            
-            // Add XP
-            let totalXP = parseInt(localStorage.getItem('totalXP') || '0');
-            totalXP += 10;
-            localStorage.setItem('totalXP', totalXP.toString());
-            
-            // Redirect to Progress.html
-            window.location.href = 'Progress.html';
-        }
-
-        function updateStreak() {
-            const today = new Date();
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
-            
-            const lastCompleted = localStorage.getItem('lastDailyChallengeDate');
-            const currentStreak = parseInt(localStorage.getItem('dailyStreak') || '0');
-            
-            if (lastCompleted === yesterday.toDateString()) {
-                localStorage.setItem('dailyStreak', currentStreak + 1);
-            } else if (lastCompleted !== today.toDateString()) {
-                localStorage.setItem('dailyStreak', '1');
-            }
-        }
-
-        function init() {
-            // Load player's hint count from localStorage
-            maxHints = parseInt(localStorage.getItem('playerHints') || '3');
-            
-            dailyQuestion = getTodaysQuestion();
-            
-            if (!dailyQuestion) {
-                showAlreadyCompleted();
-                return;
-            }
-            
-            loadQuestion();
-            initializeAudioSettings();
-            playBackgroundMusic();
-        }
-
-        function loadQuestion() {
-            const container = document.getElementById('quizContainer');
-            container.innerHTML = generateMultipleChoice(dailyQuestion);
-            
-            selectedOptionIndex = -1;
-            isAnswered = false;
-            hintsUsedThisQuestion = 0;
-            removedOptions = [];
-        }
-
-        function showAlreadyCompleted() {
-            document.querySelector('.top-bar').style.display = 'none';
-            
-            const container = document.getElementById('quizContainer');
-            container.style.justifyContent = 'center';
-            container.innerHTML = `
-                <div style="text-align: center;">
-                    <img src="/icons/green_check.png" alt="Complete" style="width: 120px; height: 120px; margin-bottom: 20px;">
-                    <h2 style="font-size: 32px; margin-bottom: 20px;">Challenge Complete!</h2>
-                    <p style="font-size: 20px; color: #d4c4d9;">Come back tomorrow for a new challenge!</p>
-                    <button class="submit-button active" style="margin-top: 40px;" onclick="goBack()">Go Back</button>
-                </div>
-            `;
-        }
-
-        function goBack() {
-            window.history.back();
-        }
-
-        function openQuizSettings() {
-            document.getElementById('quizSettingsModal').classList.add('active');
-        }
-
-        function closeQuizSettings() {
-            document.getElementById('quizSettingsModal').classList.remove('active');
-        }
-
-        function toggleQuizBackgroundMusic(checkbox) {
-            bgMusicEnabled = checkbox.checked;
-            localStorage.setItem('bgMusicEnabled', bgMusicEnabled);
-            
-            const bgMusic = document.getElementById('bgMusic');
-            if (bgMusicEnabled) {
-                bgMusic.play().catch(e => console.log('Audio play failed:', e));
-            } else {
-                bgMusic.pause();
-            }
-        }
-
-        function toggleQuizSoundEffects(checkbox) {
-            soundEffectsEnabled = checkbox.checked;
-            localStorage.setItem('soundEffectsEnabled', soundEffectsEnabled);
-
-            // Play test sound when enabled
-            if (soundEffectsEnabled) {
-                playCorrectSound();
-            }
-        }
-
-        // ============================================
-        // AUDIO FUNCTIONS
-        // ============================================
-        function initializeAudioSettings() {
-            const savedBgMusic = localStorage.getItem('bgMusicEnabled');
-            const savedSoundEffects = localStorage.getItem('soundEffectsEnabled');
-            
-            bgMusicEnabled = savedBgMusic !== null ? savedBgMusic === 'true' : true;
-            soundEffectsEnabled = savedSoundEffects !== null ? savedSoundEffects === 'true' : true;
-            
-            document.getElementById('quizBgMusicToggle').checked = bgMusicEnabled;
-            document.getElementById('quizSoundEffectsToggle').checked = soundEffectsEnabled;
-        }
-
-        function playBackgroundMusic() {
-            if (!bgMusicEnabled) return;
-            
-            const bgMusic = document.getElementById('bgMusic');
-            bgMusic.volume = 0.3;
-            bgMusic.play().catch(e => console.log('Audio play failed:', e));
-        }
-
-        function stopBackgroundMusic() {
-            const bgMusic = document.getElementById('bgMusic');
-            bgMusic.pause();
-            bgMusic.currentTime = 0;
-        }
-
-        function playCorrectSound() {
-            if (!soundEffectsEnabled) return;
-            
-            const sound = document.getElementById('correctSound');
-            sound.currentTime = 0;
-            sound.play().catch(e => console.log('Sound play failed:', e));
-        }
-
-        function playWrongSound() {
-            if (!soundEffectsEnabled) return;
-            
-            const sound = document.getElementById('wrongSound');
-            sound.currentTime = 0;
-            sound.play().catch(e => console.log('Sound play failed:', e));
-        }
-
-        function playCompletedSound() {
-            if (!soundEffectsEnabled) return;
-            
-            const sound = document.getElementById('completedSound');
-            sound.currentTime = 0;
-            sound.play().catch(e => console.log('Sound play failed:', e));
-        }
-
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', init);
-    </script>
+/* ---------- Init ---------- */
+async function init() {
+    $('bgT').checked = pref('bgMusicEnabled');
+    $('sfxT').checked = pref('soundEffectsEnabled');
+    try {
+        const d = await JM.daily();
+        if (d.completed) { showAlreadyCompleted(); return; }
+        dailyQuestion = d.question;
+    } catch (e) {
+        $('stage').classList.add('center');
+        $('stage').innerHTML = `<div class="done"><h1>Could not load the challenge</h1>
+            <p class="note">${esc(e.message)}</p>
+            <button class="rbtn" onclick="goBack()">Go Back</button></div>`;
+        return;
+    }
+    loadQuestion();
+    playBg();
+}
+window.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
