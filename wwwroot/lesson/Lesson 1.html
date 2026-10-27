@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Java Master - Lesson 1</title>
-<link rel="icon" href="/logo/java-master-logo" type="image/png">
+<link rel="icon" href="/logo/java-master-logo.png" type="image/png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
     /* ---------- Base ---------- */
@@ -99,6 +99,7 @@
         font-size: 15px;
         line-height: 1.35;
         margin-bottom: 34px;
+        user-select: none;
     }
 
     .prompt p+p {
@@ -166,6 +167,14 @@
         padding: 8px 14px;
         width: fit-content;
         border-radius: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .tab img {
+        width: 12px;
+        height: 12px;
     }
 
     .code {
@@ -238,6 +247,14 @@
         color: #e9e4f2;
         font: 500 12px 'Inter', sans-serif;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .tools button img {
+        width: 15px;
+        height: 12px;
     }
 
     .work {
@@ -246,8 +263,8 @@
     }
 
     .output {
-        width: 150px;
-        height: 250px;
+        width: 272px;
+        height: 168px;
         background: #1b1f2e;
         border: 3px solid #2c3145;
         border-radius: 14px;
@@ -265,7 +282,7 @@
         color: #1b1f2e;
         height: 100%;
         padding: 8px 12px;
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .choices {
@@ -295,7 +312,7 @@
     .btn {
         position: absolute;
         right: 6%;
-        bottom: 6%;
+        bottom: 10%;
         width: 240px;
         padding: 20px;
         border: none;
@@ -344,7 +361,7 @@
     }
 
     .bubbles em {
-        color: #d9622b;
+        color: #b8470f;
         font-style: normal;
     }
 
@@ -494,7 +511,15 @@
 
     .done h1 {
         font-size: 26px;
-        margin-bottom: 26px;
+        margin-bottom: 14px;
+    }
+
+    .done-desc {
+        width: min(340px,86vw);
+        margin-bottom: 34px;
+        font-size: 16px;
+        line-height: 1.4;
+        color: #d9b78f;
     }
 
     .rew {
@@ -563,263 +588,263 @@
     }
 </style>
 </head>
-<body>
-<audio id="bgMusic" loop><source src="/sounds/BG_music.mp3" type="audio/mpeg"></audio>
-<audio id="correctSound"><source src="/sounds/correct_sound-efx.wav" type="audio/wav"></audio>
-<audio id="wrongSound"><source src="/sounds/wrong_sound-efx.wav" type="audio/wav"></audio>
-<audio id="completedSound"><source src="/sounds/completed_sound-efx.wav" type="audio/wav"></audio>
+    <body>
+    <audio id="bgMusic" loop><source src="/sounds/BG_music.mp3" type="audio/mpeg"></audio>
+    <audio id="correctSound"><source src="/sounds/correct_sound-efx.wav" type="audio/wav"></audio>
+    <audio id="wrongSound"><source src="/sounds/wrong_sound-efx.wav" type="audio/wav"></audio>
+    <audio id="completedSound"><source src="/sounds/completed_sound-efx.wav" type="audio/wav"></audio>
 
-<div class="top-bar" id="topBar">
-  <button onclick="openModal('exitModal')"><img src="/icons/goback.png" alt="Go Back"></button>
-  <button onclick="openModal('settingsModal')"><img src="/icons/settings_icon.png" alt="Settings"></button>
-</div>
-<div class="progress" id="progress"></div>
-<div id="stage"></div>
-<img class="model" id="model" src="" alt="James Gosling">
-<div class="bubbles" id="bubbles"></div>
+    <div class="top-bar" id="topBar">
+    <button onclick="openModal('exitModal')"><img src="/icons/goback.png" alt="Go Back"></button>
+    <button onclick="openModal('settingsModal')"><img src="/icons/settings_icon.png" alt="Settings"></button>
+    </div>
+    <div class="progress" id="progress"></div>
+    <div id="stage"></div>
+    <img class="model" id="model" src="" alt="James Gosling">
+    <div class="bubbles" id="bubbles"></div>
 
-<div class="modal" id="settingsModal"><div class="card">
-  <button class="x" onclick="closeModal('settingsModal')">×</button>
-  <h2>Settings</h2>
-  <div class="row">Background Music<label class="tg"><input type="checkbox" id="bgT" checked onchange="setPref('backgroundMusicEnabled',this.checked)"><span></span></label></div>
-  <div class="row">Sound effects<label class="tg"><input type="checkbox" id="sfxT" checked onchange="setPref('soundEffectsEnabled',this.checked)"><span></span></label></div>
-</div></div>
-<div class="modal" id="exitModal"><div class="card">
-  <h2>Exit Lesson?</h2><p>Are you sure you want to exit?<br>Your progress will not be saved.</p>
-  <div class="bs"><button onclick="closeModal('exitModal')">Cancel</button><button class="p" onclick="location.href='/pages/Learn.html'">Yes, Exit</button></div>
-</div></div>
-<canvas id="coins" aria-hidden="true"></canvas>
+    <div class="modal" id="settingsModal"><div class="card">
+    <button class="x" onclick="closeModal('settingsModal')">×</button>
+    <h2>Settings</h2>
+    <div class="row">Background Music<label class="tg"><input type="checkbox" id="bgT" checked onchange="setPref('backgroundMusicEnabled',this.checked)"><span></span></label></div>
+    <div class="row">Sound effects<label class="tg"><input type="checkbox" id="sfxT" checked onchange="setPref('soundEffectsEnabled',this.checked)"><span></span></label></div>
+    </div></div>
+    <div class="modal" id="exitModal"><div class="card">
+    <h2>Exit Lesson?</h2><p>Are you sure you want to exit?<br>Your progress will not be saved.</p>
+    <div class="bs"><button onclick="closeModal('exitModal')">Cancel</button><button class="p" onclick="location.href='/pages/Learn.html'">Yes, Exit</button></div>
+    </div></div>
+    <canvas id="coins" aria-hidden="true"></canvas>
 
-<script>
-/* ---------- Models ---------- */
-const MODEL={wave:'/model/James Gosling wave.png',stand:'/model/James Gosling Standing Up.png',applause:'/model/James Gosling Applause.png',thinking:'/model/James Gosling Thinking.png',drink:'/model/James Gosling Drinking Coffee.png'};
+    <script>
+    /* ---------- Models ---------- */
+    const MODEL={wave:'/model/James Gosling wave.png',stand:'/model/James Gosling Standing Up.png',applause:'/model/James Gosling Applause.png',thinking:'/model/James Gosling Thinking.png',drink:'/model/James Gosling Drinking Coffee.png'};
 
-/* ---------- Lesson flow ---------- */
-const steps=[
- {t:'intro'},
- {t:'mc',prompt:'<p>In Java, we use certain statements to display output. For example, System.out.println(); is used to print text to the console.</p><p>Which Java statement prints text to the console?</p>',
-  opts:['System.out.println("Hello");','String message = "Hello";'],ans:0,ok:'Great job!',bad:'That only creates a variable. Use <em>System.out.println()</em> to print.'},
- {t:'type',prompt:'<p>Code “Hello World!” between the opening and closing quotation marks.</p>',out:['Hello World!'],ok:'Excellent!',bad:'Type exactly “<em>Hello World!</em>”.'},
- {t:'asm',prompt:'<p>Let’s remember how to code an output. Code an output that says “Hello World!”.</p>',
-  lines:[['__','.','__','.','__','__','__','__','__']],ans:['System','out','println','(','"Hello World!"',')',';'],
-  choices:['System','out','println','(',')','"Hello World!"',';'],out:['Hello World!'],ok:'Excellent!',bad:'The order is off. It should be <em>System.out.println("Hello World!");</em>'},
- {t:'mc',prompt:'<p>In Java, System.out.println(); prints text and moves to a new line, while System.out.print(); prints text but stays on the same line.</p><p>Which statement prints text <b>without</b> moving to a new line?</p>',
-  opts:['System.out.println("Welcome");','System.out.print("Welcome");'],ans:1,ok:'Well done!',bad:'That moves to a new line. Use <em>System.out.print()</em> to stay on the same line.'},
- {t:'asm',prompt:'<p>Code an output that displays "The result is: 42".<br>Remember print stays on the same line, println moves to a new line.</p>',
-  lines:[['System','.','out','.','__','(','"The result is: "',')',';'],['System','.','out','.','__','(','42',')',';']],ans:['print','println'],
-  choices:['println','print'],out:['The result is: 42'],ok:'Amazing!',bad:'Use <em>print</em> for the first line so 42 stays on the same line.'},
- {t:'finish'},
- {t:'done'}
-];
-const questionSteps=steps.map((s,i)=>['mc','type','asm'].includes(s.t)?i:-1).filter(i=>i>=0);
-let cur=0,phase='answer',sel=-1,filled=[],typed='';
+    /* ---------- Lesson flow ---------- */
+    const steps=[
+    {t:'intro'},
+    {t:'mc',prompt:'<p>In Java, we use certain statements to display output. For example, System.out.println(); is used to print text to the console.</p><p>Which Java statement prints text to the console?</p>',
+    opts:['System.out.println("Hello");','String message = "Hello";'],ans:0,ok:'Great job!',bad:'That only creates a variable. Use <em>System.out.println()</em> to print.'},
+    {t:'type',prompt:'<p>Code “Hello World!” between the opening and closing quotation marks.</p>',out:['Hello World!'],ok:'Excellent!',bad:'Type exactly “<em>Hello World!</em>”.'},
+    {t:'asm',prompt:'<p>Let’s remember how to code an output. Code an output that says “Hello World!”.</p>',
+    lines:[['__','.','__','.','__','__','__','__','__']],ans:['System','out','println','(','"Hello World!"',')',';'],
+    choices:['System','out','println','(',')','"Hello World!"',';'],out:['Hello World!'],ok:'Excellent!',bad:'The order is off. It should be <em>System.out.println("Hello World!");</em>'},
+    {t:'mc',prompt:'<p>In Java, System.out.println(); prints text and moves to a new line, while System.out.print(); prints text but stays on the same line.</p><p>Which statement prints text <b>without</b> moving to a new line?</p>',
+    opts:['System.out.println("Welcome");','System.out.print("Welcome");'],ans:1,ok:'Well done!',bad:'That moves to a new line. Use <em>System.out.print()</em> to stay on the same line.'},
+    {t:'asm',prompt:'<p>Code an output that displays "The result is: 42".<br>Remember print stays on the same line, println moves to a new line.</p>',
+    lines:[['System','.','out','.','__','(','"The result is: "',')',';'],['System','.','out','.','__','(','42',')',';']],ans:['print','println'],
+    choices:['println','print'],out:['The result is: 42'],ok:'Amazing!',bad:'Use <em>print</em> for the first line so 42 stays on the same line.'},
+    {t:'finish'},
+    {t:'done'}
+    ];
+    const questionSteps=steps.map((s,i)=>['mc','type','asm'].includes(s.t)?i:-1).filter(i=>i>=0);
+    let cur=0,phase='answer',sel=-1,filled=[],typed='';
 
-/* ---------- Helpers ---------- */
-const $=id=>document.getElementById(id);
-const pref=k=>{try{return localStorage.getItem(k)!=='false'}catch(e){return true}};
-function setPref(k,v){try{localStorage.setItem(k,v)}catch(e){}if(k==='backgroundMusicEnabled')v?playBg():$('bgMusic').pause()}
-function playBg(){if(!pref('backgroundMusicEnabled'))return;const a=$('bgMusic');a.volume=.3;a.play().catch(()=>document.addEventListener('click',()=>{if(pref('backgroundMusicEnabled'))a.play()},{once:true}))}
-function sfx(id){if(!pref('soundEffectsEnabled'))return;const a=$(id);a.currentTime=0;a.play().catch(()=>{})}
-function openModal(id){$(id).classList.add('on')}
-function closeModal(id){$(id).classList.remove('on')}
-document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on')}));
-const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    /* ---------- Helpers ---------- */
+    const $=id=>document.getElementById(id);
+    const pref=k=>{try{return localStorage.getItem(k)!=='false'}catch(e){return true}};
+    function setPref(k,v){try{localStorage.setItem(k,v)}catch(e){}if(k==='backgroundMusicEnabled')v?playBg():$('bgMusic').pause()}
+    function playBg(){if(!pref('backgroundMusicEnabled'))return;const a=$('bgMusic');a.volume=.3;a.play().catch(()=>document.addEventListener('click',()=>{if(pref('backgroundMusicEnabled'))a.play()},{once:true}))}
+    function sfx(id){if(!pref('soundEffectsEnabled'))return;const a=$(id);a.currentTime=0;a.play().catch(()=>{})}
+    function openModal(id){$(id).classList.add('on')}
+    function closeModal(id){$(id).classList.remove('on')}
+    document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on')}));
+    const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 
-/* ---------- Rendering ---------- */
-function render(){
-  const s=steps[cur],q=questionSteps.indexOf(cur);
-  $('topBar').style.display=s.t==='done'?'none':'flex';
-  $('progress').style.display=q>=0?'flex':'none';
-  $('progress').innerHTML=questionSteps.map((_,i)=>`<i class="${i<=q?'on':''}"></i>`).join('');
-  const m=$('model'),b=$('bubbles');b.innerHTML='';
-  m.style.display=s.t==='done'?'none':'block';
-  let img=MODEL.stand;
-  if(s.t==='intro')img=MODEL.wave;
-  if(s.t==='finish')img=MODEL.drink;
-  if(phase==='correct'){img=MODEL.applause;b.innerHTML=`<span>${s.ok}</span>`}
-  if(phase==='wrong'){img=MODEL.thinking;b.innerHTML=`<span>Something’s not right</span><span>${s.bad}</span>`}
-  m.src=img;
-  const st=$('stage');st.classList.toggle('center',s.t==='done');
-  if(s.t==='intro')st.innerHTML=`<div class="text"><p>Welcome to the first chapter of the Java course! 🚀</p><p>Java is a popular programming language designed by <a href="https://en.wikipedia.org/wiki/James_Gosling" target="_blank" rel="noopener">James Gosling</a> to be “written once, run anywhere” with a Java Virtual Machine (JVM).</p></div><button class="btn mid" onclick="next()">Next</button>`;
-  else if(s.t==='finish')st.innerHTML=`<div class="text"><p>Awesome! We’ve learned the basics of Java</p><p>Before we add actions to them, move on to the next lesson to learn about the Java syntax present on every program out there.</p></div><button class="btn mid" onclick="next()">Next</button>`;
-  else if(s.t==='done')renderDone();
-  else{
-    let body='';
-    if(s.t==='mc')body=`<div class="opts">${s.opts.map((o,i)=>{let c='opt';if(phase==='answer'&&sel===i)c+=' sel';if(sel===i&&phase==='correct')c+=' ok';if(sel===i&&phase==='wrong')c+=' bad';return `<button class="${c}" ${phase!=='answer'?'disabled':''} onclick="pick(${i})">${esc(o)}</button>`}).join('')}</div>`;
-    if(s.t==='type'){
-      const lock=phase!=='answer'?'readonly':'';
-      body=workspace(`<div class="line"><span class="chip">System</span><span class="dot">.</span><span class="chip">out</span><span class="dot">.</span><span class="chip">println</span><span class="chip">(</span><span class="chip in">“<input id="tin" ${lock} value="${esc(typed)}" autocomplete="off" spellcheck="false" oninput="typed=this.value;upd()">”</span><span class="chip">)</span><span class="chip">;</span></div>`,s,false);
+    /* ---------- Rendering ---------- */
+    function render(){
+    const s=steps[cur],q=questionSteps.indexOf(cur);
+    $('topBar').style.display=s.t==='done'?'none':'flex';
+    $('progress').style.display=q>=0?'flex':'none';
+    $('progress').innerHTML=questionSteps.map((_,i)=>`<i class="${i<=q?'on':''}"></i>`).join('');
+    const m=$('model'),b=$('bubbles');b.innerHTML='';
+    m.style.display=s.t==='done'?'none':'block';
+    let img=MODEL.stand;
+    if(s.t==='intro')img=MODEL.wave;
+    if(s.t==='finish')img=MODEL.drink;
+    if(phase==='correct'){img=MODEL.applause;b.innerHTML=`<span>${s.ok}</span>`}
+    if(phase==='wrong'){img=MODEL.thinking;b.innerHTML=`<span>Something’s not right</span><span>${s.bad}</span>`}
+    m.src=img;
+    const st=$('stage');st.classList.toggle('center',s.t==='done');
+    if(s.t==='intro')st.innerHTML=`<div class="text"><p>Welcome to the first chapter of the Java course! 🚀</p><p>Java is a popular programming language designed by <a href="https://en.wikipedia.org/wiki/James_Gosling" target="_blank" rel="noopener">James Gosling</a> to be “written once, run anywhere” with a Java Virtual Machine (JVM).</p></div><button class="btn mid" onclick="next()">Next</button>`;
+    else if(s.t==='finish')st.innerHTML=`<div class="text"><p>Awesome! We’ve learned the basics of Java</p><p>Before we add actions to them, move on to the next lesson to learn about the Java syntax present on every program out there.</p></div><button class="btn mid" onclick="next()">Next</button>`;
+    else if(s.t==='done')renderDone();
+    else{
+        let body='';
+        if(s.t==='mc')body=`<div class="opts">${s.opts.map((o,i)=>{let c='opt';if(phase==='answer'&&sel===i)c+=' sel';if(sel===i&&phase==='correct')c+=' ok';if(sel===i&&phase==='wrong')c+=' bad';return `<button class="${c}" ${phase!=='answer'?'disabled':''} onclick="pick(${i})">${esc(o)}</button>`}).join('')}</div>`;
+        if(s.t==='type'){
+        const lock=phase!=='answer'?'readonly':'';
+        body=workspace(`<div class="line"><span class="chip">System</span><span class="dot">.</span><span class="chip">out</span><span class="dot">.</span><span class="chip">println</span><span class="chip">(</span><span class="chip in">“<input id="tin" ${lock} value="${esc(typed)}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="typed=this.value;upd()" onpaste="return false" ondrop="return false" oncopy="return false" oncut="return false" oncontextmenu="return false">”</span><span class="chip">)</span><span class="chip">;</span></div>`,s,false);
+        }
+        if(s.t==='asm'){
+        let k=0;
+        const lines=s.lines.map(l=>`<div class="line">${l.map(p=>p==='.'?'<span class="dot">.</span>':p==='__'?(filled[k]!==undefined?`<span class="chip">${esc(s.choices[filled[k++]])}</span>`:(k++,'<span class="chip empty">____</span>')):`<span class="chip">${esc(p)}</span>`).join('')}</div>`).join('');
+        body=workspace(lines,s,true)+`<div class="choices">${s.choices.map((c,i)=>`<button class="choice" ${filled.includes(i)?'disabled':''} ${phase!=='answer'?'disabled':''} onclick="addTok(${i})">${esc(c)}</button>`).join('')}</div>`;
+        }
+        st.innerHTML=`<div class="prompt">${s.prompt}</div>${body}<button class="btn" id="mainBtn" onclick="mainAction()"></button>`;
+        if(s.t==='type'&&phase==='answer')$('tin').focus();
+        upd();
     }
-    if(s.t==='asm'){
-      let k=0;
-      const lines=s.lines.map(l=>`<div class="line">${l.map(p=>p==='.'?'<span class="dot">.</span>':p==='__'?(filled[k]!==undefined?`<span class="chip">${esc(s.choices[filled[k++]])}</span>`:(k++,'<span class="chip empty">____</span>')):`<span class="chip">${esc(p)}</span>`).join('')}</div>`).join('');
-      body=workspace(lines,s,true)+`<div class="choices">${s.choices.map((c,i)=>`<button class="choice" ${filled.includes(i)?'disabled':''} ${phase!=='answer'?'disabled':''} onclick="addTok(${i})">${esc(c)}</button>`).join('')}</div>`;
     }
-    st.innerHTML=`<div class="prompt">${s.prompt}</div>${body}<button class="btn" id="mainBtn" onclick="mainAction()"></button>`;
-    if(s.t==='type'&&phase==='answer')$('tin').focus();
-    upd();
-  }
-}
-function workspace(lines,s,tools){
-  const out=phase==='correct'?`<div class="output"><div>Output</div><div>${s.out.join('<br>')}</div></div>`:'';
-  const tl=tools&&phase==='answer'?`<div class="tools"><button onclick="rem()">⌫ Remove</button><button onclick="reset()">↺ Reset</button></div>`:(tools?'<div class="tools"></div>':'');
-  return `<div class="work"><div class="editor"><div class="tab">☕ Practice.java</div><div class="code">${lines}</div>${tl}</div>${out}</div>`;
-}
-function renderDone(){
-  $('stage').innerHTML=`<div class="done"><img src="/icons/victory.png" alt="victory"><h1>COMPLETED!</h1>
-  <div class="rew"><div class="l"><b>Starter</b><b id="xpNum">${REPLAY?0:REWARD_XP}</b><b>Coins</b><b>+${REPLAY?0:REWARD_COINS}</b></div><div class="earn">EARNED<div>${REPLAY?0:REWARD_XP} XP</div></div></div>${REPLAY?'<p class="replay-note">Lesson already completed. Rewards can only be earned once.</p>':''}
-  <button class="rbtn" id="rewardBtn" onclick="getReward()">${REPLAY?'Continue':'Get Reward'}</button></div>`;
-  $('bubbles').innerHTML='';
-  $('bgMusic').pause();sfx('completedSound');
-}
-
-/* ---------- Interaction ---------- */
-function upd(){
-  const s=steps[cur],b=$('mainBtn');if(!b)return;
-  if(phase==='correct'){b.textContent='Continue';b.disabled=false;return}
-  if(phase==='wrong'){b.textContent='Try Again';b.disabled=false;return}
-  b.textContent='Check';
-  b.disabled=s.t==='mc'?sel<0:s.t==='type'?!typed.trim():filled.length<s.ans.length;
-}
-function pick(i){sel=i;document.querySelectorAll('.opt').forEach((o,k)=>o.classList.toggle('sel',k===i));upd()}
-function addTok(i){if(filled.length<steps[cur].ans.length){filled.push(i);render()}}
-function rem(){filled.pop();render()}
-function reset(){filled=[];render()}
-function mainAction(){
-  const s=steps[cur];
-  if(phase==='correct')return next();
-  if(phase==='wrong'){phase='answer';sel=-1;filled=[];typed='';return render()}
-  let ok=false;
-  if(s.t==='mc')ok=sel===s.ans;
-  if(s.t==='type')ok=typed.trim()==='Hello World!';
-  if(s.t==='asm')ok=filled.every((c,i)=>s.choices[c]===s.ans[i]);
-  phase=ok?'correct':'wrong';sfx(ok?'correctSound':'wrongSound');render();
-}
-function next(){cur++;phase='answer';sel=-1;filled=[];typed='';render()}
-
-/* ---------- Reward ---------- */
-const LESSON_STEP=1; // this lesson's step number on Learn.html (1-7)
-
-// True when this lesson was already completed before: it can be replayed, but gives no XP, coins or badge
-const REPLAY=(()=>{try{return JSON.parse(localStorage.getItem('completedLessons')||'[]').includes(LESSON_STEP)}catch(e){return false}})();
-const REWARD_XP=120,REWARD_COINS=30;
-
-/* Saves progress using the same localStorage keys as the other pages:
-   totalXP, coins, streakDays, lastPlayDate (Progress.html)
-   completedLessons, currentLesson (Learn.html)
-   badges, pendingBadge (badge-manager.js) */
-function saveProgress(){
-  try{
-    const today=new Date().toDateString();
-    const last=localStorage.getItem('lastPlayDate')||'';
-    let streak=parseInt(localStorage.getItem('streakDays'))||0;
-    let xp=parseInt(localStorage.getItem('totalXP'))||0;
-    let coins=parseInt(localStorage.getItem('coins'))||80;
-
-    // Streak: first lesson of the day continues it (if yesterday) or starts it at 1
-    if(last!==today){
-      const gap=last?Math.round((new Date(today)-new Date(last))/86400000):null;
-      streak=gap===1?streak+1:1;
+    function workspace(lines,s,tools){
+    const out=phase==='correct'?`<div class="output"><div>Output</div><div>${s.out.join('<br>')}</div></div>`:'';
+    const tl=tools&&phase==='answer'?`<div class="tools"><button onclick="rem()"><img src="/icons/remove.png" alt="">Remove</button><button onclick="reset()"><img src="/icons/reset.png" alt="">Reset</button></div>`:(tools?'<div class="tools"></div>':'');
+    return `<div class="work"><div class="editor"><div class="tab"><img src="/icons/small size java logo.png" alt="">Main.java</div><div class="code">${lines}</div>${tl}</div>${out}</div>`;
+    }
+    function renderDone(){
+    $('stage').innerHTML=`<div class="done"><img src="/icons/done.png" alt=""><h1>COMPLETED!</h1>
+    <p class="done-desc">${REPLAY?'Nice review! Rewards can only be earned once per lesson.':'Great job! You finished Lesson 1. The next lesson is now unlocked.'}</p>
+    <button class="rbtn" id="rewardBtn" onclick="getReward()">Continue</button></div>`;
+    $('bubbles').innerHTML='';
+    $('bgMusic').pause();sfx('completedSound');
     }
 
-    // Lesson completion: Learn.html reads completedLessons + currentLesson
-    const done=JSON.parse(localStorage.getItem('completedLessons')||'[]');
-    const first=!done.includes(LESSON_STEP);   // rewards are given on the first completion only
-    if(first){
-      done.push(LESSON_STEP);
-      localStorage.setItem('completedLessons',JSON.stringify(done));
-      // One badge per lesson, first completion only. Shown as a toast on Learn.html
-      localStorage.setItem('badges',(parseInt(localStorage.getItem('badges'))||0)+1);
-      localStorage.setItem('pendingBadge','1');
+    /* ---------- Interaction ---------- */
+    function upd(){
+    const s=steps[cur],b=$('mainBtn');if(!b)return;
+    if(phase==='correct'){b.textContent='Continue';b.disabled=false;return}
+    if(phase==='wrong'){b.textContent='Try Again';b.disabled=false;return}
+    b.textContent='Check';
+    b.disabled=s.t==='mc'?sel<0:s.t==='type'?!typed.trim():filled.length<s.ans.length;
     }
-    // Unlock the next node (only moves forward)
-    const current=parseInt(localStorage.getItem('currentLesson')||'1',10);
-    if(current<=LESSON_STEP)localStorage.setItem('currentLesson',LESSON_STEP+1);
-
-    localStorage.setItem('streakDays',streak);
-    localStorage.setItem('lastPlayDate',today);
-    if(first){
-      localStorage.setItem('totalXP',xp+REWARD_XP);
-      localStorage.setItem('coins',coins+REWARD_COINS);
+    function pick(i){sel=i;document.querySelectorAll('.opt').forEach((o,k)=>o.classList.toggle('sel',k===i));upd()}
+    function addTok(i){if(filled.length<steps[cur].ans.length){filled.push(i);render()}}
+    function rem(){filled.pop();render()}
+    function reset(){filled=[];render()}
+    function mainAction(){
+    const s=steps[cur];
+    if(phase==='correct')return next();
+    if(phase==='wrong'){phase='answer';sel=-1;filled=[];typed='';return render()}
+    let ok=false;
+    if(s.t==='mc')ok=sel===s.ans;
+    if(s.t==='type')ok=typed.trim()==='Hello World!';
+    if(s.t==='asm')ok=filled.every((c,i)=>s.choices[c]===s.ans[i]);
+    phase=ok?'correct':'wrong';sfx(ok?'correctSound':'wrongSound');render();
     }
-  }catch(e){}
-}
+    function next(){cur++;phase='answer';sel=-1;filled=[];typed='';render()}
 
-let claimed=false;
-function getReward(){
-  if(claimed)return;claimed=true;
-  saveProgress();
-  if(REPLAY){location.href='/pages/Learn.html';return}   // no rewards, so no coin burst
-  const b=$('rewardBtn');b.textContent='Reward Claimed';b.classList.add('claimed');b.disabled=true;
-  const r=b.getBoundingClientRect();
-  coinBurst(r.left+r.width/2,r.top+r.height/2);
-  countDown($('xpNum'),REWARD_XP,0,1200);
-  setTimeout(()=>{location.href='/pages/Learn.html'},2300);
-}
-function countDown(el,from,to,d){const t0=performance.now();(function f(n){const t=Math.min((n-t0)/d,1),e=1-Math.pow(1-t,3);el.textContent=Math.round(from+(to-from)*e);if(t<1)requestAnimationFrame(f)})(t0)}
+    /* ---------- Reward ---------- */
+    const LESSON_STEP=1; // this lesson's step number on Learn.html (1-7)
 
-/* ---------- Gold coin burst ---------- */
-const cv=$('coins'),ctx=cv.getContext('2d');
-let W,H,coins=[],sparks=[],playing=false,t0=null,tl=null;
-const DURATION=2000,rand=(a,b)=>a+Math.random()*(b-a),gold=["#FFF2A1","#FFDC57","#E7A91D","#D28A0B","#FFF0A0"];
-function resize(){const d=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0)}
-function burst(x,y){
-  sparks.push({x,y,r:rand(22,34),life:1});
-  const n=Math.round(Math.min(100,Math.max(55,W/10)));
-  for(let i=0;i<n;i++){const a=rand(-Math.PI,Math.PI),sp=rand(2.5,10.5);
-    coins.push({x:x+rand(-7,7),y:y+rand(-7,7),vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-rand(1,3),r:rand(7,13),depth:rand(.65,1.2),angle:rand(0,6.28),spin:rand(-.2,.2),rot:rand(-.1,.1),color:gold[Math.floor(Math.random()*gold.length)],age:0,wobble:rand(0,6.28)});}
-}
-function drawCoin(c){
-  const p=Math.max(.12,Math.abs(Math.cos(c.angle))),rx=c.r*p*c.depth,ry=c.r*c.depth;
-  ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.rot);
-  ctx.beginPath();ctx.ellipse(1.2,1.8,rx+1.3,ry+1.3,0,0,6.283);ctx.fillStyle="#805008";ctx.fill();
-  const g=ctx.createLinearGradient(-rx,-ry,rx,ry);
-  g.addColorStop(0,"#FFF4A4");g.addColorStop(.22,"#FFD94B");g.addColorStop(.48,c.color);g.addColorStop(.72,"#D28A0B");g.addColorStop(1,"#FFF0A0");
-  ctx.beginPath();ctx.ellipse(0,0,Math.max(.8,rx),ry,0,0,6.283);ctx.fillStyle=g;ctx.fill();
-  ctx.lineWidth=Math.max(.6,c.r*.09);ctx.strokeStyle="rgba(255,245,166,.95)";ctx.stroke();
-  if(p>.38){
-    ctx.beginPath();ctx.ellipse(0,0,Math.max(.4,rx*.72),ry*.72,0,0,6.283);ctx.lineWidth=Math.max(.45,c.r*.055);ctx.strokeStyle="rgba(155,93,5,.7)";ctx.stroke();
-    ctx.save();ctx.scale(p,1);ctx.font=`bold ${Math.max(7,c.r*1.25)}px Arial`;ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.fillStyle="rgba(133,79,0,.7)";ctx.fillText("$",.6,1);ctx.fillStyle="rgba(255,249,190,.98)";ctx.fillText("$",-.3,-.4);ctx.restore();
-  }
-  ctx.beginPath();ctx.ellipse(-rx*.28,-ry*.36,Math.max(.5,rx*.2),Math.max(.45,ry*.11),-.35,0,6.283);ctx.fillStyle="rgba(255,255,226,.78)";ctx.fill();
-  ctx.restore();
-}
-function glow(){
-  ctx.clearRect(0,0,W,H);
-  const f=Math.max(0,1-(performance.now()-t0)/420);
-  if(f>0){const g=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*.42);g.addColorStop(0,`rgba(255,195,45,${f*.14})`);g.addColorStop(1,"rgba(255,195,45,0)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
-}
-function updSparks(dt){
-  for(let i=sparks.length-1;i>=0;i--){const s=sparks[i];s.life-=.045*dt;s.r*=Math.pow(1.09,dt);
-    if(s.life<=0){sparks.splice(i,1);continue}
-    const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
-    g.addColorStop(0,`rgba(255,226,106,${s.life*.65})`);g.addColorStop(.25,`rgba(255,177,20,${s.life*.2})`);g.addColorStop(1,"rgba(255,170,0,0)");
-    ctx.fillStyle=g;ctx.fillRect(s.x-s.r,s.y-s.r,s.r*2,s.r*2);}
-}
-function updCoins(dt){
-  for(let i=coins.length-1;i>=0;i--){const c=coins[i];c.age+=dt;
-    c.vy+=.105*dt;c.vx*=Math.pow(.998,dt);c.x+=c.vx*dt;c.y+=c.vy*dt;
-    c.angle+=c.spin*dt;c.rot+=c.spin*.13*dt;c.wobble+=.04*dt;c.x+=Math.sin(c.wobble)*.18*dt;
-    ctx.globalAlpha=Math.max(0,Math.min(Math.min(1,c.age/5),Math.min(1,(120-c.age)/30)));
-    drawCoin(c);ctx.globalAlpha=1;
-    if(c.age>=120||c.y>H+60||c.x<-70||c.x>W+70)coins.splice(i,1);}
-}
-function loop(ts){
-  if(!playing)return;
-  if(tl===null)tl=ts;
-  if(ts-t0>=DURATION){playing=false;coins=[];sparks=[];ctx.clearRect(0,0,W,H);return}
-  const dt=Math.min(2,Math.max(0,(ts-tl)/16.67));tl=ts;
-  glow();updSparks(dt);updCoins(dt);requestAnimationFrame(loop);
-}
-function coinBurst(x,y){coins=[];sparks=[];t0=performance.now();tl=null;playing=true;burst(x,y);requestAnimationFrame(loop)}
-addEventListener('resize',resize);resize();
+    // True when this lesson was already completed before: it can be replayed, but gives no XP, coins or badge
+    const REPLAY=(()=>{try{return JSON.parse(localStorage.getItem('completedLessons')||'[]').includes(LESSON_STEP)}catch(e){return false}})();
+    const REWARD_XP=120,REWARD_COINS=30;
 
-/* ---------- Init ---------- */
-window.onload=()=>{
-  $('bgT').checked=pref('backgroundMusicEnabled');$('sfxT').checked=pref('soundEffectsEnabled');
-  playBg();render();
-};
-</script>
+    /* Saves progress using the same localStorage keys as the other pages:
+    totalXP, coins, streakDays, lastPlayDate (Progress.html)
+    completedLessons, currentLesson (Learn.html)
+    badges, pendingBadge (badge-manager.js) */
+    function saveProgress(){
+    try{
+        const today=new Date().toDateString();
+        const last=localStorage.getItem('lastPlayDate')||'';
+        let streak=parseInt(localStorage.getItem('streakDays'))||0;
+        let xp=parseInt(localStorage.getItem('totalXP'))||0;
+        let coins=parseInt(localStorage.getItem('coins'))||80;
+
+        // Streak: first lesson of the day continues it (if yesterday) or starts it at 1
+        if(last!==today){
+        const gap=last?Math.round((new Date(today)-new Date(last))/86400000):null;
+        streak=gap===1?streak+1:1;
+        }
+
+        // Lesson completion: Learn.html reads completedLessons + currentLesson
+        const done=JSON.parse(localStorage.getItem('completedLessons')||'[]');
+        const first=!done.includes(LESSON_STEP);   // rewards are given on the first completion only
+        if(first){
+        done.push(LESSON_STEP);
+        localStorage.setItem('completedLessons',JSON.stringify(done));
+        // One badge per lesson, first completion only. Shown as a toast on Learn.html
+        localStorage.setItem('badges',(parseInt(localStorage.getItem('badges'))||0)+1);
+        localStorage.setItem('pendingBadge','1');
+        }
+        // Unlock the next node (only moves forward)
+        const current=parseInt(localStorage.getItem('currentLesson')||'1',10);
+        if(current<=LESSON_STEP)localStorage.setItem('currentLesson',LESSON_STEP+1);
+
+        localStorage.setItem('streakDays',streak);
+        localStorage.setItem('lastPlayDate',today);
+        if(first){
+        localStorage.setItem('totalXP',xp+REWARD_XP);
+        localStorage.setItem('coins',coins+REWARD_COINS);
+        }
+    }catch(e){}
+    }
+
+    let claimed=false;
+    function getReward(){
+    if(claimed)return;claimed=true;
+    saveProgress();
+    if(REPLAY){location.href='/pages/Learn.html';return}   // no rewards, so no coin burst
+    const b=$('rewardBtn');b.textContent='Reward Claimed';b.classList.add('claimed');b.disabled=true;
+    const r=b.getBoundingClientRect();
+    coinBurst(r.left+r.width/2,r.top+r.height/2);
+    countDown($('xpNum'),REWARD_XP,0,1200);
+    setTimeout(()=>{location.href='/pages/Learn.html'},2300);
+    }
+    function countDown(el,from,to,d){const t0=performance.now();(function f(n){const t=Math.min((n-t0)/d,1),e=1-Math.pow(1-t,3);el.textContent=Math.round(from+(to-from)*e);if(t<1)requestAnimationFrame(f)})(t0)}
+
+    /* ---------- Gold coin burst ---------- */
+    const cv=$('coins'),ctx=cv.getContext('2d');
+    let W,H,coins=[],sparks=[],playing=false,t0=null,tl=null;
+    const DURATION=2000,rand=(a,b)=>a+Math.random()*(b-a),gold=["#FFF2A1","#FFDC57","#E7A91D","#D28A0B","#FFF0A0"];
+    function resize(){const d=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;ctx.setTransform(d,0,0,d,0,0)}
+    function burst(x,y){
+    sparks.push({x,y,r:rand(22,34),life:1});
+    const n=Math.round(Math.min(100,Math.max(55,W/10)));
+    for(let i=0;i<n;i++){const a=rand(-Math.PI,Math.PI),sp=rand(2.5,10.5);
+        coins.push({x:x+rand(-7,7),y:y+rand(-7,7),vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-rand(1,3),r:rand(7,13),depth:rand(.65,1.2),angle:rand(0,6.28),spin:rand(-.2,.2),rot:rand(-.1,.1),color:gold[Math.floor(Math.random()*gold.length)],age:0,wobble:rand(0,6.28)});}
+    }
+    function drawCoin(c){
+    const p=Math.max(.12,Math.abs(Math.cos(c.angle))),rx=c.r*p*c.depth,ry=c.r*c.depth;
+    ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.rot);
+    ctx.beginPath();ctx.ellipse(1.2,1.8,rx+1.3,ry+1.3,0,0,6.283);ctx.fillStyle="#805008";ctx.fill();
+    const g=ctx.createLinearGradient(-rx,-ry,rx,ry);
+    g.addColorStop(0,"#FFF4A4");g.addColorStop(.22,"#FFD94B");g.addColorStop(.48,c.color);g.addColorStop(.72,"#D28A0B");g.addColorStop(1,"#FFF0A0");
+    ctx.beginPath();ctx.ellipse(0,0,Math.max(.8,rx),ry,0,0,6.283);ctx.fillStyle=g;ctx.fill();
+    ctx.lineWidth=Math.max(.6,c.r*.09);ctx.strokeStyle="rgba(255,245,166,.95)";ctx.stroke();
+    if(p>.38){
+        ctx.beginPath();ctx.ellipse(0,0,Math.max(.4,rx*.72),ry*.72,0,0,6.283);ctx.lineWidth=Math.max(.45,c.r*.055);ctx.strokeStyle="rgba(155,93,5,.7)";ctx.stroke();
+        ctx.save();ctx.scale(p,1);ctx.font=`bold ${Math.max(7,c.r*1.25)}px Arial`;ctx.textAlign="center";ctx.textBaseline="middle";
+        ctx.fillStyle="rgba(133,79,0,.7)";ctx.fillText("$",.6,1);ctx.fillStyle="rgba(255,249,190,.98)";ctx.fillText("$",-.3,-.4);ctx.restore();
+    }
+    ctx.beginPath();ctx.ellipse(-rx*.28,-ry*.36,Math.max(.5,rx*.2),Math.max(.45,ry*.11),-.35,0,6.283);ctx.fillStyle="rgba(255,255,226,.78)";ctx.fill();
+    ctx.restore();
+    }
+    function glow(){
+    ctx.clearRect(0,0,W,H);
+    const f=Math.max(0,1-(performance.now()-t0)/420);
+    if(f>0){const g=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*.42);g.addColorStop(0,`rgba(255,195,45,${f*.14})`);g.addColorStop(1,"rgba(255,195,45,0)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+    }
+    function updSparks(dt){
+    for(let i=sparks.length-1;i>=0;i--){const s=sparks[i];s.life-=.045*dt;s.r*=Math.pow(1.09,dt);
+        if(s.life<=0){sparks.splice(i,1);continue}
+        const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+        g.addColorStop(0,`rgba(255,226,106,${s.life*.65})`);g.addColorStop(.25,`rgba(255,177,20,${s.life*.2})`);g.addColorStop(1,"rgba(255,170,0,0)");
+        ctx.fillStyle=g;ctx.fillRect(s.x-s.r,s.y-s.r,s.r*2,s.r*2);}
+    }
+    function updCoins(dt){
+    for(let i=coins.length-1;i>=0;i--){const c=coins[i];c.age+=dt;
+        c.vy+=.105*dt;c.vx*=Math.pow(.998,dt);c.x+=c.vx*dt;c.y+=c.vy*dt;
+        c.angle+=c.spin*dt;c.rot+=c.spin*.13*dt;c.wobble+=.04*dt;c.x+=Math.sin(c.wobble)*.18*dt;
+        ctx.globalAlpha=Math.max(0,Math.min(Math.min(1,c.age/5),Math.min(1,(120-c.age)/30)));
+        drawCoin(c);ctx.globalAlpha=1;
+        if(c.age>=120||c.y>H+60||c.x<-70||c.x>W+70)coins.splice(i,1);}
+    }
+    function loop(ts){
+    if(!playing)return;
+    if(tl===null)tl=ts;
+    if(ts-t0>=DURATION){playing=false;coins=[];sparks=[];ctx.clearRect(0,0,W,H);return}
+    const dt=Math.min(2,Math.max(0,(ts-tl)/16.67));tl=ts;
+    glow();updSparks(dt);updCoins(dt);requestAnimationFrame(loop);
+    }
+    function coinBurst(x,y){coins=[];sparks=[];t0=performance.now();tl=null;playing=true;burst(x,y);requestAnimationFrame(loop)}
+    addEventListener('resize',resize);resize();
+
+    /* ---------- Init ---------- */
+    window.onload=()=>{
+    $('bgT').checked=pref('backgroundMusicEnabled');$('sfxT').checked=pref('soundEffectsEnabled');
+    playBg();render();
+    };
+    </script>
 </body>
 </html>
