@@ -15,4 +15,14 @@ public static class GameRules
         ("HINT", 3),
         ("STREAK_REPAIR", 1)
     };
+
+    // Decks
+    public const int DeckNameMaxLength = 40;
+    public const int DeckDescriptionMaxLength = 200;
+    public const int DeckCoverCount = 6;
+    public static readonly int[] DeckItemOptions = { 10, 15, 20 };
+    public static readonly string[] DeckQuestionTypes =
+    {
+        "multiple-choice", "true-false", "matching", "fill-blank"
+    };
 }

@@ -19,5 +19,6 @@ const JM = {
     buy:         (code, packSize) => api('/shop/buy', { method: 'POST', body: JSON.stringify({ code, packSize }) }),
     daily:       ()               => api('/daily'),
     dailyAnswer: (answer)         => api('/daily/answer', { method: 'POST', body: JSON.stringify({ answer }) }),
-    repair:      ()               => api('/streak/repair', { method: 'POST' })
+    repair:      ()               => api('/streak/repair', { method: 'POST' }),
+    createDeck:  (deck)           => api('/decks', { method: 'POST', body: JSON.stringify(deck) })
 };

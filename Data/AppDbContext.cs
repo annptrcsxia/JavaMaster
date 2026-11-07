@@ -1,5 +1,6 @@
 using JavaMaster.Api.Entities;
 using Microsoft.EntityFrameworkCore;
+using JavaMaster.Api.Services;
 
 namespace JavaMaster.Api.Data;
 
@@ -21,6 +22,7 @@ public class AppDbContext : DbContext
     public DbSet<Purchase> Purchases => Set<Purchase>();
     public DbSet<UserDailyChallenge> UserDailyChallenges => Set<UserDailyChallenge>();
     public DbSet<UserBadge> UserBadges => Set<UserBadge>();
+    public DbSet<Deck> Decks => Set<Deck>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -66,6 +68,7 @@ public class AppDbContext : DbContext
             e.HasKey(x => new { x.UserId, x.LearnNodeId });
             e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
         });
+
         b.Entity<ShopItem>(e =>
         {
             e.Property(s => s.Code).HasMaxLength(30);
@@ -76,9 +79,17 @@ public class AppDbContext : DbContext
         {
             e.HasKey(x => new { x.UserId, x.ShopItemId });
         });
+
         b.Entity<UserDailyChallenge>(e =>
         {
             e.HasKey(x => new { x.UserId, x.Date });   // one row per player per day
+        });
+
+        b.Entity<Deck>(e =>
+        {
+            e.Property(d => d.Name).HasMaxLength(GameRules.DeckNameMaxLength);
+            e.Property(d => d.Description).HasMaxLength(GameRules.DeckDescriptionMaxLength);
+            e.HasIndex(d => d.OwnerUserId);
         });
     }
 }

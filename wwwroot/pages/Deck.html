@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Master - Create Deck</title>
+<link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/Deck-style.css">
+</head>
+<body>
+
+<a class="back" href="/pages/Lobby.html"><img src="/icons/goback.png" alt="Back to Lobby"></a>
+
+<main class="deck-card">
+    <button type="button" class="cover" id="coverBtn">
+        <img class="cover-img" id="coverImg" src="" alt="">
+        <span class="cover-plus" aria-hidden="true">+</span>
+        <span class="cover-label" id="coverLabel">Add cover image</span>
+    </button>
+
+    <div class="deck-body">
+        <div class="field-row">
+            <label class="big" for="deckName">Deck name:</label>
+            <input type="text" id="deckName" maxlength="40" autocomplete="off">
+        </div>
+
+        <label class="big" for="deckDesc">Description:<small>(optional)</small></label>
+        <textarea id="deckDesc" maxlength="200"></textarea>
+
+        <p class="tags-label">Tags</p>
+        <div class="tags-row">
+            <div class="items">
+                <span class="small-title" id="itemsTitle">Items:</span>
+                <div class="dd" id="itemsDd">
+                    <button type="button" class="dd-btn" id="itemsBtn" aria-labelledby="itemsTitle itemsText" aria-haspopup="listbox" aria-expanded="false">
+                        <span id="itemsText">Select</span><span aria-hidden="true">⌄</span>
+                    </button>
+                    <ul class="dd-list" id="itemsList" role="listbox" aria-labelledby="itemsTitle" hidden>
+                        <li role="presentation"><button type="button" role="option" aria-selected="false" data-value="10">10</button></li>
+                        <li role="presentation"><button type="button" role="option" aria-selected="false" data-value="15">15</button></li>
+                        <li role="presentation"><button type="button" role="option" aria-selected="false" data-value="20">20</button></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="types">
+                <span class="small-title">Types:</span>
+                <div class="type-chips" id="typeChips"></div>
+            </div>
+        </div>
+
+        <div class="deck-footer">
+            <p class="msg" id="formMsg" role="alert"></p>
+            <button type="button" class="create-btn" id="createBtn">Create</button>
+        </div>
+    </div>
+</main>
+
+<div class="modal" id="galleryModal">
+    <div class="gallery" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
+        <div class="gallery-head">
+            <h2 id="galleryTitle">Gallery</h2>
+            <button type="button" class="gallery-x" id="galleryClose" aria-label="Close gallery">×</button>
+        </div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+        <div class="gallery-foot">
+            <button type="button" class="save-btn" id="gallerySave" disabled>Save</button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+/* ---------- Data ---------- */
+const COVERS = [
+    { n: 1, alt: 'Pixel art picnic scene by a river with a white rabbit at a wooden table' },
+    { n: 2, alt: 'Pixel art seaside view at sunset with a lighthouse and a park bench' },
+    { n: 3, alt: 'Pixel art cozy room with cats and a vintage television playing a cake video' },
+    { n: 4, alt: 'Pixel art storefront of a charming bakery called Evening Cakery' },
+    { n: 5, alt: 'Pixel art snowy winter landscape with pine trees and a mushroom house' },
+    { n: 6, alt: 'Pixel art cozy bedroom overlooking a glowing city at night' }
+];
+const TYPES = [
+    { id: 'multiple-choice', label: 'Multiple Choice' },
+    { id: 'true-false', label: 'True or False' },
+    { id: 'matching', label: 'Matching Type' },
+    { id: 'fill-blank', label: 'Fill in the Blanks' }
+];
+
+/* ---------- State ---------- */
+const $ = id => document.getElementById(id);
+let cover = null;                                  // saved cover (1-6)
+let pending = null;                                // cover picked in the gallery, not saved yet
+let items = null;                                  // 10, 15 or 20
+const types = new Set(TYPES.map(t => t.id));       // all on by default
+
+const coverSrc = n => '/cover/cover ' + n + '.jpg';
+
+/* ---------- Messages ---------- */
+function showMsg(text, ok) {
+    const m = $('formMsg');
+    m.textContent = text;
+    m.classList.toggle('ok', !!ok);
+}
+
+/* ---------- Cover gallery ---------- */
+function buildGallery() {
+    const grid = $('galleryGrid');
+    COVERS.forEach(c => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'thumb';
+        b.dataset.n = c.n;
+        b.setAttribute('aria-pressed', 'false');
+        const img = document.createElement('img');
+        img.src = coverSrc(c.n);
+        img.alt = c.alt;
+        b.appendChild(img);
+        b.addEventListener('click', () => { pending = c.n; markThumbs(); });
+        grid.appendChild(b);
+    });
+}
+
+function markThumbs() {
+    document.querySelectorAll('.thumb').forEach(t =>
+        t.setAttribute('aria-pressed', String(Number(t.dataset.n) === pending)));
+    $('gallerySave').disabled = pending === null;
+}
+
+function openGallery() {
+    pending = cover;
+    markThumbs();
+    $('galleryModal').classList.add('on');
+    $('galleryClose').focus();
+}
+
+function closeGallery() {
+    $('galleryModal').classList.remove('on');
+    $('coverBtn').focus();
+}
+
+function saveCover() {
+    if (pending === null) return;
+    cover = pending;
+    const c = COVERS.find(x => x.n === cover);
+    $('coverImg').src = coverSrc(cover);
+    $('coverImg').alt = c.alt;
+    $('coverBtn').classList.add('has-img');
+    $('coverLabel').textContent = 'Change cover image';
+    showMsg('');
+    closeGallery();
+}
+
+$('coverBtn').addEventListener('click', openGallery);
+$('galleryClose').addEventListener('click', closeGallery);
+$('gallerySave').addEventListener('click', saveCover);
+$('galleryModal').addEventListener('click', e => { if (e.target === $('galleryModal')) closeGallery(); });
+
+/* ---------- Items dropdown ---------- */
+function setList(open) {
+    $('itemsList').hidden = !open;
+    $('itemsBtn').setAttribute('aria-expanded', String(open));
+}
+
+$('itemsBtn').addEventListener('click', () => setList($('itemsList').hidden));
+$('itemsList').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    items = Number(b.dataset.value);
+    $('itemsText').textContent = items;
+    $('itemsList').querySelectorAll('button').forEach(o => o.setAttribute('aria-selected', String(o === b)));
+    setList(false);
+    showMsg('');
+    $('itemsBtn').focus();
+}));
+document.addEventListener('click', e => { if (!$('itemsDd').contains(e.target)) setList(false); });
+
+/* ---------- Type chips ---------- */
+function renderTypes() {
+    const box = $('typeChips');
+    box.innerHTML = '';
+    TYPES.forEach(t => {
+        const on = types.has(t.id);
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'type-chip' + (on ? '' : ' off');
+        b.setAttribute('aria-pressed', String(on));
+        b.append(t.label + ' ');
+        const mark = document.createElement('span');
+        mark.setAttribute('aria-hidden', 'true');
+        mark.textContent = on ? '×' : '+';
+        b.appendChild(mark);
+        b.addEventListener('click', () => {
+            if (on) types.delete(t.id); else types.add(t.id);
+            showMsg('');
+            renderTypes();
+        });
+        box.appendChild(b);
+    });
+}
+
+/* ---------- Create ---------- */
+async function createDeck(details) {
+    const btn = $('createBtn');
+    btn.disabled = true;
+    try {
+        await JM.createDeck(details);
+        showMsg('Deck created. Adding questions comes next.', true);
+    } catch (e) {
+        showMsg(e.message);
+        btn.disabled = false;
+    }
+}
+
+$('createBtn').addEventListener('click', () => {
+    const name = $('deckName').value.trim();
+    if (!name) { showMsg('Enter a deck name.'); $('deckName').focus(); return; }
+    if (cover === null) { showMsg('Choose a cover image.'); return; }
+    if (items === null) { showMsg('Select the number of items.'); return; }
+    if (types.size === 0) { showMsg('Keep at least one question type.'); return; }
+    createDeck({
+        name: name,
+        description: $('deckDesc').value.trim(),
+        cover: cover,
+        items: items,
+        types: [...types]
+    });
+});
+
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if ($('galleryModal').classList.contains('on')) closeGallery();
+    else setList(false);
+});
+
+/* ---------- Init ---------- */
+buildGallery();
+renderTypes();
+</script>
+</body>
+</html>

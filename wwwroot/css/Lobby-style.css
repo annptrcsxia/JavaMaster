@@ -163,6 +163,10 @@ body {
 }
 
 .enter-code-btn {
+    display: flex;
+    align-items: center;       
+    justify-content: center;   
+    text-decoration: none;
     position: absolute;
     left: calc(27 * var(--u));
     bottom: calc(33 * var(--u));
@@ -229,6 +233,10 @@ body {
     color: var(--lobby-text);
     cursor: pointer;
     transition: filter 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 
 .create-deck-btn:hover {
