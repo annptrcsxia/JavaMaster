@@ -288,6 +288,7 @@
                 document.getElementById('hpCount').textContent = me.inventory.HEAL_POTION ?? 0;
                 document.getElementById('hintCount').textContent = me.inventory.HINT ?? 0;
                 document.getElementById('streakCount').textContent = me.inventory.STREAK_REPAIR ?? 0;
+                NotificationManager.notifyStreakRepair(me);
             } catch (e) {
                 console.error('Could not load player data', e);
             }

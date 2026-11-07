@@ -100,6 +100,26 @@ const NotificationManager = {
     },
 
     /**
+     * Streak Repair reminder. Pass it the answer of GET /api/me.
+     * Adds ONE bell notification per day, and only when a repair is possible
+     * (exactly one missed day). The message will show on Notifications.html.
+     */
+    notifyStreakRepair(me) {
+        if ((me.missedDays ?? 0) !== 1) return;           // only after exactly one missed day
+
+        const today = new Date().toDateString();
+        if (localStorage.getItem('repairNotified') === today) return;   // once a day
+        localStorage.setItem('repairNotified', today);
+
+        const owned = me.inventory?.STREAK_REPAIR ?? 0;
+        const message = owned > 0
+            ? `Your ${me.lostStreak}-day streak was broken. Use a Streak Repair on the Progress page before you play today.`
+            : `Your ${me.lostStreak}-day streak was broken. Buy a Streak Repair in the Shop, then use it on the Progress page before you play today.`;
+        this.add(message, '☕', 'streak');
+    },
+
+
+    /**
      * Initialize with default notifications (only if empty)
      */
     initializeDefaults() {

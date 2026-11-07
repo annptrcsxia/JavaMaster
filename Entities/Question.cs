@@ -3,6 +3,11 @@ namespace JavaMaster.Api.Entities;
 public class Question
 {
     public int Id { get; set; }
+
+    // A stable key for content that comes from the code, so the seeder can tell
+    // "never put in the database" from "already there". It is set once and then
+    // the row belongs to the database, not to the code.
+    public string? Code { get; set; }
     public int TopicId { get; set; }
     public Topic? Topic { get; set; }
 

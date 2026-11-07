@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<UserInventory> UserInventory => Set<UserInventory>();
     public DbSet<Purchase> Purchases => Set<Purchase>();
     public DbSet<UserDailyChallenge> UserDailyChallenges => Set<UserDailyChallenge>();
+    public DbSet<UserBadge> UserBadges => Set<UserBadge>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -30,12 +31,17 @@ public class AppDbContext : DbContext
             e.Property(u => u.Role).HasConversion<string>().HasMaxLength(20);
             e.Property(u => u.Email).HasMaxLength(200);
             e.Property(u => u.MicrosoftObjectId).HasMaxLength(100);
+            e.Property(u => u.School).HasMaxLength(100);
+            e.Property(u => u.Grade).HasMaxLength(50);
+            e.Property(u => u.AvatarPath).HasMaxLength(100);
         });
 
         b.Entity<Question>(e =>
         {
             e.Property(q => q.Type).HasConversion<string>().HasMaxLength(30);
             e.Property(q => q.Purpose).HasConversion<string>().HasMaxLength(20);
+            // Content that comes from the code carries a key, so it can only be seeded once.
+            e.HasIndex(q => q.Code).IsUnique().HasFilter("[Code] IS NOT NULL");
         });
 
         b.Entity<LearnNode>(e =>
@@ -47,6 +53,12 @@ public class AppDbContext : DbContext
         b.Entity<NodeQuestion>(e =>
         {
             e.HasKey(x => new { x.LearnNodeId, x.QuestionId });
+        });
+
+        b.Entity<UserBadge>(e =>
+        {
+            // One badge per lesson, so finishing a lesson again does not earn another.
+            e.HasIndex(x => new { x.UserId, x.LearnNodeId }).IsUnique();
         });
 
         b.Entity<UserNodeProgress>(e =>

@@ -48,39 +48,61 @@ public static class DbSeeder
         foreach (var u in usersWithoutKit)
             await StartingKit.GiveAsync(db, u);
 
-        // 4. Daily challenge pool (runs once)
-        if (!await db.Questions.AnyAsync(q => q.Purpose == QuestionPurpose.Daily))
+        // 4. Daily challenge pool
+        //    Insert only. The code puts these in the database once and then leaves
+        //    them alone, so a professor can edit or retire a daily question without
+        //    the next start putting the old wording back.
+        var dailyDefs = new[]
         {
-            var dailyTopic = await db.Topics.FirstOrDefaultAsync(t => t.Title == "Daily Challenge")
-                             ?? new Topic { Title = "Daily Challenge" };
+            (Code: "daily.q1",
+             Prompt: "What data type is used to store a single 16-bit Unicode character?",
+             Options: new[] { "String", "char", "int", "byte" }, Correct: 1,
+             Explanation: "The char data type stores a single 16-bit Unicode character. Unlike String, which stores many characters, char holds exactly one."),
+            (Code: "daily.q2",
+             Prompt: "What is the default value of a boolean variable in a class?",
+             Options: new[] { "true", "false", "null", "0" }, Correct: 1,
+             Explanation: "The default value of a boolean declared in a class is false. It is assigned automatically if you give no initial value."),
+            (Code: "daily.q3",
+             Prompt: "What package must be imported to use the Scanner class?",
+             Options: new[] { "java.io.*", "java.input.*", "java.scanner.*", "java.util.*" }, Correct: 3,
+             Explanation: "Scanner is part of the java.util package. Import java.util.* or java.util.Scanner to use it."),
+            (Code: "daily.q4",
+             Prompt: "Which control statement is used to execute one block from many choices?",
+             Options: new[] { "if", "switch", "loop", "select" }, Correct: 1,
+             Explanation: "The switch statement runs one block of code out of many choices, based on the value of a variable."),
+            (Code: "daily.q5",
+             Prompt: "How do you create an array of integers with 5 elements?",
+             Options: new[] { "int arr[] = new int[5];", "int arr = new int(5);", "int[5] arr;", "array int[5];" }, Correct: 0,
+             Explanation: "In Java you create an array with int arr[] = new int[5]; or int[] arr = new int[5];. This allocates memory for 5 integers.")
+        };
 
-            Question Daily(string prompt, string[] options, int correct, string explanation) => new Question
-            {
-                Topic = dailyTopic, Type = QuestionType.MultipleChoice, Purpose = QuestionPurpose.Daily,
-                Prompt = prompt,
-                Payload = Json(new { options = options.Select((t, i) => new { id = ((char)('a' + i)).ToString(), text = t }).ToArray() }),
-                AnswerKey = Json(new { correctOptionId = ((char)('a' + correct)).ToString(), correctMessage = "Great job!" }),
-                Explanation = explanation
-            };
-
-            db.Questions.AddRange(
-                Daily("What data type is used to store a single 16-bit Unicode character?",
-                    new[] { "String", "char", "int", "byte" }, 1,
-                    "The char data type stores a single 16-bit Unicode character. Unlike String, which stores many characters, char holds exactly one."),
-                Daily("What is the default value of a boolean variable in a class?",
-                    new[] { "true", "false", "null", "0" }, 1,
-                    "The default value of a boolean declared in a class is false. It is assigned automatically if you give no initial value."),
-                Daily("What package must be imported to use the Scanner class?",
-                    new[] { "java.io.*", "java.input.*", "java.scanner.*", "java.util.*" }, 3,
-                    "Scanner is part of the java.util package. Import java.util.* or java.util.Scanner to use it."),
-                Daily("Which control statement is used to execute one block from many choices?",
-                    new[] { "if", "switch", "loop", "select" }, 1,
-                    "The switch statement runs one block of code out of many choices, based on the value of a variable."),
-                Daily("How do you create an array of integers with 5 elements?",
-                    new[] { "int arr[] = new int[5];", "int arr = new int(5);", "int[5] arr;", "array int[5];" }, 0,
-                    "In Java you create an array with int arr[] = new int[5]; or int[] arr = new int[5];. This allocates memory for 5 integers."));
-            await db.SaveChangesAsync();
+        // Questions seeded before codes existed are adopted rather than duplicated.
+        foreach (var def in dailyDefs)
+        {
+            var legacy = await db.Questions.FirstOrDefaultAsync(q =>
+                q.Purpose == QuestionPurpose.Daily && q.Code == null && q.Prompt == def.Prompt);
+            if (legacy != null) legacy.Code = def.Code;
         }
+        await db.SaveChangesAsync();
+
+        var dailyTopic = await db.Topics.FirstOrDefaultAsync(t => t.Title == "Daily Challenge")
+                         ?? new Topic { Title = "Daily Challenge" };
+
+        foreach (var def in dailyDefs)
+        {
+            if (await db.Questions.AnyAsync(q => q.Code == def.Code)) continue;
+
+            db.Questions.Add(new Question
+            {
+                Code = def.Code,
+                Topic = dailyTopic, Type = QuestionType.MultipleChoice, Purpose = QuestionPurpose.Daily,
+                Prompt = def.Prompt,
+                Payload = Json(new { options = def.Options.Select((t, i) => new { id = ((char)('a' + i)).ToString(), text = t }).ToArray() }),
+                AnswerKey = Json(new { correctOptionId = ((char)('a' + def.Correct)).ToString(), correctMessage = "Great job!" }),
+                Explanation = def.Explanation
+            });
+        }
+        await db.SaveChangesAsync();
 
         // 5. Learn path (runs once)
         if (await db.LearnSections.AnyAsync()) return;
@@ -99,69 +121,12 @@ public static class DbSeeder
         // NOTE: Hint is null on purpose. Learn mode has no power-ups.
         // Explanation = message shown when the answer is WRONG.
         // AnswerKey (server only) holds the answer, the praise message, and the output panel text.
-
-        // Q1: multiple choice
-        var q1 = new Question
-        {
-            Topic = tHello, Type = QuestionType.MultipleChoice, Purpose = QuestionPurpose.Lesson,
-            Prompt = "In Java, we use certain statements to display output. For example, System.out.println(); is used to print text to the console.\n\nWhich Java statement prints text to the console?",
-            Payload = Json(new { options = new[] {
-                new { id = "a", text = "System.out.println(\"Hello\");" },
-                new { id = "b", text = "String message = \"Hello\";" } } }),
-            AnswerKey = Json(new { correctOptionId = "a", correctMessage = "Great job!" }),
-            Explanation = "That only creates a variable. Use System.out.println() to print."
-        };
-
-        // Q2: type inside the code box
-        var q2 = new Question
-        {
-            Topic = tHello, Type = QuestionType.FillBlank, Purpose = QuestionPurpose.Lesson,
-            Prompt = "Code \"Hello World!\" between the opening and closing quotation marks.",
-            Payload = Json(new { template = new[] { "System", ".", "out", ".", "println", "(", "\"{{blank}}\"", ")", ";" } }),
-            AnswerKey = Json(new { accepted = new[] { "Hello World!" }, caseSensitive = true,
-                                   output = "Hello World!", correctMessage = "Excellent!" }),
-            Explanation = "Type exactly \"Hello World!\"."
-        };
-
-        // Q3: arrange tokens (the dots between tokens are drawn by the frontend)
-        var q3 = new Question
-        {
-            Topic = tHello, Type = QuestionType.ArrangeTokens, Purpose = QuestionPurpose.Lesson,
-            Prompt = "Let's remember how to code an output. Code an output that says \"Hello World!\".",
-            Payload = Json(new { tokens = new[] { "System", "out", "println", "(", ")", "\"Hello World!\"", ";" } }),
-            AnswerKey = Json(new { order = new[] { "System", "out", "println", "(", "\"Hello World!\"", ")", ";" },
-                                   output = "Hello World!", correctMessage = "Excellent!" }),
-            Explanation = "The order is off. It should be System.out.println(\"Hello World!\");"
-        };
-
-        // Q4: multiple choice
-        var q4 = new Question
-        {
-            Topic = tHello, Type = QuestionType.MultipleChoice, Purpose = QuestionPurpose.Lesson,
-            Prompt = "In Java, System.out.println(); prints text and moves to a new line, while System.out.print(); prints text but stays on the same line.\n\nWhich statement prints text without moving to a new line?",
-            Payload = Json(new { options = new[] {
-                new { id = "a", text = "System.out.println(\"Welcome\");" },
-                new { id = "b", text = "System.out.print(\"Welcome\");" } } }),
-            AnswerKey = Json(new { correctOptionId = "b", correctMessage = "Well done!" }),
-            Explanation = "That moves to a new line. Use System.out.print() to stay on the same line."
-        };
-
-        // Q5: fill the slots from a bank (new type: FillSlots)
-        var q5 = new Question
-        {
-            Topic = tHello, Type = QuestionType.FillSlots, Purpose = QuestionPurpose.Lesson,
-            Prompt = "Code an output that displays \"The result is: 42\".\nRemember print stays on the same line, println moves to a new line.",
-            Payload = Json(new {
-                lines = new[] {
-                    new[] { "System", ".", "out", ".", "{{1}}", "(", "\"The result is: \"", ")", ";" },
-                    new[] { "System", ".", "out", ".", "{{2}}", "(", "42", ")", ";" } },
-                bank = new[] { "println", "print" } }),
-            AnswerKey = Json(new { slots = new Dictionary<string, string> { ["1"] = "print", ["2"] = "println" },
-                                   output = "The result is: 42", correctMessage = "Amazing!" }),
-            Explanation = "Use print for the first line so 42 stays on the same line."
-        };
-
-        var helloQuestions = new[] { q1, q2, q3, q4, q5 };
+        //
+        // The questions themselves are NOT created here. They live in
+        // Data/LessonContent.cs, which is the single source of truth for the
+        // lesson content, and it seeds them a moment later. Keeping a second
+        // copy of them here meant a fresh install took the wording and the
+        // answer keys from this file and never saw the ones in LessonContent.
 
         var intro = new LearnSection { Title = "Introduction to Java", SortOrder = 1, IsPublished = true };
 
@@ -172,9 +137,7 @@ public static class DbSeeder
         // Hello World: rewards match your prototype (120 XP, +30 coins)
         var hello = Node("Hello World", "Your journey starts here.", NodeType.Lesson, 1, tHello, 120, 30);
         hello.IntroText = "Welcome to the first chapter of the Java course! 🚀\n\nJava is a popular programming language designed by James Gosling to be \"written once, run anywhere\" with a Java Virtual Machine (JVM).";
-        hello.OutroText = "Awesome! We've learned the basics of Java\n\nBefore we add actions to them, move on to the next lesson to learn about the Java syntax present on every program out there.";
-        for (int i = 0; i < helloQuestions.Length; i++)
-            hello.NodeQuestions.Add(new NodeQuestion { Question = helloQuestions[i], SortOrder = i + 1 });
+        hello.OutroText = "Now that you can print a line of text, move on to the next lesson to start giving your code a place to keep its values.";
 
         intro.Nodes.Add(hello);
         // The other nodes have no questions yet. Their rewards are placeholders.

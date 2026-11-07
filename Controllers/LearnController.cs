@@ -26,8 +26,16 @@ public class LearnController : ControllerBase
         var i = all.FindIndex(n => n.Id == nodeId);
         if (i < 0) return (null, false, null);
 
-        var unlocked = i == 0 || await _db.UserNodeProgress.AnyAsync(p =>
-            p.UserId == userId && p.LearnNodeId == all[i - 1].Id && p.Status == ProgressStatus.Completed);
+        // Walk back to the nearest previous node that actually has questions.
+        // Placeholder nodes with no questions do not lock the ones behind them.
+        var previous = -1;
+        for (var p = i - 1; p >= 0; p--)
+        {
+            if (await _db.NodeQuestions.AnyAsync(nq => nq.LearnNodeId == all[p].Id && nq.Question!.IsActive)) { previous = p; break; }
+        }
+
+        var unlocked = i == 0 || previous < 0 || await _db.UserNodeProgress.AnyAsync(p =>
+            p.UserId == userId && p.LearnNodeId == all[previous].Id && p.Status == ProgressStatus.Completed);
         return (all[i], unlocked, i + 1 < all.Count ? all[i + 1] : null);
     }
 
@@ -40,6 +48,7 @@ public class LearnController : ControllerBase
             .Select(p => p.LearnNodeId).ToListAsync();
 
         var sections = await _db.LearnSections
+            .Where(s => s.IsPublished)
             .OrderBy(s => s.SortOrder)
             .Select(s => new
             {
@@ -49,6 +58,13 @@ public class LearnController : ControllerBase
                     .ToList()
             })
             .ToListAsync();
+
+        // Nodes that have no questions yet are placeholders. They must not block
+        // the node after them, otherwise an unfinished placeholder would lock the
+        // rest of the path for good.
+        var withQuestions = await _db.NodeQuestions
+            .Where(nq => nq.Question!.IsActive)
+            .Select(nq => nq.LearnNodeId).Distinct().ToListAsync();
 
         var prevDone = true;   // the very first node starts unlocked
         var output = new List<object>();
@@ -60,7 +76,7 @@ public class LearnController : ControllerBase
                 var isDone = done.Contains(n.Id);
                 var status = isDone ? "Completed" : prevDone ? "Unlocked" : "Locked";
                 nodes.Add(new { n.Id, n.Title, n.Subtitle, n.NodeType, status, n.XpReward, n.CoinReward });
-                prevDone = isDone;
+                if (withQuestions.Contains(n.Id)) prevDone = isDone;
             }
             output.Add(new { s.Id, s.Title, s.IsPublished, nodes });
         }
@@ -77,7 +93,7 @@ public class LearnController : ControllerBase
 
         // AnswerKey, Explanation and Hint are never selected here.
         var questions = await _db.NodeQuestions
-            .Where(nq => nq.LearnNodeId == nodeId)
+            .Where(nq => nq.LearnNodeId == nodeId && nq.Question!.IsActive)
             .OrderBy(nq => nq.SortOrder)
             .Select(nq => new
             {
@@ -144,7 +160,7 @@ public class LearnController : ControllerBase
         if (!unlocked) return StatusCode(403, new { error = "This node is locked." });
 
         var questionIds = await _db.NodeQuestions
-            .Where(nq => nq.LearnNodeId == nodeId).Select(nq => nq.QuestionId).ToListAsync();
+            .Where(nq => nq.LearnNodeId == nodeId && nq.Question!.IsActive).Select(nq => nq.QuestionId).ToListAsync();
         if (questionIds.Count == 0)
             return BadRequest(new { error = "This node has no questions yet." });
 
@@ -162,7 +178,9 @@ public class LearnController : ControllerBase
         var xpBefore = user.TotalXp;
         var rankBefore = RankCalculator.For(xpBefore, ranks);
 
-        // Repeat plays earn a quarter of the reward, so nobody can farm one lesson.
+        // Rewards are only ever paid once per node. A repeat play still has to answer
+        // every question correctly again, but it earns no XP and no coins, so a learner
+        // cannot farm the same lesson for unlimited money.
         var firstTime = progress == null || progress.Status != ProgressStatus.Completed;
         var xp = firstTime ? node.XpReward : 0;
         var coins = firstTime ? node.CoinReward : 0;
@@ -173,6 +191,15 @@ public class LearnController : ControllerBase
 
         var streakBonus = StreakService.RecordActivity(user);
 
+        // A badge is earned the first time a lesson is finished, and only then.
+        var alreadyHadBadge = await _db.UserBadges
+            .AnyAsync(x => x.UserId == user.Id && x.LearnNodeId == nodeId);
+        var badgeEarned = false;
+        if (firstTime && !alreadyHadBadge)
+        {
+            _db.UserBadges.Add(new UserBadge { UserId = user.Id, LearnNodeId = nodeId });
+            badgeEarned = true;
+        }
         if (progress == null)
         {
             progress = new UserNodeProgress { UserId = user.Id, LearnNodeId = nodeId };
@@ -191,6 +218,8 @@ public class LearnController : ControllerBase
             rankIcon = "/rank titles/" + rankAfter.IconFile,
             rankMinXp = rankAfter.RankMinXp, rankMaxXp = rankAfter.RankMaxXp,
             coinsEarned = coins, streakBonus, coinsTotal = user.Coins,
+            badgeEarned, firstTime,
+            title = node.Title,
             streak = user.CurrentStreak,
             nextNodeId = next?.Id,
             outroText = node.OutroText

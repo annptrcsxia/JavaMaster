@@ -9,6 +9,11 @@ public class User
     public string FullName { get; set; } = "";
     public UserRole Role { get; set; } = UserRole.Student;
 
+    // The profile the learner edits on the profile page.
+    public string? School { get; set; }
+    public string? Grade { get; set; }
+    public string? AvatarPath { get; set; }
+
     public int TotalXp { get; set; }
     public DateTime XpUpdatedAt { get; set; } = DateTime.UtcNow;
     public int Coins { get; set; }

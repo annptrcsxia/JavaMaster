@@ -184,28 +184,16 @@
     opacity: 0.55;
 }
 
-/* Missed exactly one day and owns a repair: bright, glowing, shows the old streak in the label.
-   With a label the pill is wider, so it moves next to the "Start your streak with:" line. */
+/* Missed exactly one day: bright and glowing. A tap opens the confirm dialog.
+   With 0 repairs owned, the dialog offers "Go to Shop". */
 .repair-pill[data-state="ready"],
 .repair-pill[data-state="shop"] {
-    top: calc(332 * var(--u));
-    padding: 0 calc(22 * var(--u)) 0 calc(16 * var(--u));
-}
-
-.repair-pill[data-state="ready"] {
     border-color: var(--bar-fill);
     background: var(--bar-fill);
     color: #2a1c10;
     font-weight: 700;
     box-shadow: 0 0 0 calc(4 * var(--u)) rgba(232, 164, 60, 0.25),
                 0 0 calc(24 * var(--u)) rgba(232, 164, 60, 0.7);
-}
-
-/* Missed exactly one day, owns 0: outlined, opens the Shop */
-.repair-pill[data-state="shop"] {
-    border: 2px solid var(--bar-fill);
-    background: var(--card-bg);
-    color: var(--text-tan);
 }
 
 .is-hidden {

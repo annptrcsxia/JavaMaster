@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Master - Data Types</title>
+<link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/lesson.css">
+</head>
+<body>
+<audio id="bgMusic" loop><source src="/sounds/BG_music.mp3" type="audio/mpeg"></audio>
+<audio id="correctSound"><source src="/sounds/correct_sound-efx.wav" type="audio/wav"></audio>
+<audio id="wrongSound"><source src="/sounds/wrong_sound-efx.wav" type="audio/wav"></audio>
+<audio id="completedSound"><source src="/sounds/completed_sound-efx.wav" type="audio/wav"></audio>
+
+<div class="top-bar" id="topBar">
+  <button onclick="openModal('exitModal')"><img src="/icons/goback.png" alt="Go Back"></button>
+  <button onclick="openModal('settingsModal')"><img src="/icons/settings_icon.png" alt="Settings"></button>
+</div>
+<div class="progress" id="progress"></div>
+<div id="stage"></div>
+<img class="model" id="model" alt="James Gosling">
+<div class="bubbles" id="bubbles"></div>
+
+<div class="modal" id="settingsModal"><div class="card">
+  <button class="x" onclick="closeModal('settingsModal')">×</button>
+  <h2>Settings</h2>
+  <div class="row">Background Music<label class="tg"><input type="checkbox" id="bgT" checked onchange="setPref('backgroundMusicEnabled',this.checked)"><span></span></label></div>
+  <div class="row">Sound effects<label class="tg"><input type="checkbox" id="sfxT" checked onchange="setPref('soundEffectsEnabled',this.checked)"><span></span></label></div>
+</div></div>
+<div class="modal" id="exitModal"><div class="card">
+  <h2>Exit Lesson?</h2><p>Are you sure you want to exit?<br>Your progress will not be saved.</p>
+  <div class="bs"><button onclick="closeModal('exitModal')">Cancel</button><button class="p" onclick="location.href='/pages/Learn.html'">Yes, Exit</button></div>
+</div></div>
+<canvas id="coins" aria-hidden="true"></canvas>
+
+<script>window.LESSON_NODE_ID = 3;</script>
+<script src="/js/lesson.js"></script>
+</body>
+</html>

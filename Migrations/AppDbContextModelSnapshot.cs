@@ -156,6 +156,9 @@ namespace JavaMaster.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CodeSnippet")
                         .HasColumnType("nvarchar(max)");
 
@@ -196,6 +199,10 @@ namespace JavaMaster.Api.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasFilter("[Code] IS NOT NULL");
 
                     b.HasIndex("TopicId");
 
@@ -327,6 +334,10 @@ namespace JavaMaster.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AvatarPath")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("Coins")
                         .HasColumnType("int");
 
@@ -344,6 +355,10 @@ namespace JavaMaster.Api.Migrations
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Grade")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -370,6 +385,10 @@ namespace JavaMaster.Api.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("School")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<bool>("SfxOn")
                         .HasColumnType("bit");
 
@@ -391,6 +410,33 @@ namespace JavaMaster.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.UserBadge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EarnedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LearnNodeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearnNodeId");
+
+                    b.HasIndex("UserId", "LearnNodeId")
+                        .IsUnique();
+
+                    b.ToTable("UserBadges");
                 });
 
             modelBuilder.Entity("JavaMaster.Api.Entities.UserDailyChallenge", b =>
@@ -501,6 +547,25 @@ namespace JavaMaster.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.UserBadge", b =>
+                {
+                    b.HasOne("JavaMaster.Api.Entities.LearnNode", "LearnNode")
+                        .WithMany()
+                        .HasForeignKey("LearnNodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JavaMaster.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearnNode");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("JavaMaster.Api.Entities.UserInventory", b =>

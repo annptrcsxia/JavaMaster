@@ -1,6 +1,88 @@
 @JavaMaster.Api_HostAddress = http://localhost:5176
 
-GET {{JavaMaster.Api_HostAddress}}/weatherforecast/
+### The signed-in player
+GET {{JavaMaster.Api_HostAddress}}/api/me
+Accept: application/json
+
+### Save the profile. A field that is left out stays as it is, and a field sent
+### as an empty string is cleared. The avatar must be one of the nine the app
+### ships with, e.g. "/avatars/Avatar 5.png".
+PATCH {{JavaMaster.Api_HostAddress}}/api/me/profile
+Content-Type: application/json
+
+{
+  "fullName": "Juan Dela Cruz",
+  "school": "STI - Dasmarinas Campus",
+  "grade": "2nd year, Information Technology",
+  "avatar": "/avatars/Avatar 5.png"
+}
+
+### The learn path: every node and its state (Completed / Unlocked / Locked)
+GET {{JavaMaster.Api_HostAddress}}/api/learn/path
+Accept: application/json
+
+### One node and its questions (no answers are ever sent to the browser)
+GET {{JavaMaster.Api_HostAddress}}/api/learn/nodes/1
+Accept: application/json
+
+### Grade an answer. nodeId and the answer shape depend on the question type:
+###   MultipleChoice  -> { "optionId": "a" }
+###   FillBlank       -> { "text": "Hello World!" }
+###   ArrangeTokens   -> { "order": ["System", "out", "println"] }
+###   FillSlots       -> { "slots": { "1": "print", "2": "println" } }
+###   FindBug         -> { "lineNumber": 2 }   the line the learner thinks has the bug
+POST {{JavaMaster.Api_HostAddress}}/api/learn/questions/1/check
+Content-Type: application/json
+
+{
+  "nodeId": 1,
+  "answer": {
+    "optionId": "a"
+  }
+}
+
+### Finish a node. The server pays the rewards, unlocks the next lesson and
+### records the streak. Replaying a node pays nothing.
+POST {{JavaMaster.Api_HostAddress}}/api/learn/nodes/1/complete
+Content-Type: application/json
+
+{}
+
+### Today's daily challenge
+GET {{JavaMaster.Api_HostAddress}}/api/daily
+Accept: application/json
+
+### Answer the daily challenge
+POST {{JavaMaster.Api_HostAddress}}/api/daily/answer
+Content-Type: application/json
+
+{
+  "answer": {
+    "optionId": "a"
+  }
+}
+
+### The shop, and what the player already owns
+GET {{JavaMaster.Api_HostAddress}}/api/shop
+Accept: application/json
+
+### Buy an item. code is HINT, HEAL_POTION or STREAK_REPAIR.
+POST {{JavaMaster.Api_HostAddress}}/api/shop/buy
+Content-Type: application/json
+
+{
+  "code": "HINT",
+  "packSize": 5
+}
+
+### Use a streak repair
+POST {{JavaMaster.Api_HostAddress}}/api/streak/repair
+Content-Type: application/json
+
+{}
+
+### Topics
+GET {{JavaMaster.Api_HostAddress}}/api/topics
 Accept: application/json
 
 ###
