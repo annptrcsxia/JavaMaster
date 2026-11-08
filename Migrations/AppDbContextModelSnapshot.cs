@@ -22,6 +22,51 @@ namespace JavaMaster.Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("JavaMaster.Api.Entities.Deck", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoverNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ItemCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OwnerUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionTypes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.ToTable("Decks");
+                });
+
             modelBuilder.Entity("JavaMaster.Api.Entities.LearnNode", b =>
                 {
                     b.Property<int>("Id")
@@ -500,6 +545,15 @@ namespace JavaMaster.Api.Migrations
                     b.HasIndex("LearnNodeId");
 
                     b.ToTable("UserNodeProgress");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.Deck", b =>
+                {
+                    b.HasOne("JavaMaster.Api.Entities.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("JavaMaster.Api.Entities.LearnNode", b =>
