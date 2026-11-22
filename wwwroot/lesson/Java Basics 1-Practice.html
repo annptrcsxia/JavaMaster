@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java Basics 1 - Practice</title>
+<link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   Java Basics 1 - Practice
+   ===================================================================== */
+
+/* ---------- 1. Variables ---------- */
+:root {
+  --bg: #3e3a36;
+  --ink: #f1e6da;
+  --orange: #ff9d0a;
+  --bar: #8f7f8f;
+  --ed: #1b2036;
+  --tab: #2a3350;
+  --out: #8f93a3;
+  --bub: #b9aea5;
+  --btn: #c4622d;
+  --edge: #9a4a1c;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ---------- 2. Base ---------- */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* The whole screen is designed at 1240 x 700 and scaled to fit the window. */
+#stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1240px;
+  height: 700px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+
+/* ---------- 3. Back and settings buttons ---------- */
+.icon-btn {
+  position: absolute;
+  z-index: 5;
+  top: 22px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+}
+
+/* ---------- 4. Progress bar and task text ---------- */
+#progress {
+  position: absolute;
+  left: 342px;
+  top: 122px;
+  display: flex;
+  gap: 14px;
+}
+
+#progress i {
+  width: 100px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--bar);
+}
+
+#progress i.on {
+  background: var(--orange);
+}
+
+#task {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 166px;
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  user-select: none;
+}
+
+/* ---------- 5. Editor and output panels ---------- */
+.panel {
+  position: absolute;
+  top: 224px;
+  height: 228px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid #12172b;
+}
+
+#editor {
+  left: 237px;
+  width: 500px;
+  background: var(--ed);
+}
+
+.tab {
+  height: 26px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  background: var(--tab);
+  font-size: 10px;
+  color: #e6e9f2;
+  gap: 6px;
+}
+
+.tab img {
+  width: 12px;
+  height: 12px;
+}
+
+.body {
+  position: absolute;
+  top: 26px;
+  bottom: 34px;
+  left: 0;
+  right: 0;
+}
+
+/* ---------- 6. Code and line numbers ---------- */
+.mono {
+  font: 13px/21px var(--mono);
+  tab-size: 4;
+}
+
+#gut {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 50px;
+  padding: 17px 12px 0 0;
+  text-align: right;
+  color: #8d96b0;
+  overflow: hidden;
+  white-space: pre;
+}
+
+#wrap {
+  position: absolute;
+  left: 50px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow: auto;
+}
+
+.inner {
+  position: relative;
+  min-width: 100%;
+  width: max-content;
+  min-height: 100%;
+}
+
+#hl,
+#code {
+  margin: 0;
+  padding: 17px 16px 17px 0;
+  white-space: pre;
+}
+
+#hl {
+  color: #e6e9f2;
+  pointer-events: none;
+}
+
+#code {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  color: transparent;
+  caret-color: #fff;
+}
+
+#code::selection {
+  background: #3a4a8a;
+}
+
+/* Syntax colours */
+.k { color: #c792ea; }
+.t { color: #ffcb6b; }
+.f { color: #9fd56b; }
+.p { color: #82aaff; }
+.s { color: #c3e88d; }
+.n { color: #f78c6c; }
+.c { color: #8d96b0; }
+
+/* Wavy red underline on the line with the error */
+.sq {
+  text-decoration: underline wavy #ff6b5e;
+  text-decoration-thickness: 1.5px;
+}
+
+/* ---------- 7. Editor footer (Hint and Reset) ---------- */
+.foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34px;
+  border-top: 1px solid var(--tab);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  padding-right: 12px;
+}
+
+.foot button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: #cfd6ee;
+  font-size: 11px;
+}
+
+.foot button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.foot img {
+  height: 15px;
+}
+
+/* ---------- 8. Output panel ---------- */
+#output {
+  left: 753px;
+  width: 284px;
+  background: var(--out);
+}
+
+#output .tab {
+  height: 24px;
+}
+
+#out {
+  padding: 12px 14px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #23242e;
+  white-space: pre-wrap;
+  overflow: auto;
+  height: calc(100% - 24px);
+}
+
+#out .err {
+  color: #7a1008;
+  font-weight: 600;
+}
+
+/* ---------- 9. Mascot and speech bubbles ---------- */
+#mascot {
+  position: absolute;
+  left: 24px;
+  bottom: 0;
+  height: 300px;
+  max-width: 240px;
+  object-fit: contain;
+  object-position: left bottom;
+}
+
+/* Mascot jump. The big jump is for answers, the small one is for Hint. */
+@keyframes mascot-jump {
+  0%   { transform: translateY(0); }
+  35%  { transform: translateY(-28px); }
+  60%  { transform: translateY(0); }
+  75%  { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes mascot-hint {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-14px); }
+  100% { transform: translateY(0); }
+}
+
+#mascot.jump {
+  animation: mascot-jump .5s ease-out;
+}
+
+#mascot.jump-light {
+  animation: mascot-hint .4s ease-out;
+}
+
+/* People who turn on "reduce motion" in their system get no jump. */
+@media (prefers-reduced-motion: reduce) {
+  #mascot.jump,
+  #mascot.jump-light {
+    animation: none;
+  }
+}
+
+#bubbles {
+  position: absolute;
+  left: 190px;
+  bottom: 245px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 200px;
+}
+
+#bubbles span {
+  background: #b3aaa4;
+  color: #2b2623;
+  font-size: 12px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  width: fit-content;
+}
+
+/* ---------- 10. Orange action button (Run code, Continue, Next) ---------- */
+.btn {
+  position: absolute;
+  right: 6%;
+  bottom: 10%;
+  width: 240px;
+  padding: 20px;
+  border: none;
+  border-radius: 14px;
+  background: #c8662d;
+  box-shadow: 0 7px 0 #8a421d;
+  transition: transform .1s, box-shadow .1s;
+  color: #fff;
+  font: 700 19px 'Inter', sans-serif;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  background: #7a5a4e;
+  box-shadow: 0 7px 0 #53392f;
+  cursor: not-allowed;
+}
+
+.btn:not(:disabled):active {
+  transform: translateY(4px);
+  box-shadow: 0 3px 0 #8a421d;
+}
+
+/* The Next button on the Finish screen sits under the text */
+.btn.mid {
+  position: static;
+  margin-top: 90px;
+}
+
+/* ---------- 11. Finish screen (after the last question) ---------- */
+#intro,
+#finish,
+#done {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#intro,
+#finish {
+  padding-top: 170px;
+}
+
+.fin-text {
+  width: 480px;
+  text-align: justify;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.fin-text p {
+  margin: 0;
+}
+
+.fin-text p + p {
+  margin-top: 28px;
+}
+
+/* ---------- 12. Completed screen ---------- */
+#done {
+  justify-content: center;
+  text-align: center;
+}
+
+#done img {
+  width: 190px;
+  margin-bottom: 22px;
+}
+
+#done h1 {
+  font-size: 26px;
+  margin: 0 0 14px;
+}
+
+.done-desc {
+  width: 340px;
+  margin: 0 0 34px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #d9b78f;
+}
+
+/* First-time reward: rank, XP and coins */
+.rew {
+  display: flex;
+  gap: 70px;
+  align-items: center;
+  margin-bottom: 34px;
+  font-weight: 600;
+  font-size: 20px;
+  color: #d9b78f;
+}
+
+.rew .l {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 6px 150px;
+  text-align: left;
+}
+
+.rew .l b:nth-child(even) {
+  text-align: right;
+}
+
+.earn {
+  text-align: center;
+  color: #f3e6d8;
+  font-size: 19px;
+}
+
+.earn div {
+  color: #f59e0b;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+/* Purple reward button */
+.rbtn {
+  width: 306px;
+  padding: 20px;
+  border: 0;
+  border-radius: 14px;
+  background: #5b3fe0;
+  box-shadow: 0 7px 0 #3a2a9a;
+  transition: transform .1s, box-shadow .1s;
+  color: #fff;
+  font: 700 20px Inter, sans-serif;
+  cursor: pointer;
+}
+
+.rbtn.claimed {
+  background: #432da3;
+  box-shadow: 0 3px 0 #2a1d75;
+  transform: translateY(4px);
+  cursor: default;
+}
+
+.rbtn:not(.claimed):active {
+  transform: translateY(4px);
+  box-shadow: 0 3px 0 #3a2a9a;
+}
+
+.rbtn.edge {
+  box-shadow: 0 6px 0 #3a2a9a;
+}
+
+.rbtn.edge:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #3a2a9a;
+}
+
+/* ---------- 13. Gold coin burst (covers the whole window) ---------- */
+#coins {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* ---------- 14. Settings and exit popups ---------- */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .7);
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.on {
+  display: flex;
+}
+
+.card {
+  background: #3f2e28;
+  color: #f3e6d8;
+  border-radius: 28px;
+  padding: 40px 44px;
+  width: min(420px, 90vw);
+  text-align: center;
+  position: relative;
+}
+
+.card h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 36px;
+}
+
+.card .x {
+  position: absolute;
+  top: 14px;
+  right: 22px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  font-weight: 300;
+  color: #f3e6d8;
+  cursor: pointer;
+}
+
+.card p {
+  margin: 0 0 36px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #f3e6d8;
+}
+
+.card .bs {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+}
+
+.card .bs button {
+  font: 600 17px 'Inter', sans-serif;
+  padding: 12px 30px;
+  border-radius: 14px;
+  cursor: pointer;
+  border: 3px solid #e0966f;
+  background: transparent;
+  color: #e0966f;
+}
+
+.card .bs button.p {
+  background: #c8662d;
+  border-color: #c8662d;
+  color: #fff;
+}
+
+/* One settings row: label on the left, toggle on the right */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 26px;
+  font-size: 17px;
+  color: #f3e6d8;
+}
+
+/* Toggle switch: the checkbox is hidden, the span is the track, and its :before is the knob */
+.tg {
+  position: relative;
+  width: 56px;
+  height: 30px;
+}
+
+.tg input {
+  display: none;
+}
+
+.tg span {
+  position: absolute;
+  inset: 0;
+  background: #4a2a14;
+  border-radius: 30px;
+  transition: .3s;
+  cursor: pointer;
+}
+
+.tg span:before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 4px;
+  bottom: 4px;
+  background: #8a7568;
+  border-radius: 50%;
+  transition: .3s;
+}
+
+.tg input:checked + span:before {
+  background: #e0700f;
+  transform: translateX(26px);
+}
+
+/* ---------- 15. Helpers ---------- */
+[hidden] {
+  display: none !important;
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <button class="icon-btn" id="back" style="left:44px" aria-label="Back">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+  </button>
+  <button class="icon-btn" id="gear" style="right:44px" aria-label="Settings">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg>
+  </button>
+  <img id="mascot" src="/model/James Gosling wave.png" alt="model wave">
+
+  <div id="intro">
+  <div class="fin-text">
+    <p>Welcome to Java Basics 1 Practice!</p>
+    <p>Here you'll type real Java code. There are 5 short tasks, and each one checks what you wrote.</p>
+  </div>
+  <button class="btn mid" id="start">Next</button>
+</div>
+
+<div id="practice" hidden>
+    <div id="progress" aria-label="Progress"></div>
+    <p id="task"></p>
+    <section class="panel" id="editor">
+    <div class="tab"><img src="/icons/small size java logo.png" alt="">Practice.java</div>
+      <div class="body">
+        <div id="gut" class="mono" aria-hidden="true"></div>
+        <div id="wrap"><div class="inner">
+          <pre id="hl" class="mono" aria-hidden="true"></pre>
+          <textarea id="code" class="mono" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Java code editor" onpaste="return false" oncopy="return false" oncut="return false" ondrop="return false" oncontextmenu="return false"></textarea>
+        </div></div>
+      </div>
+      <div class="foot">
+        <button id="hint"><img src="/icons/bulb.png" alt="">Hint</button>
+        <button id="reset"><img src="/icons/reset.png" alt="">Reset</button>
+      </div>
+    </section>
+    <section class="panel" id="output">
+      <div class="tab">Output</div>
+      <div id="out" aria-live="polite"></div>
+    </section>
+    <div id="bubbles" aria-live="polite"></div>
+  </div>
+
+  <div id="finish" hidden>
+    <div class="fin-text">
+      <p>Awesome! You practiced printing output, creating variables, and choosing the right data types.</p>
+      <p>Next up, learn how to calculate and compare values with operators and expressions.</p>
+    </div>
+    <button class="btn mid" id="next">Next</button>
+  </div>
+  <div id="done" hidden></div>
+</div>
+<button class="btn" id="run" hidden>Run code</button>
+<audio id="bgMusic" loop><source src="/sounds/BG_music.mp3" type="audio/mpeg"></audio>
+<audio id="correctSound"><source src="/sounds/correct_sound-efx.wav" type="audio/wav"></audio>
+<audio id="wrongSound"><source src="/sounds/wrong_sound-efx.wav" type="audio/wav"></audio>
+<audio id="completedSound"><source src="/sounds/completed_sound-efx.wav" type="audio/wav"></audio>
+<div class="modal" id="settingsModal"><div class="card">
+  <button class="x" onclick="closeModal('settingsModal')" aria-label="Close">×</button>
+  <h2>Settings</h2>
+  <div class="row">Background Music<label class="tg"><input type="checkbox" id="bgT" checked onchange="setPref('backgroundMusicEnabled',this.checked)"><span></span></label></div>
+  <div class="row">Sound effects<label class="tg"><input type="checkbox" id="sfxT" checked onchange="setPref('soundEffectsEnabled',this.checked)"><span></span></label></div>
+</div></div>
+<div class="modal" id="exitModal"><div class="card">
+  <h2>Exit Lesson?</h2><p>Are you sure you want to exit?<br>Your progress will not be saved.</p>
+  <div class="bs"><button onclick="closeModal('exitModal')">Cancel</button><button class="p" onclick="location.href='/pages/Learn.html'">Yes, Exit</button></div>
+</div></div>
+<canvas id="coins" aria-hidden="true"></canvas>
+
+<script src="/js/api.js"></script>
+<script>
+const API_URL = '/api/practice/run';
+const LEARN_URL = '/pages/Learn.html';
+const NODE_ID = 4;   // Java Basics 1 on the path
+const STARTER = 'class Main {\n    public static void main(String[] args) {\n        // Write your Java code here\n    }\n}';
+// The class and main method lines are fixed. Only the line(s) in between can be edited.
+const CODE_HEAD = 'class Main {\n    public static void main(String[] args) {\n';
+const CODE_FOOT = '\n    }\n}';
+let codeBody = STARTER.slice(CODE_HEAD.length, STARTER.length - CODE_FOOT.length);
+
+// Puts the fixed lines back if the learner changed them. The learner's own lines are kept.
+function lockTemplate() {
+  const v = codeEl.value;
+  const intact = v.startsWith(CODE_HEAD) && v.endsWith(CODE_FOOT) && v.length >= CODE_HEAD.length + CODE_FOOT.length;
+  if (intact) {
+    codeBody = v.slice(CODE_HEAD.length, v.length - CODE_FOOT.length);
+  } else {
+    codeEl.value = CODE_HEAD + codeBody + CODE_FOOT;
+    const pos = CODE_HEAD.length + codeBody.length;   // put the cursor back at the end of the editable part
+    codeEl.setSelectionRange(pos, pos);
+  }
+}
+const POSES = {
+  stand:   ['/model/James Gosling Standing Up.png', 'model stand up'],
+  idea:    ['/model/James Gosling Bright Idea.png', 'model idea'],
+  applause:['/model/James Gosling Applause.png',    'model applause'],
+  drink:   ['/model/James Gosling Drinking Coffee.png', 'model drinking coffee'],
+  think:   ['/model/James Gosling Thinking.png',    'model thinking'],
+};
+// id must match the itemId rules in PracticeChecks.cs
+const ITEMS = [
+  { id: 1, task: 'Write code that prints <b>Hello, Java!</b> on the screen.',
+    tip: 'Tip: every Java statement ends with a ;', done: 'You did it! That was your first line of Java.' },
+  { id: 2, task: 'Write code that prints <b>Hello</b> on one line and <b>Java</b> on the next line.',
+    tip: 'Tip: use println twice, one for each line.', done: 'Two lines, two printlns. Nice!' },
+  { id: 3, task: 'Create an <b>int</b> variable named <b>age</b> that stores <b>15</b>, then print it.',
+    tip: 'Tip: a variable needs a type, a name and a value.', done: 'Your first variable. Well done!' },
+  { id: 4, task: 'Create a <b>String</b> variable named <b>name</b> with your name, then print it.',
+    tip: 'Tip: String is the type for text, and text goes inside quotes.', done: 'Text stored and printed. Great!' },
+  { id: 5, task: 'Store the decimal number <b>3.14</b> in a variable named <b>pi</b>, then print it.',
+    tip: 'Tip: whole numbers and decimals use different types.', done: 'Practice complete! Great job!' },
+];
+
+const $ = (id) => document.getElementById(id);
+// Makes the mascot jump. Removing and re-adding the class lets it play again every time.
+function jumpMascot(light = false) {
+  const m = $('mascot');
+  m.classList.remove('jump', 'jump-light');
+  void m.offsetWidth;   // forces the browser to restart the animation
+  m.classList.add(light ? 'jump-light' : 'jump');
+}
+const stage = $('stage'), codeEl = $('code');
+// mode: edit | running | wrong | correct
+const s = { i: 0, mode: 'edit', hint: false, result: null };
+
+const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const TOK = /(\/\/.*$)|("(?:[^"\\]|\\.)*"?)|\b(class|public|static|void|int|double|boolean|char|long|float|if|else|for|while|return|new)\b|\b(args)\b|\b(println|print)\b|\b([A-Z]\w*)\b|\b([a-z_]\w*)(?=\()|\b(\d+(?:\.\d+)?)\b/g;
+function hlLine(l) {
+  let out = '', last = 0, m; TOK.lastIndex = 0;
+  while ((m = TOK.exec(l))) {
+    out += esc(l.slice(last, m.index));
+    const c = m[1] ? 'c' : m[2] ? 's' : m[3] ? 'k' : m[4] ? 'f' : m[5] ? 'p' : m[6] ? 't' : m[7] ? 'f' : 'n';
+    out += `<span class="${c}">${esc(m[0])}</span>`; last = TOK.lastIndex;
+  }
+  return out + esc(l.slice(last));
+}
+
+function render() {
+  const it = ITEMS[s.i], r = s.result, code = codeEl.value;
+  $('progress').innerHTML = ITEMS.map((_, k) => `<i class="${k <= s.i ? 'on' : ''}"></i>`).join('');
+  $('task').innerHTML = it.task;
+
+  const errLine = s.mode === 'wrong' && r && r.line;
+  const lines = code.split('\n');
+  $('hl').innerHTML = lines.map((l, n) => hlLine(l) + (n + 1 === errLine ? '<span class="sq">&nbsp;&nbsp;</span>' : '')).join('\n') + '\n ';
+  $('gut').textContent = lines.map((_, n) => n + 1).join('\n');
+  codeEl.readOnly = s.mode === 'running' || s.mode === 'correct';
+
+  let out = '<span>Run your code to see the output here.</span>';
+  if (s.mode === 'running') out = 'Running your code\u2026';
+  else if (s.mode === 'wrong' && r) out = `<span class="err">${r.line ? 'Line ' + r.line + ': ' : ''}${esc(r.message)}</span>`;
+  else if (s.mode === 'correct' && r) out = esc(r.output);
+  $('out').innerHTML = out;
+
+  let pose = 'stand', say = [];
+  if (s.hint) { pose = 'idea'; say = [it.tip]; }
+  else if (s.mode === 'wrong' && r) { pose = 'think'; say = [r.title, r.help]; }
+  else if (s.mode === 'correct') { pose = 'applause'; say = [it.done]; }
+  $('mascot').src = POSES[pose][0]; $('mascot').alt = POSES[pose][1];
+  $('bubbles').innerHTML = say.filter(Boolean).map((t) => `<span>${esc(t)}</span>`).join('');
+
+  const run = $('run');
+  run.textContent = s.mode === 'wrong' ? 'Try again' : s.mode === 'correct' ? (s.i === ITEMS.length - 1 ? 'Finish' : 'Continue') : s.mode === 'running' ? 'Running\u2026' : 'Run code';
+  run.disabled = s.mode === 'running' || (s.mode === 'edit' && code.trim() === STARTER.trim());
+  $('hint').disabled = s.mode === 'correct' || s.mode === 'running';
+}
+
+function loadItem() { codeBody = STARTER.slice(CODE_HEAD.length, STARTER.length - CODE_FOOT.length); codeEl.value = STARTER; Object.assign(s, { mode: 'edit', hint: false, result: null }); render(); codeEl.focus(); }
+
+async function primary() {
+  if (s.mode === 'wrong') { Object.assign(s, { mode: 'edit', result: null }); render(); codeEl.focus(); return; }
+  if (s.mode === 'correct') {
+    if (s.i === ITEMS.length - 1) { finishPractice(); return; }
+    s.i++; loadItem(); return;
+  }
+  if (s.mode !== 'edit' || codeEl.value.trim() === STARTER.trim()) return;
+  s.mode = 'running'; s.hint = false; render();
+  let result;
+  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 25000);
+  try {
+    const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ itemId: ITEMS[s.i].id, code: codeEl.value, nodeId: NODE_ID }), signal: ctrl.signal });
+    result = await res.json();
+  } catch (e) {
+    result = { status: 'offline', title: 'Connection problem', message: "We couldn't reach the practice server.", help: 'Check that the server is running and try again.', output: '' };
+  } finally { clearTimeout(timer); }
+  s.result = result; s.mode = result.status === 'success' ? 'correct' : 'wrong'; render();
+  if (s.mode === 'correct') jumpMascot();
+  if (result.status === 'success') sfx('correctSound'); else if (result.status !== 'offline') sfx('wrongSound');
+}
+
+codeEl.addEventListener('input', () => { lockTemplate(); if (s.mode === 'wrong') Object.assign(s, { mode: 'edit', result: null }); render(); });
+let tabFree = false;   // press Esc, then Tab, to leave the editor with the keyboard
+codeEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { tabFree = true; return; }
+  if (e.key === 'Tab' && !e.shiftKey && !tabFree) {
+    e.preventDefault(); document.execCommand('insertText', false, '    ');
+  } else if (e.key !== 'Tab') tabFree = false;
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); primary(); }
+});
+$('wrap').addEventListener('scroll', (e) => { $('gut').scrollTop = e.target.scrollTop; });
+$('run').addEventListener('click', primary);
+$('hint').addEventListener('click', () => { s.hint = true; render(); jumpMascot(true); });
+$('reset').addEventListener('click', () => { if (s.mode !== 'running') loadItem(); });
+$('back').addEventListener('click', () => openModal('exitModal'));
+$('gear').addEventListener('click', () => openModal('settingsModal'));
+$('next').addEventListener('click', showDone);
+
+
+/* ---------- Finish and completed screens (the server decides the rewards) ---------- */
+const pref = (k) => { try { return localStorage.getItem(k) !== 'false'; } catch (e) { return true; } };
+function setPref(k, v) { try { localStorage.setItem(k, v); } catch (e) {} if (k === 'backgroundMusicEnabled') { v ? playBg() : $('bgMusic').pause(); } }
+function playBg() {
+  if (!pref('backgroundMusicEnabled')) return;
+  const a = $('bgMusic'); a.volume = .3;
+  a.play().catch(() => document.addEventListener('click', () => { if (pref('backgroundMusicEnabled')) a.play(); }, { once: true }));
+}
+function openModal(id) { $(id).classList.add('on'); }
+function closeModal(id) { $(id).classList.remove('on'); }
+document.querySelectorAll('.modal').forEach((m) => m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('on'); }));
+function sfx(id) { if (!pref('soundEffectsEnabled')) return; const a = $(id); a.currentTime = 0; a.play().catch(() => {}); }
+
+let completion = null, finishing = false, claimed = false;
+
+// Asks the server to complete the node: it pays the rewards once, unlocks the next node and counts the streak.
+async function finishPractice() {
+  if (finishing) return; finishing = true;
+  try {
+    completion = await api('/learn/nodes/' + NODE_ID + '/complete', { method: 'POST', body: '{}' });
+  } catch (e) {
+    finishing = false;
+    s.result = { status: 'error', title: 'Could not finish the practice', message: e.message, help: 'Run your code again.', output: '' };
+    s.mode = 'wrong'; render();
+    return;
+  }
+  completion.firstTime ? showFinish() : showDone();
+}
+function showFinish() {
+  $('practice').hidden = true; $('run').hidden = true; $('finish').hidden = false;
+  $('mascot').src = POSES.drink[0]; $('mascot').alt = POSES.drink[1];
+}
+function showDone() {
+$('practice').hidden = true; $('finish').hidden = true; $('run').hidden = true; $('done').hidden = false;
+  $('mascot').hidden = true; $('back').hidden = true; $('gear').hidden = true;
+  renderDone(); $('bgMusic').pause(); sfx('completedSound');
+}
+function renderDone() {
+  const c = completion || {}, first = !!c.firstTime;
+  const body = first
+    ? `<div class="rew"><div class="l"><b id="rankName">${esc(c.rankBefore || 'Starter')}</b><b id="xpNum">${c.xpBefore || 0}</b><b>Coins</b><b>+${c.coinsEarned || 0}</b></div><div class="earn">EARNED<div>${c.xpEarned || 0} XP</div></div></div>`
+    : `<p class="done-desc">Nice Review! Rewards can only be earned once per lesson.</p>`;
+  $('done').innerHTML = `<img src="/icons/${first ? 'victory.png' : 'done.png'}" alt=""><h1${first ? ' style="margin-bottom:26px"' : ''}>COMPLETED!</h1>${body}
+    <button class="rbtn${first ? '' : ' edge'}" id="rewardBtn" onclick="getReward()">${first ? 'Get reward' : 'Continue'}</button>`;
+  if (first) {
+    countUp($('xpNum'), c.xpBefore || 0, c.xpAfter || 0, 1200);
+    setTimeout(() => { const r = $('rankName'); if (r) r.textContent = c.rankAfter || 'Starter'; }, 1250);
+  }
+}
+function getReward() {
+  if (claimed) return; claimed = true;
+  const c = completion || {};
+  const target = c.badgeEarned ? LEARN_URL + '?badge=1' : LEARN_URL;
+  if ((c.xpEarned || 0) > 0) {
+    const b = $('rewardBtn'); b.textContent = 'Reward claimed'; b.classList.add('claimed'); b.disabled = true;
+    setTimeout(() => { location.href = target; }, 2300);   // set first, so an animation problem can never block it
+    const r = b.getBoundingClientRect();
+    coinBurst(r.left + r.width / 2, r.top + r.height / 2);
+  } else {
+    location.href = target;   // replay: no rewards, so no coin burst or delay
+  }
+}
+function countUp(el, from, to, d) { const t0 = performance.now(); (function f(n) { const t = Math.min((n - t0) / d, 1), e = 1 - Math.pow(1 - t, 3); el.textContent = Math.round(from + (to - from) * e); if (t < 1) requestAnimationFrame(f); })(t0); }
+
+/* ---------- Gold coin burst (same as Lesson 1) ---------- */
+const cv = $('coins'), ctx = cv.getContext('2d');
+let W, H, coins = [], sparks = [], playing = false, t0 = null, tl = null;
+const DURATION = 2000, rand = (a, b) => a + Math.random() * (b - a), gold = ["#FFF2A1", "#FFDC57", "#E7A91D", "#D28A0B", "#FFF0A0"];
+function resize() { const d = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
+function burst(x, y) {
+  sparks.push({ x, y, r: rand(22, 34), life: 1 });
+  const n = Math.round(Math.min(100, Math.max(55, W / 10)));
+  for (let i = 0; i < n; i++) { const a = rand(-Math.PI, Math.PI), sp = rand(2.5, 10.5);
+    coins.push({ x: x + rand(-7, 7), y: y + rand(-7, 7), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - rand(1, 3), r: rand(7, 13), depth: rand(.65, 1.2), angle: rand(0, 6.28), spin: rand(-.2, .2), rot: rand(-.1, .1), color: gold[Math.floor(Math.random() * gold.length)], age: 0, wobble: rand(0, 6.28) }); }
+}
+function drawCoin(c) {
+  const p = Math.max(.12, Math.abs(Math.cos(c.angle))), rx = c.r * p * c.depth, ry = c.r * c.depth;
+  ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.rot);
+  ctx.beginPath(); ctx.ellipse(1.2, 1.8, rx + 1.3, ry + 1.3, 0, 0, 6.283); ctx.fillStyle = "#805008"; ctx.fill();
+  const g = ctx.createLinearGradient(-rx, -ry, rx, ry);
+  g.addColorStop(0, "#FFF4A4"); g.addColorStop(.22, "#FFD94B"); g.addColorStop(.48, c.color); g.addColorStop(.72, "#D28A0B"); g.addColorStop(1, "#FFF0A0");
+  ctx.beginPath(); ctx.ellipse(0, 0, Math.max(.8, rx), ry, 0, 0, 6.283); ctx.fillStyle = g; ctx.fill();
+  ctx.lineWidth = Math.max(.6, c.r * .09); ctx.strokeStyle = "rgba(255,245,166,.95)"; ctx.stroke();
+  if (p > .38) {
+    ctx.beginPath(); ctx.ellipse(0, 0, Math.max(.4, rx * .72), ry * .72, 0, 0, 6.283); ctx.lineWidth = Math.max(.45, c.r * .055); ctx.strokeStyle = "rgba(155,93,5,.7)"; ctx.stroke();
+    ctx.save(); ctx.scale(p, 1); ctx.font = `bold ${Math.max(7, c.r * 1.25)}px Arial`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(133,79,0,.7)"; ctx.fillText("$", .6, 1); ctx.fillStyle = "rgba(255,249,190,.98)"; ctx.fillText("$", -.3, -.4); ctx.restore();
+  }
+  ctx.beginPath(); ctx.ellipse(-rx * .28, -ry * .36, Math.max(.5, rx * .2), Math.max(.45, ry * .11), -.35, 0, 6.283); ctx.fillStyle = "rgba(255,255,226,.78)"; ctx.fill();
+  ctx.restore();
+}
+function glow() {
+  ctx.clearRect(0, 0, W, H);
+  const f = Math.max(0, 1 - (performance.now() - t0) / 420);
+  if (f > 0) { const g = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * .42); g.addColorStop(0, `rgba(255,195,45,${f * .14})`); g.addColorStop(1, "rgba(255,195,45,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
+}
+function updSparks(dt) {
+  for (let i = sparks.length - 1; i >= 0; i--) { const sp = sparks[i]; sp.life -= .045 * dt; sp.r *= Math.pow(1.09, dt);
+    if (sp.life <= 0) { sparks.splice(i, 1); continue; }
+    const g = ctx.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, sp.r);
+    g.addColorStop(0, `rgba(255,226,106,${sp.life * .65})`); g.addColorStop(.25, `rgba(255,177,20,${sp.life * .2})`); g.addColorStop(1, "rgba(255,170,0,0)");
+    ctx.fillStyle = g; ctx.fillRect(sp.x - sp.r, sp.y - sp.r, sp.r * 2, sp.r * 2); }
+}
+function updCoins(dt) {
+  for (let i = coins.length - 1; i >= 0; i--) { const c = coins[i]; c.age += dt;
+    c.vy += .105 * dt; c.vx *= Math.pow(.998, dt); c.x += c.vx * dt; c.y += c.vy * dt;
+    c.angle += c.spin * dt; c.rot += c.spin * .13 * dt; c.wobble += .04 * dt; c.x += Math.sin(c.wobble) * .18 * dt;
+    ctx.globalAlpha = Math.max(0, Math.min(Math.min(1, c.age / 5), Math.min(1, (120 - c.age) / 30)));
+    drawCoin(c); ctx.globalAlpha = 1;
+    if (c.age >= 120 || c.y > H + 60 || c.x < -70 || c.x > W + 70) coins.splice(i, 1); }
+}
+function loop(ts) {
+  if (!playing) return;
+  if (tl === null) tl = ts;
+  if (ts - t0 >= DURATION) { playing = false; coins = []; sparks = []; ctx.clearRect(0, 0, W, H); return; }
+  const dt = Math.min(2, Math.max(0, (ts - tl) / 16.67)); tl = ts;
+  glow(); updSparks(dt); updCoins(dt); requestAnimationFrame(loop);
+}
+function coinBurst(x, y) { coins = []; sparks = []; t0 = performance.now(); tl = null; playing = true; burst(x, y); requestAnimationFrame(loop); }
+addEventListener('resize', resize); resize();
+
+function fit() { stage.style.transform = `translate(-50%,-50%) scale(${Math.min(innerWidth / 1240, innerHeight / 700)})`; }
+addEventListener('resize', fit); fit();
+$('start').addEventListener('click', () => {
+  $('intro').hidden = true; $('practice').hidden = false; $('run').hidden = false;
+  loadItem();
+});
+$('bgT').checked = pref('backgroundMusicEnabled'); $('sfxT').checked = pref('soundEffectsEnabled');
+playBg();
+</script>
+</body>
+</html>

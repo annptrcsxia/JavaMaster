@@ -29,7 +29,7 @@ public static class LessonContent
     {
         // ---------------------------------------------------------------- Hello World
         new(1, "Hello World",
-            "Welcome to the first chapter of the Java course! 🚀\n\nJava is a popular programming language designed by James Gosling to be \"written once, run anywhere\" with a Java Virtual Machine (JVM).",
+            "Welcome to the first chapter of the Java course! \n\nJava is a popular programming language designed by James Gosling to be \"written once, run anywhere\" with a Java Virtual Machine (JVM).",
             "Now that you can print a line of text, move on to the next lesson to start giving your code a place to keep its values.",
             new[]
         {
@@ -77,7 +77,7 @@ public static class LessonContent
 
         // ------------------------------------------------------------------- Variables
         new(2, "Variables",
-            "Welcome to lesson 2! 🚀\n\nA variable is a named container that holds a value in memory. Before Java lets you use one, you must declare it — and a declaration always starts with the type of data it holds.",
+            "Welcome to lesson 2! \n\nA variable is a named container that holds a value in memory. Before Java lets you use one, you must declare it — and a declaration always starts with the type of data it holds.",
             "Now that your values have names, move on to the next lesson to start choosing the right type for each one.",
             new[]
         {
@@ -88,14 +88,14 @@ public static class LessonContent
                     new { id = "b", text = "age = 20;" },
                     new { id = "c", text = "variable int age = 20;" } } },
                 new { correctOptionId = "a", correctMessage = "Great job!" },
-                "A Java declaration always puts the type first, then the name, then the value. Check each option for all three in that order."),
+                "Nice try! Remember the order: type first, then name, then value."),
 
             new Q("variables.q2", QuestionType.FillBlank, "Variables",
                 "The type tells Java how much memory to reserve and what the variable is allowed to hold. Exactly one of Java's primitive types stores a decimal number like 9.99 without needing a suffix on the value.\n\nFill in the missing type.",
                 new { template = new[] { "{{blank}}", "price", "=", "9.99", ";" } },
                 new { accepted = new[] { "double" }, caseSensitive = true,
                       correctMessage = "Perfect - double holds decimal values." },
-                "Two things can go wrong here. Java is case-sensitive, so the type has to be spelled exactly as Java writes it - a capitalized version would not compile. And the other floating-point type needs an f after the value, so it would not compile here either."),
+                "Almost! Java is case sensitive, so check how the type is written."),
 
             new Q("variables.q3", QuestionType.FillSlots, "Variables",
                 "A boolean variable can hold only two values: true or false. It is often used as a flag, such as isReady.\n\nBuild the statement that declares isReady and sets it to true.",
@@ -103,7 +103,7 @@ public static class LessonContent
                   bank = new[] { "boolean", "isReady", "true", "false", "int", "String", "null" } },
                 new { slots = new Dictionary<string, string> { ["1"] = "boolean", ["2"] = "isReady", ["3"] = "true" },
                       correctMessage = "Nice! A boolean is either true or false." },
-                "There are three blanks: the type, the name and the value. The prompt gives you the name and the value, so the type is the one that can only be true or false."),
+                "Close! The prompt gives you the name and the value. Which type holds only true or false?"),
 
             new Q("variables.q4", QuestionType.MultipleChoice, "Variables",
                 "Java identifiers - the names you give variables and methods - are case-sensitive, may contain letters, digits, underscores and dollar signs, and cannot start with a digit. They also cannot be a keyword such as class or int.\n\nWhich of these is not a valid variable name?",
@@ -113,7 +113,7 @@ public static class LessonContent
                     new { id = "c", text = "2ndValue" },
                     new { id = "d", text = "myScore" } } },
                 new { correctOptionId = "c", correctMessage = "Right - a name cannot begin with a digit." },
-                "Three of these follow every naming rule. The odd one out breaks the rule about where a name is allowed to begin."),
+                "So close! Look at where each name starts. Which one begins with something Java does not allow?"),
 
             new Q("variables.q5", QuestionType.FillSlots, "Variables",
                 "A final variable cannot be changed after it is created, which makes it a constant. Constants are written in ALL CAPS by convention. The highest score is a whole number.\n\nBuild the constant declaration for MAX_SCORE equal to 100.",
@@ -121,12 +121,12 @@ public static class LessonContent
                   bank = new[] { "int", "boolean", "MAX_SCORE", "MIN_SCORE", "100", "50", "final", "static" } },
                 new { slots = new Dictionary<string, string> { ["1"] = "int", ["2"] = "MAX_SCORE", ["3"] = "100" },
                       correctMessage = "Great - that is a constant int." },
-                "There are three blanks after final: the type, the name and the value. The prompt gives you the name and the value, so the type has to be the one that fits a whole number.")
+                "Nice try! Think about which type is made for whole numbers like 100.")
         }),
 
         // ----------------------------------------------------------------- Data Types
         new(3, "Data Types",
-            "Welcome to lesson 3! 🚀\n\nJava has eight primitive data types: byte, short, int and long for whole numbers, float and double for decimals, plus char and boolean.",
+            "Welcome to lesson 3! \n\nJava has eight primitive data types: byte, short, int and long for whole numbers, float and double for decimals, plus char and boolean.",
             "Now that our variables know what kind of data they hold, move on to the next lesson to start giving them behaviors and actions.",
             new[]
         {
@@ -138,14 +138,14 @@ public static class LessonContent
                     new { id = "c", text = "int" },
                     new { id = "d", text = "byte" } } },
                 new { correctOptionId = "b", correctMessage = "Right - char holds exactly one character." },
-                "Java stores text in two ways: a whole word and a single letter. One of these options does the second one."),
+                "Almost! Think about which type holds one letter, not a whole word."),
 
             new Q("data-types.q2", QuestionType.FillBlank, "Data Types",
                 "When a whole number is too large for an int, Java lets you write it as a long by adding the letter L to the end of the number. Without the L, the number is just an int.\n\nFill in the missing suffix.",
                 new { template = new[] { "long", "total", "=", "42", "{{blank}}", ";" } },
                 new { accepted = new[] { "L", "l" }, caseSensitive = false,
                       correctMessage = "Correct - 42L is a long literal." },
-                "It is a single letter, and it goes straight after the digits with no space. Java accepts either a capital L or a small l here - this suffix is the one place where the case does not matter."),
+                "Nearly there! Think about the letter that tells Java a number is a long, and where it goes."),
 
             new Q("data-types.q3", QuestionType.FillSlots, "Data Types",
                 "Every decimal literal without a suffix is a double. To store a smaller decimal in a float you must add an f - otherwise the compiler assumes you meant a double.\n\nBuild the statement that stores the value 3.14 in a variable called pi.",
@@ -153,7 +153,7 @@ public static class LessonContent
                   bank = new[] { "double", "float", "pi", "int", "long", "3.14", "3.14f" } },
                 new { slots = new Dictionary<string, string> { ["1"] = "double", ["2"] = "pi" },
                       correctMessage = "Nice - double pi = 3.14;" },
-                "Two blanks: the type and the variable name. The value is already there, so pick the type that a decimal without a suffix becomes."),
+                "Close! The value 3.14 is already a decimal. Which type is the usual choice for decimals?"),
 
             new Q("data-types.q4", QuestionType.MultipleChoice, "Data Types",
                 "When both operands are whole numbers, Java does integer division and throws away the decimal part. To keep the decimal you must use a double or a float.\n\nWhat does  int x = 9; int y = 2; System.out.println(x / y);  print?",
@@ -163,7 +163,7 @@ public static class LessonContent
                     new { id = "c", text = "5" },
                     new { id = "d", text = "Error" } } },
                 new { correctOptionId = "b", correctMessage = "Right - 9 / 2 is 4, the remainder is dropped." },
-                "Both operands are whole numbers here, so Java does integer division and drops the remainder. Work out 9 divided by 2 with the remainder thrown away."),
+                "Good try! Java drops the decimal part when both numbers are whole. What is 9 divided by 2 with the decimal part removed?"),
 
             new Q("data-types.q5", QuestionType.FillSlots, "Data Types",
                 "A char literal is wrapped in single quotes, and a boolean holds only true or false. The declarations below store the letter A, and a flag that starts out false because the work is not finished yet.\n\nBuild the two declarations below.",
@@ -173,12 +173,12 @@ public static class LessonContent
                   bank = new[] { "'A'", "A", "true", "false", "'B'", "'1'" } },
                 new { slots = new Dictionary<string, string> { ["1"] = "'A'", ["2"] = "false" },
                       correctMessage = "Perfect - char uses single quotes, and a not-yet-finished flag is false." },
-                "Two blanks, one per line. The first holds a character and needs the quote marks around it. The second holds a flag that has not finished yet.")
+                "Almost! Think about how a character is written, and what a flag for unfinished work should start as.")
         }),
 
         // ----------------------------------------------------- Operators & Expressions
         new(5, "Operators & Expressions",
-            "Welcome to lesson 4! 🚀\n\nOperators let you work with values — adding and dividing them, comparing them, and combining conditions. An expression is any combination of values and operators that produces a result.",
+            "Welcome to lesson 4! \n\nOperators let you work with values — adding and dividing them, comparing them, and combining conditions. An expression is any combination of values and operators that produces a result.",
             "Now that you can calculate and compare values, move on to the next lesson to start making your programs make decisions.",
             new[]
         {

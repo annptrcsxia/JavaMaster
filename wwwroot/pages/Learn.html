@@ -108,7 +108,7 @@
 
                     <!-- 2 · Variables -->
                     <div class="lesson-node locked" data-step="2" data-type="lesson"
-                         data-href="Lesson 2.html" data-in="top" data-out="bottom"
+                         data-href="/lesson/Lesson 2.html" data-in="top" data-out="bottom"
                          style="--x:832; --y:279" tabindex="0" role="button">
                         <img src="/nodes/Lock node.png" alt="Variables">
                         <div class="lesson-label right" style="--lw:200px; --sw:130px">
@@ -119,7 +119,7 @@
 
                     <!-- 3 · Data Types -->
                     <div class="lesson-node locked" data-step="3" data-type="lesson"
-                         data-href="Lesson 3.html" data-in="right" data-out="left"
+                         data-href="/lesson/Lesson 3.html" data-in="right" data-out="left"
                          style="--x:558; --y:528" tabindex="0" role="button">
                         <img src="/nodes/Lock node.png" alt="Data Types">
                         <div class="lesson-label bottom" style="--lw:260px; --sw:190px">
@@ -130,7 +130,7 @@
 
                     <!-- 4 · Java Basics 1 (practice) -->
                     <div class="lesson-node locked" data-step="4" data-type="practice"
-                         data-href="Practice 1.html" data-in="top" data-out="bottom"
+                         data-href="/lesson/Java Basics 1-Practice.html" data-in="top" data-out="bottom"
                          style="--x:282; --y:803" tabindex="0" role="button">
                         <img src="/nodes/Practice node.png" alt="Java Basics 1 practice">
                         <div class="lesson-label left" style="--lw:130px; --sw:130px">
@@ -243,25 +243,31 @@
             currentLesson    -> step the learner is on (default 1)
             completedLessons -> array of finished steps
         */
-        function loadLessonProgress() {
-            const completed = JSON.parse(localStorage.getItem('completedLessons') || '[]');
-            const current   = parseInt(localStorage.getItem('currentLesson') || '1', 10);
+        async function loadLessonProgress() {
+            let sections = [];
+            try {
+                const res = await fetch('/api/learn/path');
+                if (!res.ok) throw new Error('path ' + res.status);
+                sections = await res.json();
+            } catch (e) {
+                console.error('Could not load the Learn path', e);
+                drawPath();
+                return;
+            }
+            const status = {};
+            sections.forEach(s => (s.nodes || []).forEach(n => { status[n.id] = n.status; }));
 
             nodes.forEach(node => {
-                const step = parseInt(node.dataset.step, 10);
+                const step = parseInt(node.dataset.step, 10);   // step number = node id (1-7)
                 const type = node.dataset.type;
                 const img  = node.querySelector(':scope > img');
+                const s = status[step];
+                const state = s === 'Completed' ? 'completed' : s === 'Unlocked' ? 'current' : 'locked';
 
                 node.classList.remove('locked', 'current', 'completed');
-
-                let state;
-                if (completed.includes(step))      state = 'completed';
-                else if (step === current)         state = 'current';
-                else                               state = 'locked';
-
                 node.classList.add(state);
                 node.dataset.state = state;
-                img.src = type === 'lesson' ? NODE_IMAGES.lesson[state] : NODE_IMAGES[type];
+                img.src = (type === 'lesson' || state !== 'locked') ? NODE_IMAGES.lesson[state] : NODE_IMAGES[type];
             });
 
             drawPath();
@@ -357,7 +363,7 @@
             NotificationManager.updateBadge();
         });
 
-
+        window.addEventListener('pageshow', e => { if (e.persisted) loadLessonProgress(); });
     </script>
 </body>
 </html>

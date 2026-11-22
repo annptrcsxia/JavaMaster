@@ -27,11 +27,12 @@
     .top-bar {
         position: absolute;
         top: 0;
-        left: 0;
-        right: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(100vw, calc(100vh * 1240 / 700));   
         display: flex;
         justify-content: space-between;
-        padding: 28px 40px;
+        padding: min(1.774vw, 3.143vh) min(3.548vw, 6.286vh);   
         z-index: 5;
     }
 
@@ -40,11 +41,16 @@
         border: none;
         cursor: pointer;
         display: flex;
+        align-items: center;
+        justify-content: center;
+        width: min(3.548vw, 6.286vh);
+        height: min(3.548vw, 6.286vh); 
     }
 
-    .top-bar img {
-        width: 34px;
-        height: 34px;
+    .top-bar svg {
+        width: min(2.258vw, 4vh);
+        height: min(2.258vw, 4vh);
+        color: #f3e6d8;
     }
 
     .progress {
@@ -78,12 +84,12 @@
         padding-top: 200px;
     }
 
-    .text {
-        width: min(480px,86vw);
-        text-align: justify;
-        font-size: 22px;
-        line-height: 1.3;
-    }
+.text {
+    width: min(480px,86vw);
+    text-align: justify;
+    font-size: 22px;
+    line-height: 1.3;
+}
 
     .text p+p {
         margin-top: 28px;
@@ -152,9 +158,9 @@
     /* ---------- Code editor, output & code assembly ---------- */
     .editor {
         width: min(555px,90vw);
-        background: #1b1f2e;
-        border: 3px solid #2c3145;
-        border-radius: 14px;
+        background: #1b2036;
+        border: 2px solid #12172b;
+        border-radius: 16px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -162,9 +168,10 @@
     }
 
     .tab {
-        background: #2a2f44;
-        font-size: 11px;
-        padding: 8px 14px;
+        background: #2a3350;
+        font-size: 10px;
+        padding: 0 14px;
+        height: 26px; 
         width: fit-content;
         border-radius: 0 0 8px 0;
         display: flex;
@@ -236,7 +243,7 @@
         justify-content: flex-end;
         gap: 14px;
         padding: 10px 18px;
-        border-top: 1px solid #2c3145;
+        border-top: 1px solid #2a3350;
         font-size: 12px;
         height: 38px;
     }
@@ -265,21 +272,24 @@
     .output {
         width: 272px;
         height: 168px;
-        background: #1b1f2e;
-        border: 3px solid #2c3145;
-        border-radius: 14px;
+        background: #1b2036;
+        border: 2px solid #12172b;
+        border-radius: 16px;
         overflow: hidden;
     }
 
     .output div:first-child {
-        background: #2a2f44;
-        font-size: 11px;
-        padding: 8px 12px;
+        background: #2a3350;
+        font-size: 10px;
+        padding: 0 14px;
+        height: 24px;           
+        display: flex;          
+        align-items: center;   
     }
 
     .output div:last-child {
         background: #8f93a3;
-        color: #1b1f2e;
+        color: #23242e;
         height: 100%;
         padding: 8px 12px;
         font-size: 16px;
@@ -317,7 +327,9 @@
         padding: 20px;
         border: none;
         border-radius: 14px;
-        background: #c97f60;
+        background: #c8662d;
+        box-shadow: 0 7px 0 #8a421d;
+        transition: transform .1s, box-shadow .1s;
         color: #fff;
         font: 700 19px 'Inter', sans-serif;
         cursor: pointer;
@@ -325,7 +337,13 @@
 
     .btn:disabled {
         background: #7a5a4e;
+        box-shadow: 0 7px 0 #53392f;
         cursor: not-allowed;
+    }
+
+    .btn:not(:disabled):active {
+        transform: translateY(4px);
+        box-shadow: 0 3px 0 #8a421d;
     }
 
     .btn.mid {
@@ -339,6 +357,26 @@
         bottom: 0;
         height: 40vh;
         max-height: 340px;
+    }
+
+    /* Model jump when the answer is correct */
+    @keyframes model-jump {
+        0%   { transform: translateY(0); }
+        35%  { transform: translateY(-28px); }
+        60%  { transform: translateY(0); }
+        75%  { transform: translateY(-8px); }
+        100% { transform: translateY(0); }
+    }
+
+    .model.jump {
+        animation: model-jump .5s ease-out;
+    }
+
+    /* People who turn on "reduce motion" in their system get no jump. */
+    @media (prefers-reduced-motion: reduce) {
+        .model.jump {
+            animation: none;
+        }
     }
 
     .bubbles {
@@ -567,6 +605,8 @@
         border: none;
         border-radius: 14px;
         background: #5b3fe0;
+        box-shadow: 0 7px 0 #3a2a9a;
+        transition: transform .1s, box-shadow .1s;
         color: #fff;
         font: 700 20px 'Inter', sans-serif;
         cursor: pointer;
@@ -574,7 +614,23 @@
 
     .rbtn.claimed {
         background: #432da3;
+        box-shadow: 0 3px 0 #2a1d75;
+        transform: translateY(4px);
         cursor: default;
+    }
+
+    .rbtn:not(.claimed):active {
+        transform: translateY(4px);
+        box-shadow: 0 3px 0 #3a2a9a;
+    }
+
+    .rbtn.edge {
+    box-shadow: 0 6px 0 #3a2a9a;
+    }
+
+    .rbtn.edge:active {
+        transform: translateY(3px);
+        box-shadow: 0 3px 0 #3a2a9a;
     }
 
     /* ---------- Gold coin canvas ---------- */
@@ -595,8 +651,8 @@
     <audio id="completedSound"><source src="/sounds/completed_sound-efx.wav" type="audio/wav"></audio>
 
     <div class="top-bar" id="topBar">
-    <button onclick="openModal('exitModal')"><img src="/icons/goback.png" alt="Go Back"></button>
-    <button onclick="openModal('settingsModal')"><img src="/icons/settings_icon.png" alt="Settings"></button>
+    <button onclick="openModal('exitModal')" aria-label="Go back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+    <button onclick="openModal('settingsModal')" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg></button>
     </div>
     <div class="progress" id="progress"></div>
     <div id="stage"></div>
@@ -622,15 +678,15 @@
     /* ---------- Lesson flow ---------- */
     const steps=[
     {t:'intro'},
-    {t:'mc',prompt:'<p>In Java, we use certain statements to display output. For example, System.out.println(); is used to print text to the console.</p><p>Which Java statement prints text to the console?</p>',
+    {t:'mc',prompt:'<p>In Java, we use certain statements to display output. For example, <b>System.out.println();</b> is used to print text to the console.</p><p>Which Java statement prints text to the console?</p>',
     opts:['System.out.println("Hello");','String message = "Hello";'],ans:0,ok:'Great job!',bad:'That only creates a variable. Use <em>System.out.println()</em> to print.'},
-    {t:'type',prompt:'<p>Code “Hello World!” between the opening and closing quotation marks.</p>',out:['Hello World!'],ok:'Excellent!',bad:'Type exactly “<em>Hello World!</em>”.'},
-    {t:'asm',prompt:'<p>Let’s remember how to code an output. Code an output that says “Hello World!”.</p>',
+    {t:'type',prompt:'<p>Code “<b>Hello World!</b>” between the opening and closing quotation marks.</p>',out:['Hello World!'],ok:'Excellent!',bad:'Type exactly “<em>Hello World!</em>”.'},
+    {t:'asm',prompt:'<p>Let’s remember how to code an output. Code an output that says “<b>Hello World!</b>”.</p>',
     lines:[['__','.','__','.','__','__','__','__','__']],ans:['System','out','println','(','"Hello World!"',')',';'],
     choices:['System','out','println','(',')','"Hello World!"',';'],out:['Hello World!'],ok:'Excellent!',bad:'The order is off. It should be <em>System.out.println("Hello World!");</em>'},
-    {t:'mc',prompt:'<p>In Java, System.out.println(); prints text and moves to a new line, while System.out.print(); prints text but stays on the same line.</p><p>Which statement prints text <b>without</b> moving to a new line?</p>',
+    {t:'mc',prompt:'<p>In Java, <b>System.out.println();</b> prints text and moves to a new line, while <b>System.out.print();</b> prints text but stays on the same line.</p><p>Which statement prints text <b>without</b> moving to a new line?</p>',
     opts:['System.out.println("Welcome");','System.out.print("Welcome");'],ans:1,ok:'Well done!',bad:'That moves to a new line. Use <em>System.out.print()</em> to stay on the same line.'},
-    {t:'asm',prompt:'<p>Code an output that displays "The result is: 42".<br>Remember print stays on the same line, println moves to a new line.</p>',
+    {t:'asm',prompt:'<p>Code an output that displays "<b>The result is: 42</b>".<br>Remember print stays on the same line, println moves to a new line.</p>',
     lines:[['System','.','out','.','__','(','"The result is: "',')',';'],['System','.','out','.','__','(','42',')',';']],ans:['print','println'],
     choices:['println','print'],out:['The result is: 42'],ok:'Amazing!',bad:'Use <em>print</em> for the first line so 42 stays on the same line.'},
     {t:'finish'},
@@ -641,6 +697,13 @@
 
     /* ---------- Helpers ---------- */
     const $=id=>document.getElementById(id);
+    // Restarts the model's jump each time, so it plays again for every correct answer.
+    function jumpModel(){
+        const m=$('model');
+        m.classList.remove('jump');
+        void m.offsetWidth;   // forces the browser to restart the animation
+        m.classList.add('jump');
+    }
     const pref=k=>{try{return localStorage.getItem(k)!=='false'}catch(e){return true}};
     function setPref(k,v){try{localStorage.setItem(k,v)}catch(e){}if(k==='backgroundMusicEnabled')v?playBg():$('bgMusic').pause()}
     function playBg(){if(!pref('backgroundMusicEnabled'))return;const a=$('bgMusic');a.volume=.3;a.play().catch(()=>document.addEventListener('click',()=>{if(pref('backgroundMusicEnabled'))a.play()},{once:true}))}
@@ -665,7 +728,7 @@
     if(phase==='wrong'){img=MODEL.thinking;b.innerHTML=`<span>Something’s not right</span><span>${s.bad}</span>`}
     m.src=img;
     const st=$('stage');st.classList.toggle('center',s.t==='done');
-    if(s.t==='intro')st.innerHTML=`<div class="text"><p>Welcome to the first chapter of the Java course! 🚀</p><p>Java is a popular programming language designed by <a href="https://en.wikipedia.org/wiki/James_Gosling" target="_blank" rel="noopener">James Gosling</a> to be “written once, run anywhere” with a Java Virtual Machine (JVM).</p></div><button class="btn mid" onclick="next()">Next</button>`;
+    if(s.t==='intro')st.innerHTML=`<div class="text"><p>Welcome to the first chapter of the Java course! </p><p>Java is a popular programming language designed by <a href="https://en.wikipedia.org/wiki/James_Gosling" target="_blank" rel="noopener">James Gosling</a> to be “written once, run anywhere” with a Java Virtual Machine (JVM).</p></div><button class="btn mid" onclick="next()">Next</button>`;
     else if(s.t==='finish')st.innerHTML=`<div class="text"><p>Awesome! We’ve learned the basics of Java</p><p>Before we add actions to them, move on to the next lesson to learn about the Java syntax present on every program out there.</p></div><button class="btn mid" onclick="next()">Next</button>`;
     else if(s.t==='done')renderDone();
     else{
@@ -691,18 +754,26 @@
     return `<div class="work"><div class="editor"><div class="tab"><img src="/icons/small size java logo.png" alt="">Main.java</div><div class="code">${lines}</div>${tl}</div>${out}</div>`;
     }
     function renderDone(){
-    $('stage').innerHTML=`<div class="done"><img src="/icons/done.png" alt=""><h1>COMPLETED!</h1>
-    <p class="done-desc">${REPLAY?'Nice review! Rewards can only be earned once per lesson.':'Great job! You finished Lesson 1. The next lesson is now unlocked.'}</p>
-    <button class="rbtn" id="rewardBtn" onclick="getReward()">Continue</button></div>`;
-    $('bubbles').innerHTML='';
-    $('bgMusic').pause();sfx('completedSound');
-    }
+        if(REPLAY){
+            // Lesson already completed: no rewards
+            $('stage').innerHTML=`<div class="done"><img src="/icons/done.png" alt=""><h1>COMPLETED!</h1>
+            <p class="done-desc">Nice Review! Rewards can only be earned once per lesson.</p>
+            <button class="rbtn edge" id="rewardBtn" onclick="getReward()">Continue</button></div>`;
+        }else{
+            // First time: star, rank, XP and coins
+            $('stage').innerHTML=`<div class="done"><img src="/icons/victory.png" alt="victory"><h1 style="margin-bottom:26px">COMPLETED!</h1>
+            <div class="rew"><div class="l"><b>Starter</b><b id="xpNum">${REWARD_XP}</b><b>Coins</b><b>+${REWARD_COINS}</b></div><div class="earn">EARNED<div>${REWARD_XP} XP</div></div></div>
+            <button class="rbtn" id="rewardBtn" onclick="getReward()">Get reward</button></div>`;
+        }
+        $('bubbles').innerHTML='';
+        $('bgMusic').pause();sfx('completedSound');
+}
 
     /* ---------- Interaction ---------- */
     function upd(){
     const s=steps[cur],b=$('mainBtn');if(!b)return;
     if(phase==='correct'){b.textContent='Continue';b.disabled=false;return}
-    if(phase==='wrong'){b.textContent='Try Again';b.disabled=false;return}
+    if(phase==='wrong'){b.textContent='Try again';b.disabled=false;return}
     b.textContent='Check';
     b.disabled=s.t==='mc'?sel<0:s.t==='type'?!typed.trim():filled.length<s.ans.length;
     }
@@ -719,6 +790,7 @@
     if(s.t==='type')ok=typed.trim()==='Hello World!';
     if(s.t==='asm')ok=filled.every((c,i)=>s.choices[c]===s.ans[i]);
     phase=ok?'correct':'wrong';sfx(ok?'correctSound':'wrongSound');render();
+    if(ok)jumpModel();
     }
     function next(){cur++;phase='answer';sel=-1;filled=[];typed='';render()}
 
@@ -772,14 +844,14 @@
 
     let claimed=false;
     function getReward(){
-    if(claimed)return;claimed=true;
-    saveProgress();
-    if(REPLAY){location.href='/pages/Learn.html';return}   // no rewards, so no coin burst
-    const b=$('rewardBtn');b.textContent='Reward Claimed';b.classList.add('claimed');b.disabled=true;
-    const r=b.getBoundingClientRect();
-    coinBurst(r.left+r.width/2,r.top+r.height/2);
-    countDown($('xpNum'),REWARD_XP,0,1200);
-    setTimeout(()=>{location.href='/pages/Learn.html'},2300);
+        if(claimed)return;claimed=true;
+        saveProgress();
+        if(REPLAY){location.href='/pages/Learn.html';return}   // no rewards, so no coin burst
+        const b=$('rewardBtn');b.textContent='Reward claimed';b.classList.add('claimed');b.disabled=true;
+        setTimeout(()=>{location.href='/pages/Learn.html'},2300);   // set first, so an animation problem can never block it
+        const r=b.getBoundingClientRect();
+        coinBurst(r.left+r.width/2,r.top+r.height/2);
+        const xn=$('xpNum');if(xn)countDown(xn,REWARD_XP,0,1200);
     }
     function countDown(el,from,to,d){const t0=performance.now();(function f(n){const t=Math.min((n-t0)/d,1),e=1-Math.pow(1-t,3);el.textContent=Math.round(from+(to-from)*e);if(t<1)requestAnimationFrame(f)})(t0)}
 

@@ -6,7 +6,695 @@
 <title>Java Master - Data Types</title>
 <link rel="icon" href="/logo/java-master-logo.png" type="image/png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/lesson.css">
+<style>
+  /* ---------- Base ---------- */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #3e3a36;
+        font-family: 'Inter', sans-serif;
+        height: 100vh;
+        color: #f3e6d8;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* ---------- Top bar & progress ---------- */
+    .top-bar {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(100vw, calc(100vh * 1240 / 700));   
+        display: flex;
+        justify-content: space-between;
+        padding: min(1.774vw, 3.143vh) min(3.548vw, 6.286vh);   
+        z-index: 5;
+    }
+
+    .top-bar button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: min(3.548vw, 6.286vh);
+        height: min(3.548vw, 6.286vh);  
+    }
+
+    .top-bar svg {
+        width: min(2.258vw, 4vh);
+        height: min(2.258vw, 4vh);
+        color: #f3e6d8;
+    }
+
+    .progress {
+        position: absolute;
+        top: 135px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+    }
+
+    .progress i {
+        width: 112px;
+        height: 12px;
+        border-radius: 6px;
+        background: #8f7f8f;
+        transition: background .4s;
+    }
+
+    .progress i.on {
+        background: #f59e0b;
+    }
+
+    /* ---------- Stage, text & multiple choice ---------- */
+
+    /* Every block of lesson content sits on one column, so the prompt, the
+       options, the code editor and the token bank all line up. The column is
+       wide enough for the code editor and the output panel to sit side by
+       side inside it. */
+    :root {
+        --content-w: min(700px, 92vw);
+    }
+
+    #stage {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 170px;
+        padding-bottom: 40px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+
+    .text {
+        width: min(480px,86vw);
+        text-align: justify;
+        font-size: 22px;
+        line-height: 1.3;
+    }
+
+    .text p+p {
+        margin-top: 28px;
+    }
+
+    .text a {
+        color: inherit;
+    }
+
+    .prompt {
+        width: var(--content-w);
+        text-align: center;
+        font-size: 15px;
+        line-height: 1.35;
+        margin-bottom: 34px;
+        user-select: none;
+    }
+
+    .prompt p+p {
+        margin-top: 18px;
+    }
+
+    .opts {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        width: var(--content-w);
+    }
+
+    .opt {
+        background: #f1e3d8;
+        color: #3e3a36;
+        border: 3px solid #b9694f;
+        border-radius: 16px;
+        padding: 20px;
+        font: 600 15px 'Inter', sans-serif;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .opt:hover {
+        transform: translateY(-2px);
+    }
+
+    .opt.sel {
+        border-color: #4a9eff;
+    }
+
+    .opt.ok {
+        background: #d9ffb3;
+        border-color: #7ed321;
+        color: #4c9a0a;
+    }
+
+    .opt.bad {
+        background: #ffe0e4;
+        border-color: #e0525f;
+        color: #e0303f;
+    }
+
+    .opt:disabled {
+        cursor: default;
+        transform: none;
+    }
+
+    /* ---------- Code editor, output & code assembly ---------- */
+    .editor {
+        flex: 1 1 auto;
+        min-width: 0;
+        height: auto;
+        min-height: 150px;
+        max-height: 250px;
+        background: #1b2036;
+        border: 2px solid #12172b;
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tab {
+        background: #2a3350;
+        font-size: 10px;
+        padding: 0 14px;
+        height: 26px; 
+        width: fit-content;
+        border-radius: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .tab img {
+        width: 12px;
+        height: 12px;
+    }
+
+    .code {
+        padding: 18px 22px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .line {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        flex-wrap: wrap;
+    }
+
+    .chip {
+        background: #2f3450;
+        border-radius: 7px;
+        padding: 7px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        min-height: 28px;
+        display: flex;
+        align-items: center;
+        color: #e9e4f2;
+    }
+
+    .chip.empty {
+        background: #2a2f44;
+        min-width: 42px;
+        color: transparent;
+    }
+
+    .chip.in {
+        padding: 0 4px;
+        min-width: 90px;
+    }
+
+    .chip.in input {
+        background: none;
+        border: none;
+        outline: none;
+        color: #fff;
+        font: 600 12px 'Inter', sans-serif;
+        width: 120px;
+        text-align: center;
+        padding: 7px 0;
+    }
+
+    .dot {
+        color: #7ec8ff;
+        font-weight: 700;
+    }
+
+    .tools {
+        display: flex;
+        justify-content: flex-end;
+        gap: 14px;
+        padding: 10px 18px;
+        border-top: 1px solid #2a3350;
+        font-size: 12px;
+        height: 38px;
+    }
+
+    .tools button {
+        background: none;
+        border: none;
+        color: #e9e4f2;
+        font: 500 12px 'Inter', sans-serif;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .tools button img {
+        width: 15px;
+        height: 12px;
+    }
+
+    /* The editor and the output panel sit side by side inside the same column
+       as the prompt and the token bank. The output needs room for a whole line
+       of text, so the column is wide enough for both. */
+    .work {
+        display: flex;
+        gap: 12px;
+        width: var(--content-w);
+        align-items: stretch;
+    }
+
+    /* The output is a wide, short panel: a tall narrow box broke the output
+       text onto several lines. */
+    .output {
+        flex: 0 0 272px;
+        height: 168px;
+        align-self: flex-start;
+        background: #1b2036;
+        border: 2px solid #12172b;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .output div:first-child {
+        background: #2a3350;
+        font-size: 10px;
+        padding: 0 14px;
+        height: 24px;           
+        display: flex;          
+        align-items: center;   
+    }
+
+    .output div:last-child {
+        background: #8f93a3;
+        color: #23242e;
+        height: 100%;
+        padding: 8px 12px;
+        font-size: 16px;
+    }
+
+    .choices {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        width: var(--content-w);
+        margin-top: 26px;
+    }
+
+    .choice {
+        background: #f1e3d8;
+        color: #3e3a36;
+        border: 3px solid #b9694f;
+        border-radius: 14px;
+        padding: 12px 24px;
+        font: 700 17px 'Inter', sans-serif;
+        cursor: pointer;
+    }
+
+    .choice:disabled {
+        visibility: hidden;
+    }
+
+    /* ---------- Main button, model & speech bubbles ---------- */
+
+    /* The action button sits in the bottom right corner of the screen. It is
+       pinned to the window, so it stays put when the stage scrolls. */
+    .btn {
+        position: fixed;
+        right: 6%;
+        bottom: 10%;
+        width: 240px;
+        padding: 20px;
+        border: none;
+        border-radius: 14px;
+        background: #c8662d; 
+        box-shadow: 0 7px 0 #8a421d;               
+        transition: transform .1s, box-shadow .1s;
+        color: #fff;
+        font: 700 19px 'Inter', sans-serif;
+        cursor: pointer;
+    }
+
+    .btn:disabled {
+        background: #7a5a4e;
+        box-shadow: 0 7px 0 #53392f;
+        cursor: not-allowed;
+    }
+
+    .btn:not(:disabled):active {
+        transform: translateY(4px);
+        box-shadow: 0 3px 0 #8a421d;
+    }
+
+    /* The Next button on the intro and the outro stays on the content column,
+       in the middle of the screen. */
+    .btn.mid {
+        position: static;
+        flex: none;
+        align-self: center;
+        margin-top: 90px;
+    }
+
+    .model {
+        position: absolute;
+        left: 6%;
+        bottom: 0;
+        height: 40vh;
+        max-height: 340px;
+    }
+
+    /* Model jump when the answer is correct */
+    @keyframes model-jump {
+        0%   { transform: translateY(0); }
+        35%  { transform: translateY(-28px); }
+        60%  { transform: translateY(0); }
+        75%  { transform: translateY(-8px); }
+        100% { transform: translateY(0); }
+    }
+
+    .model.jump {
+        animation: model-jump .5s ease-out;
+    }
+
+    /* People who turn on "reduce motion" in their system get no jump. */
+    @media (prefers-reduced-motion: reduce) {
+        .model.jump {
+            animation: none;
+        }
+    }
+
+    .bubbles {
+        position: absolute;
+        left: calc(6% + 150px);
+        bottom: 26vh;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        max-width: 200px;
+    }
+
+    .bubbles span {
+        background: #b3aaa4;
+        color: #2b2623;
+        font-size: 12px;
+        padding: 7px 10px;
+        border-radius: 9px;
+        width: fit-content;
+    }
+
+    .bubbles em {
+        color: #b8470f;
+        font-style: normal;
+    }
+
+    /* ---------- Settings & exit modals ---------- */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .7);
+        z-index: 50;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.on {
+        display: flex;
+    }
+
+    .card {
+        background: #3f2e28;
+        color: #f3e6d8;
+        border-radius: 28px;
+        padding: 40px 44px;
+        width: min(420px,90vw);
+        text-align: center;
+        position: relative;
+    }
+
+    .card h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 36px;
+    }
+
+    .card .x {
+        position: absolute;
+        top: 14px;
+        right: 22px;
+        background: none;
+        border: none;
+        font-size: 28px;
+        font-weight: 300;
+        color: #f3e6d8;
+        cursor: pointer;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 26px;
+        font-size: 17px;
+        color: #f3e6d8;
+    }
+
+    .tg {
+        position: relative;
+        width: 56px;
+        height: 30px;
+    }
+
+    .tg input {
+        display: none;
+    }
+
+    .tg span {
+        position: absolute;
+        inset: 0;
+        background: #4a2a14;
+        border-radius: 30px;
+        transition: .3s;
+        cursor: pointer;
+    }
+
+    .tg span:before {
+        content: "";
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        left: 4px;
+        bottom: 4px;
+        background: #8a7568;
+        border-radius: 50%;
+        transition: .3s;
+    }
+
+    .tg input:checked+span {
+        background: #4a2a14;
+    }
+
+    .tg input:checked+span:before {
+        background: #e0700f;
+    }
+
+    .tg input:checked+span:before {
+        transform: translateX(26px);
+    }
+
+    .card p {
+        margin-bottom: 36px;
+        font-size: 15px;
+        line-height: 1.4;
+        color: #f3e6d8;
+    }
+
+    .card .bs {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+    }
+
+    .card .bs button {
+        font: 600 17px 'Inter', sans-serif;
+        padding: 12px 30px;
+        border-radius: 14px;
+        cursor: pointer;
+        border: 3px solid #e0966f;
+        background: transparent;
+        color: #e0966f;
+    }
+
+    .card .bs button.p {
+        background: #c8662d;
+        border-color: #c8662d;
+        color: #fff;
+    }
+
+    /* ---------- Finish & completed screens ---------- */
+
+    /* The top bar and the progress dots are gone by the time the lesson is
+       finished, so the space they needed is given back. Without this the
+       panel sits low, because it is centred inside the space the top bar
+       used to take. */
+    #stage.center {
+        padding-top: 0;
+    }
+
+    /* The finish screen is a piece of reading, so it is justified. The line
+       is kept short, because a justified line that runs the width of the
+       column is hard to read. */
+    .text.finish {
+        width: min(480px, 86vw);
+        text-align: justify;
+    }
+
+    .done {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-top: 0;
+        justify-content: center;
+
+        /* The height grows with the content instead of being pinned to the
+           screen, so a short screen scrolls to the top of the panel instead of
+           cutting it off. */
+        height: auto;
+        min-height: 100%;
+    }
+
+    .done img {
+        width: 190px;
+        margin-bottom: 22px;
+    }
+
+    .done h1 {
+        font-size: 26px;
+        margin-bottom: 14px;
+    }
+
+    /* The short line under the heading that says what just happened. */
+    .done-desc {
+        width: min(340px, 86vw);
+        margin-bottom: 34px;
+        font-size: 16px;
+        line-height: 1.4;
+        color: #d9b78f;
+    }
+
+    /* The reward panel sits on the same column as the prompt, the options and
+       the code editor, so the lesson keeps one width from the first question
+       to the last screen. */
+    .rew {
+        display: flex;
+        gap: 70px;
+        align-items: center;
+        justify-content: center;
+        width: var(--content-w);
+        margin-bottom: 34px;
+        font-weight: 600;
+        font-size: 20px;
+        color: #d9b78f;
+    }
+
+    .rew .l {
+        display: grid;
+        grid-template-columns: auto auto;
+        gap: 6px 28px;
+        text-align: left;
+    }
+
+    .rew .l b:nth-child(even) {
+        text-align: right;
+    }
+
+    .earn {
+        text-align: center;
+        color: #f3e6d8;
+        font-size: 19px;
+    }
+
+    .earn div {
+        color: #f59e0b;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .rbtn {
+        width: min(306px, 88vw);
+        padding: 20px;
+        border: none;
+        border-radius: 14px;
+        background: #5b3fe0;
+        box-shadow: 0 7px 0 #3a2a9a;
+        transition: transform .1s, box-shadow .1s;
+        color: #fff;
+        font: 700 20px 'Inter', sans-serif;
+        cursor: pointer;
+    }
+
+    .rbtn.claimed {
+        background: #432da3;
+        box-shadow: 0 3px 0 #2a1d75;
+        transform: translateY(4px);
+        cursor: default;
+    }
+
+    .rbtn:not(.claimed):active {
+        transform: translateY(4px);
+        box-shadow: 0 3px 0 #3a2a9a;
+    } 
+
+    /* On a narrow screen the two halves of the panel stack instead of
+       sitting side by side. */
+    @media (max-width: 600px) {
+        .rew {
+            gap: 26px;
+            flex-direction: column;
+        }
+
+        .rew .l {
+            gap: 6px 40px;
+        }
+    }
+
+    /* ---------- Gold coin canvas ---------- */
+    #coins {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 100;
+    }
+</style>
 </head>
 <body>
 <audio id="bgMusic" loop><source src="/sounds/BG_music.mp3" type="audio/mpeg"></audio>
@@ -15,8 +703,8 @@
 <audio id="completedSound"><source src="/sounds/completed_sound-efx.wav" type="audio/wav"></audio>
 
 <div class="top-bar" id="topBar">
-  <button onclick="openModal('exitModal')"><img src="/icons/goback.png" alt="Go Back"></button>
-  <button onclick="openModal('settingsModal')"><img src="/icons/settings_icon.png" alt="Settings"></button>
+<button onclick="openModal('exitModal')" aria-label="Go back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+<button onclick="openModal('settingsModal')" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg></button>
 </div>
 <div class="progress" id="progress"></div>
 <div id="stage"></div>
@@ -36,6 +724,678 @@
 <canvas id="coins" aria-hidden="true"></canvas>
 
 <script>window.LESSON_NODE_ID = 3;</script>
-<script src="/js/lesson.js"></script>
+<script>
+  /* ==========================================================================
+   Java Master - lesson engine
+   --------------------------------------------------------------------------
+   Every lesson page loads this file. It drives the whole lesson:
+
+     1. loads the node and its questions from the API (the payload never
+        contains an answer, only what the learner is allowed to see),
+     2. renders one question frame at a time,
+     3. sends every answer to the server, which decides whether it is right
+        and replies with the praise or the correction,
+     4. lets the learner retry a question they got wrong,
+     5. asks the server to complete the node, which pays the rewards, unlocks
+        the next lesson and records the streak.
+
+   The browser never decides whether an answer is correct.
+   ========================================================================== */
+(function () {
+    'use strict';
+
+    var NODE_ID = window.LESSON_NODE_ID;
+
+    var MODEL = {
+        wave: '/model/James Gosling wave.png',
+        stand: '/model/James Gosling Standing Up.png',
+        applause: '/model/James Gosling Applause.png',
+        thinking: '/model/James Gosling Thinking.png',
+        drink: '/model/James Gosling Drinking Coffee.png'
+    };
+
+    /* ---------------------------------------------------------------- state */
+    var node = null;        // the node, straight from the server
+    var questions = [];     // the questions, in order
+    var screen = 'intro';   // 'intro' | 'question' | 'done'
+    var qIndex = 0;
+    var phase = 'answer';   // 'answer' | 'correct' | 'wrong'
+    var sel = null;         // selected option id (multiple choice)
+    var typed = '';         // free text (fill in the blank)
+    var slots = {};         // slot id -> chosen token (fill slots / arrange tokens)
+    var slotOrder = [];     // slot ids in the order they appear
+    var serverOutput = null;// the output panel, only sent back on a correct answer
+    var completion = null;  // the completion payload from the server
+    var correcting = false; // true while the learner is fixing a wrong answer
+    var busy = false;
+
+    /* ------------------------------------------------------------- helpers */
+    var $ = function (id) { return document.getElementById(id); };
+    // Restarts the model's jump each time, so it plays again for every correct answer.
+    function jumpModel() {
+        var m = $('model');
+        m.classList.remove('jump');
+        void m.offsetWidth;   // forces the browser to restart the animation
+        m.classList.add('jump');
+    }
+    var esc = function (s) {
+        return String(s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    };
+
+    function pref(k) { try { return localStorage.getItem(k) !== 'false'; } catch (e) { return true; } }
+    function setPref(k, v) {
+        try { localStorage.setItem(k, v); } catch (e) { }
+        if (k === 'backgroundMusicEnabled') { v ? playBg() : $('bgMusic').pause(); }
+    }
+    function playBg() {
+        if (!pref('backgroundMusicEnabled')) return;
+        var a = $('bgMusic'); a.volume = .3;
+        a.play().catch(function () {
+            document.addEventListener('click', function () {
+                if (pref('backgroundMusicEnabled')) a.play();
+            }, { once: true });
+        });
+    }
+    function sfx(id) {
+        if (!pref('soundEffectsEnabled')) return;
+        var a = $(id); a.currentTime = 0; a.play().catch(function () { });
+    }
+    function openModal(id) { $(id).classList.add('on'); }
+    function closeModal(id) { $(id).classList.remove('on'); }
+    document.querySelectorAll('.modal').forEach(function (m) {
+        m.addEventListener('click', function (e) { if (e.target === m) m.classList.remove('on'); });
+    });
+
+    function api(path, options) {
+        return fetch('/api' + path, {
+            headers: { 'Content-Type': 'application/json' },
+            ...(options || {})
+        }).then(function (res) {
+            return res.json().catch(function () { return {}; }).then(function (data) {
+                if (!res.ok) {
+                    var err = new Error(data.error || 'Something went wrong.');
+                    err.status = res.status;
+                    throw err;
+                }
+                return data;
+            });
+        });
+    }
+
+    /* ------------------------------------------------------- question parts */
+    function payloadOf(q) {
+        // The API sends the payload as a JSON string.
+        if (typeof q.payload === 'string') {
+            try { return JSON.parse(q.payload); } catch (e) { return {}; }
+        }
+        return q.payload || {};
+    }
+
+    function slotsOf(p) {
+        var p2 = p.lines || [];
+        var ids = [];
+        p2.forEach(function (line) {
+            line.forEach(function (tok) {
+                var m = /^\{\{(\d+)\}\}$/.exec(tok);
+                if (m && ids.indexOf(m[1]) < 0) ids.push(m[1]);
+            });
+        });
+        return ids;
+    }
+
+    function bankOf(p, type) {
+        var bank = type === 'ArrangeTokens' ? (p.tokens || []) : (p.bank || []);
+        if (type !== 'ArrangeTokens') return bank.slice();
+        // The order matters for arrange-tokens, so do not hand them over in order.
+        var shuffled = bank.slice();
+        for (var i = shuffled.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+        }
+        return shuffled;
+    }
+
+    function chip(tok) {
+        if (tok === '.') return '<span class="dot">.</span>';
+        return '<span class="chip">' + esc(tok) + '</span>';
+    }
+
+    function slotChip(id) {
+        var v = slots[id];
+        return v !== undefined
+            ? '<span class="chip">' + esc(v) + '</span>'
+            : '<span class="chip empty">____</span>';
+    }
+
+    function renderLines(lines) {
+        return lines.map(function (line) {
+            return '<div class="line">' + line.map(function (tok) {
+                var m = /^\{\{(\d+)\}\}$/.exec(tok);
+                return m ? slotChip(m[1]) : chip(tok);
+            }).join('') + '</div>';
+        }).join('');
+    }
+
+    function renderTemplate(template) {
+        return template.map(function (tok) {
+            var i = tok.indexOf('{{blank}}');
+            if (i < 0) return chip(tok);
+            var pre = tok.slice(0, i);
+            var post = tok.slice(i + 9);
+            // The input is wired up with a real event listener in render(), not an
+            // inline handler: an inline handler would assign to the global scope
+            // and the value would never reach this module.
+            // Every typed answer goes through here, in every lesson, so this is
+            // where the clipboard is closed off: the answer is usually in the
+            // question text, so the field must not accept a paste of it.
+            return '<span class="chip in">' + esc(pre) +
+                '<input id="tin" ' + (phase === 'answer' ? '' : 'readonly') +
+                ' value="' + esc(typed) + '" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"' +
+                ' onpaste="return false" ondrop="return false" oncopy="return false" oncut="return false" oncontextmenu="return false">' +
+                esc(post) + '</span>';
+        }).join('');
+    }
+
+    function workspace(inner, tools) {
+        var out = (phase === 'correct' && serverOutput)
+            ? '<div class="output"><div>Output</div><div>' + esc(serverOutput) + '</div></div>'
+            : '';
+        var tl = (tools && phase === 'answer')
+            ? '<div class="tools"><button data-action="rem"><img src="/icons/remove.png" alt="">Remove</button>' +
+              '<button data-action="reset"><img src="/icons/reset.png" alt="">Reset</button></div>'
+            : (tools ? '<div class="tools"></div>' : '');
+        return '<div class="work"><div class="editor"><div class="tab"><img src="/icons/small size java logo.png" alt="">Main.java</div>' +
+            '<div class="code">' + inner + '</div>' + tl + '</div>' + out + '</div>';
+    }
+
+    /* ------------------------------------------------------------ rendering */
+    function render() {
+        var st = $('stage');
+        var b = $('bubbles');
+        b.innerHTML = '';
+        var m = $('model');
+        m.style.display = screen === 'done' ? 'none' : 'block';
+        var img = MODEL.stand;
+
+        $('topBar').style.display = screen === 'done' ? 'none' : 'flex';
+        $('progress').style.display = screen === 'question' ? 'flex' : 'none';
+
+        // The finished screen has no top bar and no progress dots, so the
+        // room they needed at the top is given back and the panel can sit in
+        // the middle of the screen. The finish screen keeps the top bar, so
+        // the learner can still go back.
+        st.classList.toggle('center', screen === 'done');
+
+        if (screen === 'question') {
+            $('progress').innerHTML = questions.map(function (_, i) {
+                return '<i class="' + (i <= qIndex ? 'on' : '') + '"></i>';
+            }).join('');
+        }
+
+        if (screen === 'finish') { renderFinish(); return; }
+
+        if (screen === 'intro') {
+            img = MODEL.wave;
+            m.src = img;
+            st.innerHTML = '<div class="text">' +
+                (node.introText || '').split(/\n\n/).map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') +
+                '</div><button class="btn mid" data-action="start">Next</button>';
+            return;
+        }
+
+        if (screen === 'done') { renderDone(); return; }
+
+        var q = questions[qIndex];
+        var p = payloadOf(q);
+        slotOrder = slotsOf(p);
+        var body = '';
+
+        if (phase === 'correct') { img = MODEL.applause; b.innerHTML = '<span>' + esc(lastMessage || '') + '</span>'; }
+        else if (phase === 'wrong' || correcting) {
+            // The correction stays on screen while the learner fixes the answer.
+            img = MODEL.thinking;
+            b.innerHTML = '<span>Something’s not right</span><span>' + esc(lastMessage || '') + '</span>';
+        }
+        m.src = img;
+
+        if (q.type === 'MultipleChoice') {
+            body = '<div class="opts">' + (p.options || []).map(function (o) {
+                var c = 'opt';
+                if (phase === 'answer' && sel === o.id) c += ' sel';
+                if (sel === o.id && phase === 'correct') c += ' ok';
+                if (sel === o.id && phase === 'wrong') c += ' bad';
+                return '<button class="' + c + '" ' + (phase !== 'answer' ? 'disabled' : '') +
+                    ' data-opt="' + esc(o.id) + '">' + esc(o.text) + '</button>';
+            }).join('') + '</div>';
+        } else if (q.type === 'FillBlank') {
+            body = workspace('<div class="line">' + renderTemplate(p.template || []) + '</div>', false);
+        } else {
+            // FillSlots and ArrangeTokens both fill marked places from a bank of tokens.
+            body = workspace(renderLines(p.lines || []), true) +
+                '<div class="choices">' + bankOf(p, q.type).map(function (t) {
+                    var used = Object.keys(slots).some(function (k) { return slots[k] === t; });
+                    return '<button class="choice" ' + (used || phase !== 'answer' ? 'disabled' : '') +
+                        ' data-token="' + esc(t) + '">' + esc(t) + '</button>';
+                }).join('') + '</div>';
+        }
+
+        st.innerHTML = '<div class="prompt"><p>' + esc(q.prompt || '').replace(/\n\n/g, '</p><p>') + '</p></div>' +
+            body + '<button class="btn" id="mainBtn"></button>';
+
+        if (q.type === 'FillBlank' && phase === 'answer') {
+            var ti = $('tin');
+            if (ti) {
+                ti.addEventListener('input', function () { typed = ti.value; upd(); });
+                ti.focus();
+            }
+        }
+        upd();
+    }
+
+    // The finish screen comes between the last question and the completed
+    // screen. It is only shown the first time a lesson is finished, so a
+    // replay goes straight to the completed screen.
+    function renderFinish() {
+        var c = completion || {};
+
+        // The name comes from the server's own record of what was just
+        // completed, so it can never disagree with the lesson that was played.
+        var title = c.title || (node && node.title) || 'the lesson';
+
+        // The first line says the lesson is done and the next one is open.
+        // The rest is the lesson's own closing text, which the server owns.
+        var outro = (c.outroText || '').split(/\n\n/).filter(function (t) { return t.trim(); });
+
+        $('model').src = MODEL.drink;
+        $('stage').innerHTML = '<div class="text finish">' +
+            '<p>' + esc('Great Job! You finished ' + title + '. The next lesson is now unlocked.') + '</p>' +
+            outro.map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') +
+            '</div><button class="btn mid" data-action="finishNext">Next</button>';
+    }
+
+    function renderDone() {
+        var c = completion || {};
+
+        // A lesson that is played for the first time shows what it paid, so
+        // the learner can claim the reward. A replay has nothing left to
+        // claim, so it gets the plain screen with the closing line instead.
+        var first = c.firstTime;
+
+        var body = first
+            ? '<div class="rew"><div class="l"><b id="rankName">' + esc(c.rankBefore || 'Starter') + '</b>' +
+              '<b id="xpNum">' + (c.xpBefore || 0) + '</b>' +
+              '<b>Coins</b><b>+' + (c.coinsEarned || 0) + '</b></div>' +
+              '<div class="earn">EARNED<div>' + (c.xpEarned || 0) + ' XP</div></div></div>'
+            : '<p class="done-desc">Nice review! Rewards can only be earned once per lesson.</p>';
+
+        $('stage').innerHTML = '<div class="done">' +
+            '<img src="/icons/' + (first ? 'victory.png' : 'done.png') + '" alt="">' +
+            '<h1>COMPLETED!</h1>' + body +
+            '<button class="rbtn" id="rewardBtn">' + (first ? 'Get Reward' : 'Continue') + '</button></div>';
+        $('bubbles').innerHTML = '';
+        $('bgMusic').pause();
+        sfx('completedSound');
+
+        if (!first) return;
+
+        // The XP counts up to the new total, and the rank name changes once it
+        // has landed.
+        countUp($('xpNum'), c.xpBefore || 0, c.xpAfter || 0, 1200);
+        setTimeout(function () {
+            var r = $('rankName');
+            if (r) r.textContent = c.rankAfter || 'Starter';
+        }, 1250);
+    }
+
+    // Counts a number up from one value to another.
+    function countUp(el, from, to, d) {
+        if (!el) return;
+        // Someone who asked for less motion gets the number straight away.
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            el.textContent = to;
+            return;
+        }
+        var t0 = performance.now();
+        (function f(n) {
+            var t = Math.min((n - t0) / d, 1);
+            var e = 1 - Math.pow(1 - t, 3);
+            el.textContent = Math.round(from + (to - from) * e);
+            if (t < 1) requestAnimationFrame(f);
+        })(t0);
+    }
+
+    /* ----------------------------------------------------------- answering */
+    function upd() {
+        var b = $('mainBtn');
+        if (!b) return;
+        var q = questions[qIndex];
+        if (phase === 'correct') { b.textContent = 'Continue'; b.disabled = false; return; }
+        if (phase === 'wrong') { b.textContent = 'Try Again'; b.disabled = false; return; }
+        b.textContent = 'Check';
+        if (q.type === 'MultipleChoice') b.disabled = sel === null;
+        else if (q.type === 'FillBlank') b.disabled = !typed.trim();
+        else b.disabled = slotOrder.some(function (id) { return slots[id] === undefined; });
+    }
+
+    function pick(id) {
+        sel = id;
+        var opts = payloadOf(questions[qIndex]).options || [];
+        document.querySelectorAll('.opt').forEach(function (o, k) {
+            o.classList.toggle('sel', !!(opts[k] && opts[k].id === id));
+        });
+        upd();
+    }
+
+    function addTok(token) {
+        var q = questions[qIndex];
+        var p = payloadOf(q);
+        var id = slotOrder.find(function (s) { return slots[s] === undefined; });
+        if (!id) return;
+        slots[id] = token;
+        render();
+    }
+
+    function rem() {
+        var last = slotOrder.filter(function (s) { return slots[s] !== undefined; }).pop();
+        if (last) delete slots[last];
+        render();
+    }
+
+    function reset() { slots = {}; render(); }
+
+    function answerBody() {
+        var q = questions[qIndex];
+        if (q.type === 'MultipleChoice') return { optionId: sel };
+        if (q.type === 'FillBlank') return { text: typed };
+        if (q.type === 'ArrangeTokens') {
+            return { order: slotOrder.map(function (id) { return slots[id]; }) };
+        }
+        var out = {};
+        slotOrder.forEach(function (id) { out[id] = slots[id]; });
+        return { slots: out };
+    }
+
+    var lastMessage = '';
+
+    function mainAction() {
+        if (busy) return;
+        if (phase === 'correct') { next(); return; }
+        if (phase === 'wrong') { retry(); return; }
+
+        var q = questions[qIndex];
+        busy = true;
+        api('/learn/questions/' + q.id + '/check', {
+            method: 'POST',
+            body: JSON.stringify({ nodeId: NODE_ID, answer: answerBody() })
+        }).then(function (res) {
+            busy = false;
+            lastMessage = res.message || '';
+            serverOutput = res.output || null;
+            correcting = !res.correct;
+            phase = res.correct ? 'correct' : 'wrong';
+            if (res.correct) sfx('correctSound'); else sfx('wrongSound');
+            render();
+            if (res.correct) jumpModel();
+        }).catch(function (err) {
+            busy = false;
+            lastMessage = err.message || 'Something went wrong.';
+            correcting = true;
+            phase = 'wrong';
+            render();
+        });
+    }
+
+    function retry() {
+        phase = 'answer';
+        // The model goes back to standing and the correction goes away, so the
+        // learner sees a clean question again instead of the same wrong answer
+        // still being on screen.
+        correcting = false;
+        lastMessage = '';
+        var q = questions[qIndex];
+        // Keep the typed text so a small slip does not have to be typed again,
+        // but clear the choices so a wrong option is not simply left selected.
+        if (q.type === 'MultipleChoice') sel = null;
+        if (q.type === 'FillSlots' || q.type === 'ArrangeTokens') slots = {};
+        serverOutput = null;
+        render();
+    }
+
+    function next() {
+        if (qIndex >= questions.length - 1) { finish(); return; }
+        qIndex++;
+        phase = 'answer';
+        correcting = false;
+        sel = null;
+        typed = '';
+        slots = {};
+        serverOutput = null;
+        lastMessage = '';
+        render();
+    }
+
+    function startLesson() {
+        screen = 'question';
+        qIndex = 0;
+        phase = 'answer';
+        correcting = false;
+        sel = null; typed = ''; slots = {}; serverOutput = null; lastMessage = '';
+        render();
+    }
+
+    /* ----------------------------------------------------------- completing */
+    function finish() {
+        busy = true;
+        api('/learn/nodes/' + NODE_ID + '/complete', { method: 'POST', body: '{}' })
+            .then(function (res) {
+                busy = false;
+                completion = res;
+                // The finish screen is the celebration, and it only happens the
+                // first time. A replay goes straight to the completed screen.
+                screen = res.firstTime ? 'finish' : 'done';
+                render();
+            })
+            .catch(function (err) {
+                busy = false;
+                lastMessage = err.message || 'Could not finish the lesson.';
+                screen = 'question';
+                render();
+            });
+    }
+
+
+
+    var claimed = false;
+    function getReward() {
+        if (claimed) return;
+        claimed = true;
+        var b = $('rewardBtn');
+        var c = completion || {};
+        var target = (completion && completion.badgeEarned) ? '/pages/Learn.html?badge=1' : '/pages/Learn.html';
+        if ((c.xpEarned || 0) > 0) {
+            b.textContent = 'Reward Claimed';
+            b.classList.add('claimed');
+            b.disabled = true;
+            setTimeout(function () { location.href = target; }, 2300);   // set first, so an animation problem can't block it
+            var r = b.getBoundingClientRect();
+            coinBurst(r.left + r.width / 2, r.top + r.height / 2);
+        } else {
+            location.href = target;   // replay: no rewards, so no coin burst or delay
+        }
+        // The Learn page shows the "+1 Badge" toast when it is told a badge was earned.
+        var target = (completion && completion.badgeEarned) ? '/pages/Learn.html?badge=1' : '/pages/Learn.html';
+        setTimeout(function () { location.href = target; }, 2300);
+    }
+
+    /* -------------------------------------------------------- coin burst */
+    var cv = $('coins'), ctx = cv.getContext('2d');
+    var W = 0, H = 0, coins = [], sparks = [], playing = false, t0 = null, tl = null;
+    var DURATION = 2000;
+    var rand = function (a, b) { return a + Math.random() * (b - a); };
+    var gold = ["#FFF2A1", "#FFDC57", "#E7A91D", "#D28A0B", "#FFF0A0"];
+
+    function resize() {
+        var d = Math.min(devicePixelRatio || 1, 2);
+        W = innerWidth; H = innerHeight;
+        cv.width = W * d; cv.height = H * d;
+        ctx.setTransform(d, 0, 0, d, 0, 0);
+    }
+    function burst(x, y) {
+        sparks.push({ x: x, y: y, r: rand(22, 34), life: 1 });
+        var n = Math.round(Math.min(100, Math.max(55, W / 10)));
+        for (var i = 0; i < n; i++) {
+            var a = rand(-Math.PI, Math.PI), sp = rand(2.5, 10.5);
+            coins.push({
+                x: x + rand(-7, 7), y: y + rand(-7, 7), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - rand(1, 3),
+                r: rand(7, 13), depth: rand(.65, 1.2), angle: rand(0, 6.28), spin: rand(-.2, .2),
+                rot: rand(-.1, .1), color: gold[Math.floor(Math.random() * gold.length)], age: 0, wobble: rand(0, 6.28)
+            });
+        }
+    }
+    function drawCoin(c) {
+        var p = Math.max(.12, Math.abs(Math.cos(c.angle))), rx = c.r * p * c.depth, ry = c.r * c.depth;
+        ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.rot);
+        ctx.beginPath(); ctx.ellipse(1.2, 1.8, rx + 1.3, ry + 1.3, 0, 0, 6.283); ctx.fillStyle = "#805008"; ctx.fill();
+        var g = ctx.createLinearGradient(-rx, -ry, rx, ry);
+        g.addColorStop(0, "#FFF4A4"); g.addColorStop(.22, "#FFD94B"); g.addColorStop(.48, c.color);
+        g.addColorStop(.72, "#D28A0B"); g.addColorStop(1, "#FFF0A0");
+        ctx.beginPath(); ctx.ellipse(0, 0, Math.max(.8, rx), ry, 0, 0, 6.283); ctx.fillStyle = g; ctx.fill();
+        ctx.lineWidth = Math.max(.6, c.r * .09); ctx.strokeStyle = "rgba(255,245,166,.95)"; ctx.stroke();
+        if (p > .38) {
+            ctx.beginPath(); ctx.ellipse(0, 0, Math.max(.4, rx * .72), ry * .72, 0, 0, 6.283);
+            ctx.lineWidth = Math.max(.45, c.r * .055); ctx.strokeStyle = "rgba(155,93,5,.7)"; ctx.stroke();
+            ctx.save(); ctx.scale(p, 1); ctx.font = 'bold ' + Math.max(7, c.r * 1.25) + 'px Arial';
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillStyle = "rgba(133,79,0,.7)"; ctx.fillText("$", .6, 1);
+            ctx.fillStyle = "rgba(255,249,190,.98)"; ctx.fillText("$", -.3, -.4); ctx.restore();
+        }
+        ctx.beginPath(); ctx.ellipse(-rx * .28, -ry * .36, Math.max(.5, rx * .2), Math.max(.45, ry * .11), -.35, 0, 6.283);
+        ctx.fillStyle = "rgba(255,255,226,.78)"; ctx.fill();
+        ctx.restore();
+    }
+    function glow() {
+        ctx.clearRect(0, 0, W, H);
+        var f = Math.max(0, 1 - (performance.now() - t0) / 420);
+        if (f > 0) {
+            var g = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * .42);
+            g.addColorStop(0, 'rgba(255,195,45,' + f * .14 + ')');
+            g.addColorStop(1, 'rgba(255,195,45,0)');
+            ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+        }
+    }
+    function updSparks(dt) {
+        for (var i = sparks.length - 1; i >= 0; i--) {
+            var s = sparks[i]; s.life -= .045 * dt; s.r *= Math.pow(1.09, dt);
+            if (s.life <= 0) { sparks.splice(i, 1); continue; }
+            var g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r);
+            g.addColorStop(0, 'rgba(255,226,106,' + s.life * .65 + ')');
+            g.addColorStop(.25, 'rgba(255,177,20,' + s.life * .2 + ')');
+            g.addColorStop(1, 'rgba(255,170,0,0)');
+            ctx.fillStyle = g; ctx.fillRect(s.x - s.r, s.y - s.r, s.r * 2, s.r * 2);
+        }
+    }
+    function updCoins(dt) {
+        for (var i = coins.length - 1; i >= 0; i--) {
+            var c = coins[i]; c.age += dt;
+            c.vy += .105 * dt; c.vx *= Math.pow(.998, dt);
+            c.x += c.vx * dt; c.y += c.vy * dt;
+            c.angle += c.spin * dt; c.rot += c.spin * .13 * dt; c.wobble += .04 * dt;
+            c.x += Math.sin(c.wobble) * .18 * dt;
+            ctx.globalAlpha = Math.max(0, Math.min(Math.min(1, c.age / 5), Math.min(1, (120 - c.age) / 30)));
+            drawCoin(c); ctx.globalAlpha = 1;
+            if (c.age >= 120 || c.y > H + 60 || c.x < -70 || c.x > W + 70) coins.splice(i, 1);
+        }
+    }
+    function loop(ts) {
+        if (!playing) return;
+        if (tl === null) tl = ts;
+        if (ts - t0 >= DURATION) { playing = false; coins = []; sparks = []; ctx.clearRect(0, 0, W, H); return; }
+        var dt = Math.min(2, Math.max(0, (ts - tl) / 16.67)); tl = ts;
+        glow(); updSparks(dt); updCoins(dt); requestAnimationFrame(loop);
+    }
+    function coinBurst(x, y) {
+        coins = []; sparks = []; t0 = performance.now(); tl = null; playing = true; burst(x, y); requestAnimationFrame(loop);
+    }
+    addEventListener('resize', resize); resize();
+
+    /* ------------------------------------------------------------- exports */
+    // One delegated listener handles every button inside the stage. Inline
+    // handlers cannot see this module's variables, and they break on tokens
+    // that contain quotation marks.
+    $('stage').addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('button') : null;
+        if (!b || b.disabled) return;
+        if (b.dataset.opt) { pick(b.dataset.opt); return; }
+        if (b.dataset.token !== undefined) { addTok(b.dataset.token); return; }
+        if (b.dataset.action === 'start') { startLesson(); return; }
+        if (b.dataset.action === 'finishNext') { screen = 'done'; render(); return; }
+        if (b.dataset.action === 'rem') { rem(); return; }
+        if (b.dataset.action === 'reset') { reset(); return; }
+        if (b.dataset.action === 'back') { location.href = '/pages/Learn.html'; return; }
+        if (b.id === 'mainBtn') { mainAction(); return; }
+        if (b.id === 'rewardBtn') { getReward(); return; }
+    });
+
+    window.pick = pick;
+    window.addTok = addTok;
+    window.rem = rem;
+    window.reset = reset;
+    window.mainAction = mainAction;
+    window.getReward = getReward;
+    window.startLesson = startLesson;
+    window.upd = upd;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.setPref = setPref;
+
+    /* ---------------------------------------------------------------- boot */
+    function boot() {
+        $('bgT').checked = pref('backgroundMusicEnabled');
+        $('sfxT').checked = pref('soundEffectsEnabled');
+        playBg();
+
+        // Ask for the path first. It says whether this node is open, so a locked
+        // lesson can be turned away without ever calling the node endpoint and
+        // producing a 403 in the console.
+        api('/learn/path').then(function (path) {
+            var state = null;
+            (path || []).forEach(function (s) {
+                (s.nodes || []).forEach(function (n) { if (n.id === NODE_ID) state = n.status; });
+            });
+
+            if (state === 'Locked') {
+                var locked = new Error('This lesson is still locked.');
+                locked.status = 403;
+                throw locked;
+            }
+            return api('/learn/nodes/' + NODE_ID).then(function (nodeData) {
+                return { path: path, node: nodeData };
+            });
+        }).then(function (res) {
+            var nodeData = res.node;
+            node = nodeData;
+            questions = nodeData.questions || [];
+
+            var q = questions[0];
+            if (q) slotOrder = slotsOf(payloadOf(q));
+
+            render();
+        }).catch(function (err) {
+            var m = $('model');
+            if (m) m.src = MODEL.stand;
+            var locked = err.status === 403;
+            $('stage').innerHTML = '<div class="text"><p>' +
+                (locked ? 'This lesson is still locked.' : 'This lesson could not be loaded.') + '</p><p>' +
+                esc(locked ? 'Finish the lesson before it on the path to unlock this one.'
+                           : (err.message || '')) +
+                '</p></div><button class="btn mid" data-action="back">Back to the path</button>';
+        });
+    }
+
+    window.onload = boot;
+})();
+</script>
 </body>
 </html>

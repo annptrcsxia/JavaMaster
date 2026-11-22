@@ -18,26 +18,9 @@ public class LearnController : ControllerBase
     public record AnswerRequest(int NodeId, JsonElement Answer);
 
     // Finds a node, whether this user may play it, and which node comes next.
-    private async Task<(LearnNode? node, bool unlocked, LearnNode? next)> Locate(int userId, int nodeId)
-    {
-        var all = await _db.LearnNodes
-            .OrderBy(n => n.LearnSection!.SortOrder).ThenBy(n => n.SortOrder)
-            .ToListAsync();
-        var i = all.FindIndex(n => n.Id == nodeId);
-        if (i < 0) return (null, false, null);
-
-        // Walk back to the nearest previous node that actually has questions.
-        // Placeholder nodes with no questions do not lock the ones behind them.
-        var previous = -1;
-        for (var p = i - 1; p >= 0; p--)
-        {
-            if (await _db.NodeQuestions.AnyAsync(nq => nq.LearnNodeId == all[p].Id && nq.Question!.IsActive)) { previous = p; break; }
-        }
-
-        var unlocked = i == 0 || previous < 0 || await _db.UserNodeProgress.AnyAsync(p =>
-            p.UserId == userId && p.LearnNodeId == all[previous].Id && p.Status == ProgressStatus.Completed);
-        return (all[i], unlocked, i + 1 < all.Count ? all[i + 1] : null);
-    }
+    // One shared rule (LearnRules): a node is open only when the node before it is Completed.
+    private Task<(LearnNode? node, bool unlocked, LearnNode? next)> Locate(int userId, int nodeId)
+        => LearnRules.LocateAsync(_db, userId, nodeId);
 
     [HttpGet("path")]
     public async Task<IActionResult> GetPath()
@@ -59,24 +42,21 @@ public class LearnController : ControllerBase
             })
             .ToListAsync();
 
-        // Nodes that have no questions yet are placeholders. They must not block
-        // the node after them, otherwise an unfinished placeholder would lock the
-        // rest of the path for good.
-        var withQuestions = await _db.NodeQuestions
-            .Where(nq => nq.Question!.IsActive)
-            .Select(nq => nq.LearnNodeId).Distinct().ToListAsync();
-
-        var prevDone = true;   // the very first node starts unlocked
+        // Exactly ONE node is Unlocked: the first node that is not Completed.
+        // Every node after it stays Locked until that node is Completed (practice nodes included).
+        var foundCurrent = false;
         var output = new List<object>();
         foreach (var s in sections)
         {
             var nodes = new List<object>();
             foreach (var n in s.Nodes)
             {
-                var isDone = done.Contains(n.Id);
-                var status = isDone ? "Completed" : prevDone ? "Unlocked" : "Locked";
+                string status;
+                if (done.Contains(n.Id)) status = "Completed";
+                else if (!foundCurrent) { status = "Unlocked"; foundCurrent = true; }
+                else status = "Locked";
+
                 nodes.Add(new { n.Id, n.Title, n.Subtitle, n.NodeType, status, n.XpReward, n.CoinReward });
-                if (withQuestions.Contains(n.Id)) prevDone = isDone;
             }
             output.Add(new { s.Id, s.Title, s.IsPublished, nodes });
         }
@@ -159,28 +139,40 @@ public class LearnController : ControllerBase
         if (node == null) return NotFound();
         if (!unlocked) return StatusCode(403, new { error = "This node is locked." });
 
-        var questionIds = await _db.NodeQuestions
-            .Where(nq => nq.LearnNodeId == nodeId && nq.Question!.IsActive).Select(nq => nq.QuestionId).ToListAsync();
-        if (questionIds.Count == 0)
-            return BadRequest(new { error = "This node has no questions yet." });
-
         // Only answers given since the last completion count, so a replay must be played again.
         var progress = await _db.UserNodeProgress.FindAsync(user.Id, nodeId);
         var since = progress?.LastPlayedAt ?? DateTime.MinValue;
 
-        var correctIds = await _db.QuestionAttempts
-            .Where(a => a.UserId == user.Id && a.LearnNodeId == nodeId && a.IsCorrect && a.CreatedAt > since)
-            .Select(a => a.QuestionId).Distinct().ToListAsync();
-        if (questionIds.Any(id => !correctIds.Contains(id)))
-            return BadRequest(new { error = "Answer every question correctly first." });
+        if (node.NodeType == NodeType.Practice)
+        {
+            // Practice is checked by running the learner's code, so the proof is a recorded
+            // pass for every practice item (saved by /api/practice/run).
+            var passed = await _db.PracticePasses
+                .CountAsync(x => x.UserId == user.Id && x.LearnNodeId == nodeId && x.PassedAt > since);
+            if (passed < PracticeChecks.ItemCount)
+                return BadRequest(new { error = "Pass every practice item first." });
+        }
+        else
+        {
+            var questionIds = await _db.NodeQuestions
+                .Where(nq => nq.LearnNodeId == nodeId && nq.Question!.IsActive)
+                .Select(nq => nq.QuestionId).ToListAsync();
+            if (questionIds.Count == 0)
+                return BadRequest(new { error = "This node has no questions yet." });
+
+            var correctIds = await _db.QuestionAttempts
+                .Where(a => a.UserId == user.Id && a.LearnNodeId == nodeId && a.IsCorrect && a.CreatedAt > since)
+                .Select(a => a.QuestionId).Distinct().ToListAsync();
+            if (questionIds.Any(id => !correctIds.Contains(id)))
+                return BadRequest(new { error = "Answer every question correctly first." });
+        }
 
         var ranks = await _db.Ranks.ToListAsync();
         var xpBefore = user.TotalXp;
         var rankBefore = RankCalculator.For(xpBefore, ranks);
 
-        // Rewards are only ever paid once per node. A repeat play still has to answer
-        // every question correctly again, but it earns no XP and no coins, so a learner
-        // cannot farm the same lesson for unlimited money.
+        // Rewards are only ever paid once per node. A repeat play still has to pass again,
+        // but it earns no XP and no coins, so a learner cannot farm the same lesson.
         var firstTime = progress == null || progress.Status != ProgressStatus.Completed;
         var xp = firstTime ? node.XpReward : 0;
         var coins = firstTime ? node.CoinReward : 0;
