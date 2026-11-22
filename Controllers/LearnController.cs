@@ -143,29 +143,19 @@ public class LearnController : ControllerBase
         var progress = await _db.UserNodeProgress.FindAsync(user.Id, nodeId);
         var since = progress?.LastPlayedAt ?? DateTime.MinValue;
 
-        if (node.NodeType == NodeType.Practice)
-        {
-            // Practice is checked by running the learner's code, so the proof is a recorded
-            // pass for every practice item (saved by /api/practice/run).
-            var passed = await _db.PracticePasses
-                .CountAsync(x => x.UserId == user.Id && x.LearnNodeId == nodeId && x.PassedAt > since);
-            if (passed < PracticeChecks.ItemCount)
-                return BadRequest(new { error = "Pass every practice item first." });
-        }
-        else
-        {
-            var questionIds = await _db.NodeQuestions
-                .Where(nq => nq.LearnNodeId == nodeId && nq.Question!.IsActive)
-                .Select(nq => nq.QuestionId).ToListAsync();
-            if (questionIds.Count == 0)
-                return BadRequest(new { error = "This node has no questions yet." });
+        // Every node, practice included, is passed by answering every question correctly.
+        // Practice answers are checked by /questions/{id}/check, which records QuestionAttempts.
+        var questionIds = await _db.NodeQuestions
+            .Where(nq => nq.LearnNodeId == nodeId && nq.Question!.IsActive)
+            .Select(nq => nq.QuestionId).ToListAsync();
+        if (questionIds.Count == 0)
+            return BadRequest(new { error = "This node has no questions yet." });
 
-            var correctIds = await _db.QuestionAttempts
-                .Where(a => a.UserId == user.Id && a.LearnNodeId == nodeId && a.IsCorrect && a.CreatedAt > since)
-                .Select(a => a.QuestionId).Distinct().ToListAsync();
-            if (questionIds.Any(id => !correctIds.Contains(id)))
-                return BadRequest(new { error = "Answer every question correctly first." });
-        }
+        var correctIds = await _db.QuestionAttempts
+            .Where(a => a.UserId == user.Id && a.LearnNodeId == nodeId && a.IsCorrect && a.CreatedAt > since)
+            .Select(a => a.QuestionId).Distinct().ToListAsync();
+        if (questionIds.Any(id => !correctIds.Contains(id)))
+            return BadRequest(new { error = "Answer every question correctly first." });
 
         var ranks = await _db.Ranks.ToListAsync();
         var xpBefore = user.TotalXp;

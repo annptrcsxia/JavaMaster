@@ -713,27 +713,8 @@ button:focus-visible {
 
 <script src="/js/api.js"></script>
 <script>
-const API_URL = '/api/practice/run';
 const LEARN_URL = '/pages/Learn.html';
 const NODE_ID = 4;   // Java Basics 1 on the path
-const STARTER = 'class Main {\n    public static void main(String[] args) {\n        // Write your Java code here\n    }\n}';
-// The class and main method lines are fixed. Only the line(s) in between can be edited.
-const CODE_HEAD = 'class Main {\n    public static void main(String[] args) {\n';
-const CODE_FOOT = '\n    }\n}';
-let codeBody = STARTER.slice(CODE_HEAD.length, STARTER.length - CODE_FOOT.length);
-
-// Puts the fixed lines back if the learner changed them. The learner's own lines are kept.
-function lockTemplate() {
-  const v = codeEl.value;
-  const intact = v.startsWith(CODE_HEAD) && v.endsWith(CODE_FOOT) && v.length >= CODE_HEAD.length + CODE_FOOT.length;
-  if (intact) {
-    codeBody = v.slice(CODE_HEAD.length, v.length - CODE_FOOT.length);
-  } else {
-    codeEl.value = CODE_HEAD + codeBody + CODE_FOOT;
-    const pos = CODE_HEAD.length + codeBody.length;   // put the cursor back at the end of the editable part
-    codeEl.setSelectionRange(pos, pos);
-  }
-}
 const POSES = {
   stand:   ['/model/James Gosling Standing Up.png', 'model stand up'],
   idea:    ['/model/James Gosling Bright Idea.png', 'model idea'],
@@ -741,21 +722,51 @@ const POSES = {
   drink:   ['/model/James Gosling Drinking Coffee.png', 'model drinking coffee'],
   think:   ['/model/James Gosling Thinking.png',    'model thinking'],
 };
-// id must match the itemId rules in PracticeChecks.cs
-const ITEMS = [
-  { id: 1, task: 'Write code that prints <b>Hello, Java!</b> on the screen.',
-    tip: 'Tip: every Java statement ends with a ;', done: 'You did it! That was your first line of Java.' },
-  { id: 2, task: 'Write code that prints <b>Hello</b> on one line and <b>Java</b> on the next line.',
-    tip: 'Tip: use println twice, one for each line.', done: 'Two lines, two printlns. Nice!' },
-  { id: 3, task: 'Create an <b>int</b> variable named <b>age</b> that stores <b>15</b>, then print it.',
-    tip: 'Tip: a variable needs a type, a name and a value.', done: 'Your first variable. Well done!' },
-  { id: 4, task: 'Create a <b>String</b> variable named <b>name</b> with your name, then print it.',
-    tip: 'Tip: String is the type for text, and text goes inside quotes.', done: 'Text stored and printed. Great!' },
-  { id: 5, task: 'Store the decimal number <b>3.14</b> in a variable named <b>pi</b>, then print it.',
-    tip: 'Tip: whole numbers and decimals use different types.', done: 'Practice complete! Great job!' },
-];
+
+// The class and main method lines are fixed. Only the middle part is the learner's answer.
+const CODE_HEAD = 'class Main {\n    public static void main(String[] args) {\n';
+const CODE_FOOT = '\n    }\n}';
+const STARTER_BODY = '        // Write your Java code here';
+let codeBody = STARTER_BODY;
 
 const $ = (id) => document.getElementById(id);
+const stage = $('stage'), codeEl = $('code');
+const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const pref = (k) => { try { return localStorage.getItem(k) !== 'false'; } catch (e) { return true; } };
+function sfx(id) { if (!pref('soundEffectsEnabled')) return; const a = $(id); a.currentTime = 0; a.play().catch(() => {}); }
+
+// mode: edit | running | wrong | correct
+const s = { i: 0, mode: 'edit', hint: false, result: null };
+let questions = [];   // the 5 questions from /api/learn/nodes/4 (no answers in them)
+let completion = null, finishing = false, claimed = false;
+
+function payloadOf(q) {
+  try { return typeof q.payload === 'string' ? JSON.parse(q.payload) : (q.payload || {}); }
+  catch (e) { return {}; }
+}
+
+// What the learner typed, without the comment placeholder and without extra spaces.
+// Each line is trimmed, so indentation does not matter. The server compares this text.
+function answerText() {
+  return codeBody.split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith('//'))
+    .join('\n');
+}
+
+// If the learner changed the fixed lines, put them back and keep the learner's own lines.
+function lockTemplate() {
+  const v = codeEl.value;
+  const intact = v.startsWith(CODE_HEAD) && v.endsWith(CODE_FOOT) && v.length >= CODE_HEAD.length + CODE_FOOT.length;
+  if (intact) {
+    codeBody = v.slice(CODE_HEAD.length, v.length - CODE_FOOT.length);
+  } else {
+    codeEl.value = CODE_HEAD + codeBody + CODE_FOOT;
+    const pos = CODE_HEAD.length + codeBody.length;
+    codeEl.setSelectionRange(pos, pos);
+  }
+}
+
 // Makes the mascot jump. Removing and re-adding the class lets it play again every time.
 function jumpMascot(light = false) {
   const m = $('mascot');
@@ -763,11 +774,7 @@ function jumpMascot(light = false) {
   void m.offsetWidth;   // forces the browser to restart the animation
   m.classList.add(light ? 'jump-light' : 'jump');
 }
-const stage = $('stage'), codeEl = $('code');
-// mode: edit | running | wrong | correct
-const s = { i: 0, mode: 'edit', hint: false, result: null };
 
-const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const TOK = /(\/\/.*$)|("(?:[^"\\]|\\.)*"?)|\b(class|public|static|void|int|double|boolean|char|long|float|if|else|for|while|return|new)\b|\b(args)\b|\b(println|print)\b|\b([A-Z]\w*)\b|\b([a-z_]\w*)(?=\()|\b(\d+(?:\.\d+)?)\b/g;
 function hlLine(l) {
   let out = '', last = 0, m; TOK.lastIndex = 0;
@@ -780,60 +787,76 @@ function hlLine(l) {
 }
 
 function render() {
-  const it = ITEMS[s.i], r = s.result, code = codeEl.value;
-  $('progress').innerHTML = ITEMS.map((_, k) => `<i class="${k <= s.i ? 'on' : ''}"></i>`).join('');
-  $('task').innerHTML = it.task;
+  const q = questions[s.i];
+  const p = payloadOf(q);
+  const r = s.result;
+  $('progress').innerHTML = questions.map((_, k) => `<i class="${k <= s.i ? 'on' : ''}"></i>`).join('');
+  $('task').innerHTML = q.prompt;   // the prompt is written by the course author and may contain <b> tags
 
-  const errLine = s.mode === 'wrong' && r && r.line;
-  const lines = code.split('\n');
-  $('hl').innerHTML = lines.map((l, n) => hlLine(l) + (n + 1 === errLine ? '<span class="sq">&nbsp;&nbsp;</span>' : '')).join('\n') + '\n ';
+  const lines = codeEl.value.split('\n');
+  $('hl').innerHTML = lines.map((l) => hlLine(l)).join('\n') + '\n ';
   $('gut').textContent = lines.map((_, n) => n + 1).join('\n');
   codeEl.readOnly = s.mode === 'running' || s.mode === 'correct';
 
   let out = '<span>Run your code to see the output here.</span>';
   if (s.mode === 'running') out = 'Running your code\u2026';
-  else if (s.mode === 'wrong' && r) out = `<span class="err">${r.line ? 'Line ' + r.line + ': ' : ''}${esc(r.message)}</span>`;
-  else if (s.mode === 'correct' && r) out = esc(r.output);
+  else if (s.mode === 'wrong' && r) out = `<span class="err">${esc(r.message)}</span>`;
+  else if (s.mode === 'correct' && r) out = esc(r.output || '');
   $('out').innerHTML = out;
 
   let pose = 'stand', say = [];
-  if (s.hint) { pose = 'idea'; say = [it.tip]; }
-  else if (s.mode === 'wrong' && r) { pose = 'think'; say = [r.title, r.help]; }
-  else if (s.mode === 'correct') { pose = 'applause'; say = [it.done]; }
+  if (s.hint) { pose = 'idea'; say = [p.tip]; }
+  else if (s.mode === 'wrong' && r) { pose = 'think'; say = ['Something’s not right', r.message]; }
+  else if (s.mode === 'correct' && r) { pose = 'applause'; say = [r.message]; }
   $('mascot').src = POSES[pose][0]; $('mascot').alt = POSES[pose][1];
   $('bubbles').innerHTML = say.filter(Boolean).map((t) => `<span>${esc(t)}</span>`).join('');
 
   const run = $('run');
-  run.textContent = s.mode === 'wrong' ? 'Try again' : s.mode === 'correct' ? (s.i === ITEMS.length - 1 ? 'Finish' : 'Continue') : s.mode === 'running' ? 'Running\u2026' : 'Run code';
-  run.disabled = s.mode === 'running' || (s.mode === 'edit' && code.trim() === STARTER.trim());
+  const last = s.i === questions.length - 1;
+  run.textContent = s.mode === 'wrong' ? 'Try again' : s.mode === 'correct' ? (last ? 'Finish' : 'Continue') : s.mode === 'running' ? 'Running\u2026' : 'Run code';
+  run.disabled = s.mode === 'running' || (s.mode === 'edit' && answerText() === '');
   $('hint').disabled = s.mode === 'correct' || s.mode === 'running';
 }
 
-function loadItem() { codeBody = STARTER.slice(CODE_HEAD.length, STARTER.length - CODE_FOOT.length); codeEl.value = STARTER; Object.assign(s, { mode: 'edit', hint: false, result: null }); render(); codeEl.focus(); }
+function loadItem() {
+  codeBody = STARTER_BODY;
+  codeEl.value = CODE_HEAD + codeBody + CODE_FOOT;
+  Object.assign(s, { mode: 'edit', hint: false, result: null });
+  render();
+  codeEl.focus();
+}
 
 async function primary() {
   if (s.mode === 'wrong') { Object.assign(s, { mode: 'edit', result: null }); render(); codeEl.focus(); return; }
   if (s.mode === 'correct') {
-    if (s.i === ITEMS.length - 1) { finishPractice(); return; }
+    if (s.i === questions.length - 1) { finishPractice(); return; }
     s.i++; loadItem(); return;
   }
-  if (s.mode !== 'edit' || codeEl.value.trim() === STARTER.trim()) return;
+  if (s.mode !== 'edit' || answerText() === '') return;
+
   s.mode = 'running'; s.hint = false; render();
-  let result;
-  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 25000);
+  let res, networkError = false;
   try {
-    const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ itemId: ITEMS[s.i].id, code: codeEl.value, nodeId: NODE_ID }), signal: ctrl.signal });
-    result = await res.json();
+    res = await api('/learn/questions/' + questions[s.i].id + '/check', {
+      method: 'POST',
+      body: JSON.stringify({ nodeId: NODE_ID, answer: { text: answerText() } })
+    });
   } catch (e) {
-    result = { status: 'offline', title: 'Connection problem', message: "We couldn't reach the practice server.", help: 'Check that the server is running and try again.', output: '' };
-  } finally { clearTimeout(timer); }
-  s.result = result; s.mode = result.status === 'success' ? 'correct' : 'wrong'; render();
-  if (s.mode === 'correct') jumpMascot();
-  if (result.status === 'success') sfx('correctSound'); else if (result.status !== 'offline') sfx('wrongSound');
+    networkError = !e.status;
+    res = { correct: false, message: e.status ? e.message : "We couldn't reach the server. Check your connection and try again.", output: null };
+  }
+  s.result = res;
+  s.mode = res.correct ? 'correct' : 'wrong';
+  render();
+  if (res.correct) { jumpMascot(); sfx('correctSound'); }
+  else if (!networkError) sfx('wrongSound');
 }
 
-codeEl.addEventListener('input', () => { lockTemplate(); if (s.mode === 'wrong') Object.assign(s, { mode: 'edit', result: null }); render(); });
+codeEl.addEventListener('input', () => {
+  lockTemplate();
+  if (s.mode === 'wrong') Object.assign(s, { mode: 'edit', result: null });
+  render();
+});
 let tabFree = false;   // press Esc, then Tab, to leave the editor with the keyboard
 codeEl.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { tabFree = true; return; }
@@ -850,9 +873,7 @@ $('back').addEventListener('click', () => openModal('exitModal'));
 $('gear').addEventListener('click', () => openModal('settingsModal'));
 $('next').addEventListener('click', showDone);
 
-
-/* ---------- Finish and completed screens (the server decides the rewards) ---------- */
-const pref = (k) => { try { return localStorage.getItem(k) !== 'false'; } catch (e) { return true; } };
+/* ---------- Settings and popups ---------- */
 function setPref(k, v) { try { localStorage.setItem(k, v); } catch (e) {} if (k === 'backgroundMusicEnabled') { v ? playBg() : $('bgMusic').pause(); } }
 function playBg() {
   if (!pref('backgroundMusicEnabled')) return;
@@ -862,10 +883,8 @@ function playBg() {
 function openModal(id) { $(id).classList.add('on'); }
 function closeModal(id) { $(id).classList.remove('on'); }
 document.querySelectorAll('.modal').forEach((m) => m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('on'); }));
-function sfx(id) { if (!pref('soundEffectsEnabled')) return; const a = $(id); a.currentTime = 0; a.play().catch(() => {}); }
 
-let completion = null, finishing = false, claimed = false;
-
+/* ---------- Finish and completed screens (the server decides the rewards) ---------- */
 // Asks the server to complete the node: it pays the rewards once, unlocks the next node and counts the streak.
 async function finishPractice() {
   if (finishing) return; finishing = true;
@@ -873,7 +892,7 @@ async function finishPractice() {
     completion = await api('/learn/nodes/' + NODE_ID + '/complete', { method: 'POST', body: '{}' });
   } catch (e) {
     finishing = false;
-    s.result = { status: 'error', title: 'Could not finish the practice', message: e.message, help: 'Run your code again.', output: '' };
+    s.result = { correct: false, message: e.message, output: null };
     s.mode = 'wrong'; render();
     return;
   }
@@ -884,7 +903,7 @@ function showFinish() {
   $('mascot').src = POSES.drink[0]; $('mascot').alt = POSES.drink[1];
 }
 function showDone() {
-$('practice').hidden = true; $('finish').hidden = true; $('run').hidden = true; $('done').hidden = false;
+  $('practice').hidden = true; $('finish').hidden = true; $('run').hidden = true; $('done').hidden = false;
   $('mascot').hidden = true; $('back').hidden = true; $('gear').hidden = true;
   renderDone(); $('bgMusic').pause(); sfx('completedSound');
 }
@@ -972,14 +991,37 @@ function loop(ts) {
 function coinBurst(x, y) { coins = []; sparks = []; t0 = performance.now(); tl = null; playing = true; burst(x, y); requestAnimationFrame(loop); }
 addEventListener('resize', resize); resize();
 
+/* ---------- Scaling and start ---------- */
 function fit() { stage.style.transform = `translate(-50%,-50%) scale(${Math.min(innerWidth / 1240, innerHeight / 700)})`; }
 addEventListener('resize', fit); fit();
+
+// Loads the path and the 5 questions. If the node is locked or empty, the welcome screen says so and Next is hidden.
+async function boot() {
+  $('bgT').checked = pref('backgroundMusicEnabled');
+  $('sfxT').checked = pref('soundEffectsEnabled');
+  playBg();
+  try {
+    const path = await api('/learn/path');
+    let state = null;
+    (path || []).forEach((sec) => (sec.nodes || []).forEach((n) => { if (n.id === NODE_ID) state = n.status; }));
+    if (state === 'Locked') throw Object.assign(new Error('This practice is still locked.'), { status: 403 });
+    const node = await api('/learn/nodes/' + NODE_ID);
+    questions = node.questions || [];
+    if (!questions.length) throw new Error('This practice has no questions yet.');
+  } catch (err) {
+    $('start').hidden = true;
+    document.querySelector('#intro .fin-text').innerHTML = '<p>' + esc(err.status === 403
+      ? 'This practice is still locked. Finish the lesson before it to unlock it.'
+      : (err.message || 'This practice could not be loaded.')) + '</p>';
+  }
+}
+
 $('start').addEventListener('click', () => {
   $('intro').hidden = true; $('practice').hidden = false; $('run').hidden = false;
-  loadItem();
+  s.i = 0; loadItem();
 });
 $('bgT').checked = pref('backgroundMusicEnabled'); $('sfxT').checked = pref('soundEffectsEnabled');
-playBg();
+boot();
 </script>
 </body>
 </html>

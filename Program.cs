@@ -25,6 +25,7 @@ using (var scope = app.Services.CreateScope())
         await db.Database.MigrateAsync();
         await DbSeeder.SeedAsync(db);
         await LessonContent.SeedAsync(db);
+        await PracticeContent.SeedAsync(db);
     }
     catch (Exception ex)
     {
