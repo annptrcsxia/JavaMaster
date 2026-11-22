@@ -94,7 +94,9 @@
 
     function checkPendingBadge() {
         if (!document.getElementById('lessonPath')) return;   // Learn page only
-        if (!read('pendingBadge')) return;
+        var fromUrl = new URLSearchParams(location.search).get('badge') === '1';
+        if (!read('pendingBadge') && !fromUrl) return;
+        if (fromUrl) history.replaceState(null, '', location.pathname);
         try { localStorage.removeItem('pendingBadge'); } catch (e) {}
         setTimeout(showBadgeToast, 600);
     }

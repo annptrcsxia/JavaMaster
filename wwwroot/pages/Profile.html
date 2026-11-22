@@ -236,5 +236,25 @@
     <script src="/js/profile-dropdown.js"></script>
     <script src="/js/edit-profile.js"></script>
     <script src="/js/study-modal.js"></script>
+    <script>
+    /* Rank, badges and best streak come from the server (same numbers as Home and Progress) */
+    async function loadProfileStats() {
+        try {
+            const res = await fetch('/api/me');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const me = await res.json();
+
+            document.getElementById('rankTitle').textContent = me.rank.name;
+            document.getElementById('rankIconProfile').src = me.rank.icon;
+            document.getElementById('badgeCount').textContent = me.badges ?? 0;
+            const best = Math.max(me.longestStreak ?? 0, me.streak ?? 0);
+            document.getElementById('bestStreak').textContent = best + (best === 1 ? ' Day' : ' Days');
+        } catch (e) {
+            console.error('Could not load profile stats', e);
+        }
+    }
+    window.addEventListener('load', loadProfileStats);   // runs after badge-manager.js, so the server wins
+    window.addEventListener('pageshow', e => { if (e.persisted) loadProfileStats(); });
+    </script>
 </body>
 </html>
