@@ -125,14 +125,36 @@
 
             <!-- Your Decks -->
             <section class="decks-section">
-                <h2 class="lobby-heading">Your Decks</h2>
+                <div class="decks-head">
+                    <h2 class="lobby-heading">Your Decks</h2>
+
+                    <!-- Shown once the user has decks. New Deck opens the loading screen, then Building deck. Sort does nothing yet. -->
+                    <div class="decks-tools" id="decksTools" hidden>
+                        <a href="/pages/Loading-screen.html" class="deck-tool" id="newDeckBtn"><span class="deck-tool-plus" aria-hidden="true">+</span>New Deck</a>
+                        <div class="sort-wrap">
+                            <button type="button" class="deck-tool deck-sort" id="sortBtn" aria-haspopup="menu" aria-expanded="false">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h12M4 12h8M4 18h4M18 7v11m0 0l-3-3m3 3l3-3"/></svg>
+                                Sort
+                            </button>
+                            <div class="pop-menu sort-menu" id="sortMenu" role="menu" aria-label="Sort decks" hidden>
+                                <button type="button" role="menuitemradio" aria-checked="true" data-sort="newest">Newest edited<img src="/icons/clock.png" alt=""></button>
+                                <button type="button" role="menuitemradio" aria-checked="false" data-sort="oldest">Oldest edited<img src="/icons/clock.png" alt=""></button>
+                                <button type="button" role="menuitemradio" aria-checked="false" data-sort="az">Alphabetical (A-Z)<img src="/icons/arrow-up.png" alt=""></button>
+                                <button type="button" role="menuitemradio" aria-checked="false" data-sort="za">Alphabetical (Z-A)<img src="/icons/arrow-down.png" alt=""></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The decks the user created -->
+                <div class="decks-grid" id="decksGrid" hidden></div>
 
                 <!-- Empty state (show when the user has no decks) -->
                 <div class="decks-empty" id="decksEmptyState">
                     <img src="/icons/letter.png" alt="No Decks Yet" class="decks-empty-img">
                     <h3 class="decks-empty-title">No Decks Yet</h3>
                     <p class="decks-empty-text">You haven’t created any decks yet, start your first one now.</p>
-                    <a href="/pages/Deck.html" class="create-deck-btn" id="createDeckBtn">+ Create your first deck</a>
+                    <a href="/pages/Loading-screen.html" class="create-deck-btn" id="createDeckBtn">+ Create your first deck</a>
                 </div>
             </section>
 
@@ -140,5 +162,190 @@
     </main>
 <script src="/js/profile-dropdown.js"></script>
 <script src="/js/study-modal.js"></script>
+<script src="/js/share-deck.js"></script>
+<script>
+(function () {
+    // TODO: load the user's decks from the Decks API (for example GET /api/decks) instead of this temporary list.
+    // The Building deck page keeps the decks published in this browser tab here.
+    const DECKS_KEY = 'jm.decks';
+    const MAX_TYPE_CHIPS = 2;   // more types than this show as "+3"
+    const TYPE_LABELS = {
+        'multiple-choice': 'Multiple Choice',
+        'true-false': 'True or False',
+        'matching': 'Matching Type',
+        'fill-blank-code': 'Fill in the Blanks Code',
+        'drag-drop-code': 'Drag and Drop Code'
+    };
+
+    const $ = id => document.getElementById(id);
+    let decks = [];
+    let sortKey = 'newest';   // every visit starts with the newest or most recently edited deck first
+    let openMenu = null;      // { btn, panel } of the menu that is open right now
+
+    function el(tag, cls, text) {
+        const node = document.createElement(tag);
+        if (cls) node.className = cls;
+        if (text !== undefined) node.textContent = text;   // text only, so a deck name can never run as code
+        return node;
+    }
+
+    function loadDecks() {
+        try {
+            const list = JSON.parse(sessionStorage.getItem(DECKS_KEY));
+            return Array.isArray(list) ? list.filter(d => d && d.id && Array.isArray(d.cards)) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    /* ---------- sorting ---------- */
+    const byName = (a, b) => a.deck.name.localeCompare(b.deck.name, undefined, { sensitivity: 'base', numeric: true });
+    const SORTS = {
+        newest: (a, b) => (b.at - a.at) || (b.i - a.i),
+        oldest: (a, b) => (a.at - b.at) || (a.i - b.i),
+        az:     (a, b) => byName(a, b) || (a.i - b.i),
+        za:     (a, b) => byName(b, a) || (a.i - b.i)
+    };
+
+    function sortedDecks() {
+        return decks
+            .map((deck, i) => ({ deck: deck, i: i, at: deck.updatedAt || deck.createdAt || 0 }))
+            .sort(SORTS[sortKey])
+            .map(x => x.deck);
+    }
+
+    function setSort(key) {
+        sortKey = key;
+        document.querySelectorAll('#sortMenu [data-sort]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.sort === key)));
+        renderGrid();
+        $('sortBtn').focus();
+    }
+
+    /* ---------- menus (the three dots and Sort) ---------- */
+    function closeMenus() {
+        if (!openMenu) return;
+        openMenu.panel.hidden = true;
+        openMenu.btn.setAttribute('aria-expanded', 'false');
+        openMenu = null;
+    }
+
+    function menuItems(panel) {
+        return [...panel.querySelectorAll('[role^="menuitem"]')];
+    }
+
+    function toggleMenu(btn, panel, byKeyboard) {
+        const wasOpen = openMenu && openMenu.panel === panel;
+        closeMenus();
+        if (wasOpen) return;
+        panel.hidden = false;
+        btn.setAttribute('aria-expanded', 'true');
+        openMenu = { btn: btn, panel: panel };
+        if (byKeyboard) menuItems(panel)[0].focus();
+    }
+
+    function menuItem(tag, label, icon, href) {
+        const item = el(tag, '', label);
+        item.setAttribute('role', 'menuitem');
+        if (tag === 'a') item.href = href; else item.type = 'button';
+        const img = el('img');
+        img.src = icon;
+        img.alt = '';
+        item.appendChild(img);
+        return item;
+    }
+
+    /* ---------- the cards ---------- */
+    function deckCard(deck) {
+        const overview = '/pages/Deck overview.html?id=' + encodeURIComponent(deck.id);
+        const card = el('article', 'deck-card');
+
+        const cover = el('img', 'deck-cover');
+        cover.src = '/cover/cover ' + deck.cover + '.jpg';
+        cover.alt = '';
+
+        const menuBtn = el('button', 'deck-menu', '⋮');
+        menuBtn.type = 'button';
+        menuBtn.setAttribute('aria-label', 'Options for ' + deck.name);
+        menuBtn.setAttribute('aria-haspopup', 'menu');
+        menuBtn.setAttribute('aria-expanded', 'false');
+
+        // Edit opens the deck overview. Share and Archive are only shown for now: no action.
+        const panel = el('div', 'pop-menu card-menu');
+        panel.setAttribute('role', 'menu');
+        panel.hidden = true;
+        const shareItem = menuItem('button', 'Share', '/icons/share.png');
+        shareItem.addEventListener('click', () => { closeMenus(); JMShare.open(deck.id, menuBtn); });
+        panel.append(
+            menuItem('a', 'Edit', '/icons/edit.png', overview),
+            shareItem,
+            menuItem('button', 'Archive', '/icons/archive.png')
+        );
+        menuBtn.addEventListener('click', e => toggleMenu(menuBtn, panel, e.detail === 0));
+
+        const info = el('div', 'deck-info');
+        const title = el('h3', 'deck-name');
+        const link = el('a', 'deck-link', deck.name);   // the whole card is clickable through this link
+        link.href = overview;
+        title.appendChild(link);
+
+        const tags = el('div', 'deck-tags');
+        const n = deck.cards.length;
+        tags.appendChild(el('span', 'deck-chip', n + (n === 1 ? ' Card' : ' Cards')));
+        const types = deck.types || [];
+        types.slice(0, MAX_TYPE_CHIPS).forEach(t => tags.appendChild(el('span', 'deck-chip', TYPE_LABELS[t] || t)));
+        if (types.length > MAX_TYPE_CHIPS) tags.appendChild(el('span', 'deck-chip', '+' + (types.length - MAX_TYPE_CHIPS)));
+
+        info.append(title, tags);
+        card.append(cover, menuBtn, panel, info);
+        return card;
+    }
+
+    function renderGrid() {
+        closeMenus();
+        const grid = $('decksGrid');
+        grid.innerHTML = '';
+        sortedDecks().forEach(d => grid.appendChild(deckCard(d)));
+    }
+
+    function render() {
+        decks = loadDecks();
+        $('decksEmptyState').hidden = decks.length > 0;
+        $('decksTools').hidden = decks.length === 0;
+        $('decksGrid').hidden = decks.length === 0;
+        renderGrid();
+    }
+
+    /* ---------- events ---------- */
+    $('sortBtn').addEventListener('click', e => toggleMenu($('sortBtn'), $('sortMenu'), e.detail === 0));
+    $('sortMenu').addEventListener('click', e => {
+        const b = e.target.closest('[data-sort]');
+        if (b) setSort(b.dataset.sort);
+    });
+
+    // a click anywhere else closes the open menu
+    document.addEventListener('click', e => {
+        if (openMenu && !openMenu.panel.contains(e.target) && !openMenu.btn.contains(e.target)) closeMenus();
+    });
+
+    // Escape closes it, the arrow keys move through it
+    document.addEventListener('keydown', e => {
+        if (!openMenu) return;
+        if (e.key === 'Escape') {
+            const btn = openMenu.btn;
+            closeMenus();
+            btn.focus();
+            return;
+        }
+        const items = menuItems(openMenu.panel);
+        const i = items.indexOf(document.activeElement);
+        if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+        else if (e.key === 'Home') { e.preventDefault(); items[0].focus(); }
+        else if (e.key === 'End') { e.preventDefault(); items[items.length - 1].focus(); }
+    });
+
+    render();
+})();
+</script>
 </body>
 </html>

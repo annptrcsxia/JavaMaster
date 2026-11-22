@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Master - Deck Overview</title>
+    <link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- ===== COPY #1: the navbar stylesheet ===== -->
+    <link rel="stylesheet" href="/css/Dashboard-navbar-style.css">
+
+    <!-- ===== Deck overview styles (only used on this page) ===== -->
+    <style>
+        .ov {
+            width: min(945px, 100%);
+            margin: 0 auto;
+            padding: 70px 0 60px;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            color: #f3e6d8;
+        }
+
+        .ov-title {
+            margin: 0 0 22px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        /* cover */
+        .ov-cover {
+            display: block;
+            width: 100%;
+            aspect-ratio: 4 / 1;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #2a2420;
+        }
+
+        /* name, tags and the three buttons */
+        .ov-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 22px;
+            padding-left: 34px;
+        }
+
+        .ov-name {
+            margin: 0 0 12px;
+            font-size: 28px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .ov-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .ov-chip {
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: #6b3414;
+            color: #f3e6d8;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .ov-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ov-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 38px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 19px;
+            background: #2a2420;
+            color: #d9cdc2;
+            font: 500 15px 'Bricolage Grotesque', sans-serif;
+            cursor: pointer;
+        }
+
+        .ov-btn:hover {
+            background: #352d28;
+        }
+
+        .ov-icon-btn {
+            width: 38px;
+            padding: 0;
+        }
+
+        .ov-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* the questions */
+        .ov-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 42px 0 0 34px;
+        }
+
+        .q-card {
+            overflow: hidden;
+            border: 1px solid #4a3c34;
+            border-radius: 22px;
+            background: #221b18;
+        }
+
+        .q-text {
+            padding: 16px 26px 14px;
+        }
+
+        .q-question {
+            margin: 0;
+            font-size: 19px;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+
+        .q-answer {
+            padding: 12px 26px 16px;
+            border-top: 1px dashed #5b4a40;
+            color: #f0b429;
+            font-size: 19px;
+            overflow-wrap: anywhere;
+        }
+
+        /* matching */
+        .q-pairs {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: baseline;
+            gap: 8px 14px;
+        }
+
+        .q-pair-item {
+            color: #f3e6d8;
+        }
+
+        .q-pair-arrow {
+            color: #a99c92;
+        }
+
+        /* code questions */
+        .q-code {
+            margin-top: 12px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            background: #1b2133;
+            color: #e9e4f2;
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+        .q-code-line {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .q-chip {
+            display: inline-block;
+            min-width: 24px;
+            margin: 0 3px;
+            padding: 0 6px;
+            border: 1px solid #b98b6a;
+            border-radius: 4px;
+            background: #f1e3d8;
+            color: #3e3a36;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 18px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .q-nums {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 28px;
+        }
+
+        .q-num {
+            margin-right: 10px;
+            color: #d9cdc2;
+            font-size: 14px;
+        }
+
+        /* nothing to show */
+        .ov-empty {
+            max-width: 480px;
+            margin: 60px auto 0;
+            padding: 32px;
+            border: 1px solid #4a3c34;
+            border-radius: 22px;
+            background: #221b18;
+            text-align: center;
+        }
+
+        .ov-empty h2 {
+            margin: 0 0 8px;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .ov-empty p {
+            margin: 0 0 20px;
+            color: #b9aea5;
+        }
+
+        .ov-link {
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 10px;
+            background: #167a8a;
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        @media (max-width: 700px) {
+            .ov-head {
+                padding-left: 0;
+            }
+
+            .ov-cards {
+                margin-left: 0;
+            }
+
+            .q-pairs {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .q-pair-arrow {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== COPY #2: SIDEBAR + TOP BAR. No link is marked "active" on this page, as in the prototype.
+         (To highlight Lobby, add the word  active  to the Lobby link: class="nav-item active") ===== -->
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <!-- Logo -->
+        <div class="logo-section">
+            <img src="/logo/horizontal-logo-javamaster.png" alt="Java Master logo" class="logo">
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="nav-sections">
+            <a href="Home.html" class="nav-item">
+                <img src="/icons/home.png" alt="Home">
+                Home
+            </a>
+
+            <a href="Learn.html" class="nav-item">
+                <img src="/icons/toga cap.png" alt="Learn">
+                Learn
+            </a>
+
+            <a href="Progress.html" class="nav-item">
+                <img src="/icons/coffee.png" alt="Progress">
+                Progress
+            </a>
+
+            <a href="Profile.html" class="nav-item">
+                <img src="/icons/profile.png" alt="Profile">
+                Profile
+            </a>
+
+            <a href="Lobby.html" class="nav-item">
+                <img src="/icons/lobby.png" alt="Lobby">
+                Lobby
+            </a>
+        </div>
+
+        <!-- Study Button -->
+        <div class="action-buttons">
+            <a href="Study.html" class="action-btn study-button">
+                <img src="/icons/game console.png" alt="Study">
+                Study
+            </a>
+        </div>
+    </nav>
+
+    <!-- Top Bar (no visible bar: just the bell and profile floating on the page) -->
+    <div class="top-navbar">
+        <a href="Notifications.html" class="icon-button">
+            <img src="/icons/notification_bell_icon.png" alt="notification icon">
+            <span class="notification-badge hidden" id="notificationBadge"></span>
+        </a>
+
+        <!-- Profile Button with Dropdown -->
+        <div class="profile-container">
+            <button class="profile-button" id="profileButton">
+                <img src="/avatars/Avatar 1.png" alt="Profile Avatar" class="profile-avatar" id="navbarAvatar">
+                <img src="/icons/dropdown_icon.png" alt="dropdown icon" class="dropdown-icon">
+            </button>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="Profile.html" class="dropdown-item">
+                    <img src="/icons/profile.png" alt="profile icon">
+                    Profile
+                </a>
+                <a href="FAQ.html" class="dropdown-item">
+                    <img src="/icons/faq_icon.png" alt="faq icon">
+                    FAQ
+                </a>
+                <a href="overview.html" class="dropdown-item logout" id="logoutBtn">
+                    <img src="/icons/logout_icon.png" alt="logout icon">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- END of SIDEBAR + TOP BAR (COPY #2 ends here) -->
+
+
+    <!-- ===== PAGE CONTENT ===== -->
+    <main class="main-content">
+        <div class="ov">
+            <h1 class="ov-title">Deck Overview</h1>
+
+            <section id="ovDeck" hidden>
+                <img class="ov-cover" id="ovCover" alt="">
+
+                <div class="ov-head">
+                    <div>
+                        <h2 class="ov-name" id="ovName"></h2>
+                        <div class="ov-tags" id="ovTags"></div>
+                    </div>
+
+                    <!-- Share, Edit and Study deck do nothing yet -->
+                    <div class="ov-actions">
+                        <button type="button" class="ov-btn ov-icon-btn" id="ovShare" aria-label="Share deck">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 14v5h14v-5"/></svg>
+                        </button>
+                        <button type="button" class="ov-btn">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4zM14 6l3 3"/></svg>
+                            Edit
+                        </button>
+                        <button type="button" class="ov-btn">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2zM12 6v14"/></svg>
+                            Study deck
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ov-cards" id="ovCards"></div>
+            </section>
+
+            <section class="ov-empty" id="ovEmpty" hidden>
+                <h2>No deck to show yet</h2>
+                <p>Publish a deck first, then choose View deck.</p>
+                <a class="ov-link" href="Lobby.html">Back to Lobby</a>
+            </section>
+        </div>
+    </main>
+
+
+    <!-- ===== COPY #3: NAVBAR SCRIPTS (dropdown, logout, notification badge) ===== -->
+    <script src="/js/notification-manager.js"></script>
+    <script src="/js/profile-dropdown.js"></script>
+    <script src="/js/share-deck.js"></script>
+
+    <!-- ===== Deck overview script ===== -->
+    <script>
+    (function () {
+        // TODO: when the Decks API can store decks, load the deck from it (for example GET /api/decks/{id})
+        // instead of this temporary hand-off. The Building deck page saves the published deck here (this tab only).
+        const DECKS_KEY = 'jm.decks';
+
+        const COVER_ALTS = [
+            'Pixel art picnic scene by a river with a white rabbit at a wooden table',
+            'Pixel art seaside view at sunset with a lighthouse and a park bench',
+            'Pixel art cozy room with cats and a vintage television playing a cake video',
+            'Pixel art storefront of a charming bakery called Evening Cakery',
+            'Pixel art snowy winter landscape with pine trees and a mushroom house',
+            'Pixel art cozy bedroom overlooking a glowing city at night'
+        ];
+        const TYPE_LABELS = {
+            'multiple-choice': 'Multiple Choice',
+            'true-false': 'True or False',
+            'matching': 'Matching Type',
+            'fill-blank-code': 'Fill in the Blanks Code',
+            'drag-drop-code': 'Drag and Drop Code'
+        };
+
+        const $ = id => document.getElementById(id);
+
+        function el(tag, cls, text) {
+            const node = document.createElement(tag);
+            if (cls) node.className = cls;
+            if (text !== undefined) node.textContent = text;   // text only, so nothing typed by a player can run as code
+            return node;
+        }
+
+        // The deck is chosen by the id in the address, for example  Deck overview.html?id=d1700000000000
+        function loadDeck() {
+            try {
+                const id = new URLSearchParams(location.search).get('id');
+                const list = JSON.parse(sessionStorage.getItem(DECKS_KEY));
+                const deck = Array.isArray(list) ? list.find(d => String(d.id) === id) : null;
+                return deck && Array.isArray(deck.cards) && deck.cards.length ? deck : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // The code of a Fill in the blanks / Drag and drop question, with a numbered box where each blank is
+        function codeBox(card) {
+            const box = el('div', 'q-code');
+            let line = el('div', 'q-code-line');
+            box.appendChild(line);
+            card.parts.forEach(p => {
+                if (p.blank !== undefined) {
+                    line.appendChild(el('span', 'q-chip', p.blank + 1));
+                    return;
+                }
+                p.text.split('\n').forEach((seg, i) => {
+                    if (i > 0) { line = el('div', 'q-code-line'); box.appendChild(line); }
+                    if (seg) line.appendChild(document.createTextNode(seg));
+                });
+            });
+            box.querySelectorAll('.q-code-line').forEach(l => { if (!l.firstChild) l.textContent = '\u00a0'; });
+            return box;
+        }
+
+        function renderCard(c) {
+            const card = el('article', 'q-card');
+            const top = el('div', 'q-text');
+            top.appendChild(el('p', 'q-question', c.question));
+            const answer = el('div', 'q-answer');
+
+            if (c.type === 'multiple-choice') {
+                answer.textContent = c.options[c.correct];
+            } else if (c.type === 'true-false') {
+                answer.textContent = c.answer ? 'True' : 'False';
+            } else if (c.type === 'matching') {
+                const grid = el('div', 'q-pairs');
+                c.pairs.forEach(p => {
+                    grid.append(el('span', 'q-pair-item', p.item), el('span', 'q-pair-arrow', '→'), el('span', '', p.answer));
+                });
+                answer.appendChild(grid);
+            } else {
+                top.appendChild(codeBox(c));
+                answer.classList.add('q-nums');
+                c.answers.forEach((a, i) => {
+                    const item = el('span');
+                    item.append(el('span', 'q-num', i + 1), document.createTextNode(a));
+                    answer.appendChild(item);
+                });
+            }
+
+            card.append(top, answer);
+            return card;
+        }
+
+        function render() {
+            const deck = loadDeck();
+            $('ovDeck').hidden = !deck;
+            $('ovEmpty').hidden = !!deck;
+            if (!deck) return;     
+            $('ovShare').addEventListener('click', () => JMShare.open(deck.id, $('ovShare')));
+
+            document.title = 'Java Master - ' + deck.name;
+            $('ovName').textContent = deck.name;
+            $('ovCover').src = '/cover/cover ' + deck.cover + '.jpg';
+            $('ovCover').alt = COVER_ALTS[deck.cover - 1] || 'Deck cover';
+
+            const tags = $('ovTags');
+            tags.appendChild(el('span', 'ov-chip', deck.cards.length + (deck.cards.length === 1 ? ' Card' : ' Cards')));
+            (deck.types || []).forEach(t => tags.appendChild(el('span', 'ov-chip', TYPE_LABELS[t] || t)));
+
+            const list = $('ovCards');
+            deck.cards.forEach(c => list.appendChild(renderCard(c)));
+        }
+
+        render();
+    })();
+    </script>
+</body>
+</html>

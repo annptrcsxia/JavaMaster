@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Master - Build Deck</title>
+<link rel="icon" href="/logo/java-master-logo.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/Building-deck-style.css">
+</head>
+<body>
+
+<header class="topbar">
+    <a class="back" href="/pages/Lobby.html"><img src="/icons/goback.png" alt="Back to Lobby"></a>
+    <input class="deck-title" id="deckTitle" type="text" value="Untitled Deck" maxlength="40" autocomplete="off" aria-label="Deck name">
+    <button type="button" class="publish-btn" id="publishBtn" disabled title="Add at least one card to publish">Publish</button>
+</header>
+
+<main class="workspace">
+    <section class="left">
+        <button type="button" class="add-card" id="addCardBtn">+Add card</button>
+
+        <div class="type-row">
+            <span class="type-label">Type:</span>
+            <button type="button" class="type-chip" id="typeChip">
+                <span id="typeText">Select question type</span>
+                <span id="typeX" aria-hidden="true" hidden>×</span>
+            </button>
+        </div>
+
+        <div class="empty" id="emptyState">
+            <h1>Add your first card</h1>
+            <p>Click “+ Add card”, then choose a question type.</p>
+        </div>
+
+        <!-- Placeholder: the card form for the chosen type is built in the next step -->
+        <div class="card-area" id="cardArea" hidden>
+            <h2 id="cardAreaTitle"></h2>
+            <p>The question form for this type goes here.</p>
+        </div>
+
+        <div class="mc-form" id="mcForm" hidden>
+            <div class="q-box">
+                <label for="qText">Question</label>
+                <textarea id="qText" placeholder="Type a question here" maxlength="200"></textarea>
+            </div>
+            <p class="pick-label" id="pickLabel">Select the correct answer</p>
+            <div class="opt-grid" id="optGrid" role="radiogroup" aria-labelledby="pickLabel"></div>
+            <button type="button" class="save-card" id="saveCardBtn" disabled>Save card</button>
+            <p class="form-msg" id="formMsg" role="status"></p>
+        </div>
+
+        <div class="mc-form" id="tfForm" hidden>
+            <div class="q-box">
+                <label for="tfText">Question</label>
+                <textarea id="tfText" placeholder="Type a question here" maxlength="200"></textarea>
+            </div>
+            <p class="pick-label" id="tfPickLabel">Select the correct answer</p>
+            <div class="opt-grid tf-grid" id="tfGrid" role="radiogroup" aria-labelledby="tfPickLabel"></div>
+                        <button type="button" class="save-card" id="saveTfBtn" disabled>Save card</button>
+        </div>
+
+        <div class="mc-form" id="mtForm" hidden>
+            <div class="q-box q-short">
+                <label for="mtText">Question</label>
+                <textarea id="mtText" placeholder="Type a question here" maxlength="200"></textarea>
+            </div>
+            <div class="mt-area">
+                <div class="mt-rows" id="mtRows"></div>
+                <p class="mt-msg" id="mtMsg" role="status"></p>
+                <button type="button" class="mt-add" id="mtAdd">+ Add</button>
+            </div>
+                        <button type="button" class="save-card" id="saveMtBtn" disabled>Save card</button>
+        </div>
+
+        <div class="mc-form" id="fbForm" hidden>
+            <div class="q-box q-short">
+                <label for="fbText">Question</label>
+                <textarea id="fbText" placeholder="Type a question here" maxlength="200"></textarea>
+            </div>
+            <div class="code-editor">
+                <div class="code-head">
+                    <span class="code-tab"><img src="/icons/small size java logo.png" alt="">Main.java</span>
+                    <span class="code-hint">Select text to make it a blank</span>
+                </div>
+                <div class="code-body">
+                    <div class="code-guides" id="codeGuides" aria-hidden="true"></div>
+                    <div class="code-line"><span class="c-kw">class</span> <span class="c-cls">Main</span> {</div>
+                    <div class="code-line code-l1"><span class="c-kw">public static void</span> <span class="c-fn">main</span>(String[] <span class="c-arg">args</span>) {</div>
+                    <div class="code-edit is-empty" id="fbCode" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="Your Java code" data-placeholder="// Write or paste your Java code here"></div>
+                    <div class="code-line code-l1">}</div>
+                    <div class="code-line">}</div>
+                </div>
+            </div>
+            <p class="pick-label" id="fbLabel">Correct answers</p>
+            <div class="fb-answers" id="fbAnswers">
+                <p class="fb-hint" id="fbHint">Blanks you make in the code will show up here, with their answers filled in.</p>
+            </div>
+            <div class="dd-options" id="ddOptions" hidden></div>
+            <p class="mt-msg" id="fbMsg" role="status"></p>
+            <button type="button" class="save-card" id="saveFbBtn" disabled>Save card</button>
+        </div>
+    </section>
+
+    <section class="right">
+        <h2 id="cardsHeading" tabindex="-1">Cards (<span id="cardCount">0</span>)</h2>
+        <div class="card-list" id="cardList"></div>
+    </section>
+</main>
+
+<section class="pub" id="pubView" hidden>
+    <button type="button" class="pub-back" id="pubBack" aria-label="Back"><img src="/icons/goback.png" alt=""></button>
+    <div class="pub-card" id="pubCard">
+        <button type="button" class="pub-cover" id="pubCoverBtn">
+            <img class="pub-cover-img" id="pubCoverImg" alt="" hidden>
+            <span class="pub-plus" aria-hidden="true">+</span>
+            <span class="pub-cover-label" id="pubCoverLabel">Add cover image</span>
+        </button>
+        <div class="pub-body">
+            <div class="pub-row">
+                <label class="pub-label" for="pubName">Deck name:</label>
+                <div class="pub-field">
+                    <input type="text" id="pubName" maxlength="30" autocomplete="off">
+                    <span class="pub-count" id="pubCount">0/30</span>
+                </div>
+            </div>
+            <div class="pub-row">
+                <span class="pub-label" id="pubShareLabel">Share with:</span>
+                <div class="pub-select" id="pubSelect">
+                    <button type="button" class="pub-select-btn" id="pubSelectBtn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="pubShareLabel pubSelectText">
+                        <span class="pub-sel-ico" id="pubSelectIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></span>
+                        <span id="pubSelectText">Public</span>
+                        <span class="pub-caret" aria-hidden="true"></span>
+                    </button>
+                    <ul class="pub-options" id="pubOptions" role="listbox" aria-labelledby="pubShareLabel" hidden>
+                        <li role="presentation">
+                            <button type="button" role="option" aria-selected="true" data-value="public">
+                                <span class="pub-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></span>
+                                <span class="pub-opt-text"><strong>Public</strong><small>Anyone can find and play this deck</small></span>
+                                <span class="pub-check" aria-hidden="true"></span>
+                            </button>
+                        </li>
+                        <li role="presentation">
+                            <button type="button" role="option" aria-selected="false" data-value="private">
+                                <span class="pub-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+                                <span class="pub-opt-text"><strong>Private</strong><small>Only you can see this deck</small></span>
+                                <span class="pub-check" aria-hidden="true"></span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <p class="pub-tags-label">Tags</p>
+            <div class="pub-tags">
+                <div class="pub-items"><span class="pub-sub">Cards:</span><span class="pub-pill" id="pubItems">0</span></div>
+                <div class="pub-types"><span class="pub-sub">Types:</span><div class="pub-chips" id="pubTypes"></div></div>
+            </div>
+            <div class="pub-foot">
+                <p class="mt-msg pub-msg" id="pubMsg" role="status"></p>
+                <button type="button" class="pub-btn" id="pubBtn"><span class="pub-btn-text">Publish</span><span class="pub-spinner" aria-hidden="true"></span></button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal" id="galleryModal">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="galTitle">
+        <h2 id="galTitle">Gallery</h2>
+        <button type="button" class="dialog-x" id="galClose" aria-label="Close">×</button>
+        <div class="pub-grid" id="galGrid"></div>
+        <div class="dialog-foot">
+            <button type="button" class="pub-save" id="galSave" disabled>Save</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="doneModal">
+    <div class="done-pop" role="dialog" aria-modal="true" aria-labelledby="doneTitle">
+        <button type="button" class="done-x" id="doneClose" aria-label="Close">×</button>
+        <img class="done-icon" id="doneIcon" src="/icons/stamp.png" alt="">
+        <svg class="done-icon" id="doneFallback" viewBox="0 0 64 64" hidden aria-hidden="true">
+            <circle cx="32" cy="32" r="30" fill="#f7c64a"/>
+            <rect x="16" y="12" width="32" height="40" rx="4" fill="#fff"/>
+            <path d="M22 24h20M22 31h20M22 38h12" stroke="#7ba7e8" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="44" cy="46" r="9" fill="#2fb36d"/>
+            <path d="M40 46l3 3 5-6" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="done-text">
+            <h2 id="doneTitle">Deck created!</h2>
+            <p id="doneText">Your deck is saved and ready to play with players and/or practice on your own.</p>
+            <button type="button" class="done-view" id="doneView">View deck</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="typeModal">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+        <h2 id="dialogTitle">Create new card</h2>
+        <button type="button" class="dialog-x" id="dialogClose" aria-label="Close">×</button>
+
+        <p class="section-title" id="typesTitle">Question types</p>
+        <div class="type-list" id="typeList" role="radiogroup" aria-labelledby="typesTitle"></div>
+
+        <p class="section-title">Preview</p>
+        <div class="preview">
+            <div class="preview-stage">
+                <img id="previewImg" alt="" hidden>
+                <p id="previewText">Select a question type first</p>
+            </div>
+            <p class="preview-desc" id="previewDesc" hidden></p>
+        </div>
+
+        <div class="dialog-foot">
+            <button type="button" class="select-btn" id="selectBtn" disabled>Select</button>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="make-blank" id="makeBlank" hidden>+ Make blank</button>
+
+<script>
+/* ---------- Question types ---------- */
+const TYPES = [
+    { id: 'multiple-choice', label: 'Multiple choice',         chip: 'Multiple Choice',         icon: '?',  color: '#1fbf8f', desc: 'Players pick the one correct answer from four options.' },
+    { id: 'true-false',      label: 'True or false',           chip: 'True or False',           icon: '✓',  color: '#3b82f6', desc: 'Players decide whether a statement is true or false.' },
+    { id: 'matching',        label: 'Matching type',           chip: 'Matching Type',           icon: '⇄',  color: '#8b5cf6', desc: 'Players pair each item with its correct match.' },
+    { id: 'fill-blank-code', label: 'Fill in the blanks code', chip: 'Fill in the Blanks Code', icon: 'ab', color: '#f59e0b', desc: 'Players type the missing part of a line of code.' },
+    { id: 'drag-drop-code',  label: 'Drag and drop code',      chip: 'Drag and Drop Code',      icon: '⠿',  color: '#ef476f', desc: 'Players arrange code pieces into the correct order.' }
+];
+
+/* ---------- State (kept in memory only) ---------- */
+const $ = id => document.getElementById(id);
+let current = null;      // type used for the card being built
+let picked = null;       // type highlighted in the pop-up, not applied yet
+let lastFocus = null;    // element to return focus to when the pop-up closes
+
+/* ---------- Type chip & left panel ---------- */
+function renderType() {
+    const t = TYPES.find(x => x.id === current);
+    $('typeText').textContent = t ? t.chip : 'Select question type';
+    $('typeX').hidden = !t;
+    $('typeChip').setAttribute('aria-label', t ? 'Question type: ' + t.chip + '. Change type' : 'Select question type');
+    $('emptyState').hidden = !!t;
+    $('mcForm').hidden = current !== 'multiple-choice';
+    $('tfForm').hidden = current !== 'true-false';
+    $('mtForm').hidden = current !== 'matching';
+    const isCode = current === 'fill-blank-code' || current === 'drag-drop-code';
+    $('fbForm').hidden = !isCode;
+    if (isCode) { applyFbMode(); drawGuides(); }
+    $('cardArea').hidden = !t || ['multiple-choice', 'true-false', 'matching', 'fill-blank-code', 'drag-drop-code'].includes(current);
+    if (t) $('cardAreaTitle').textContent = t.chip + ' card';
+}
+
+/* ---------- Pop-up ---------- */
+function buildList() {
+    const list = $('typeList');
+    list.innerHTML = '';
+    TYPES.forEach(t => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'type-opt';
+        b.setAttribute('role', 'radio');
+        b.setAttribute('aria-checked', String(t.id === picked));
+        b.dataset.id = t.id;
+
+        const icon = document.createElement('span');
+        icon.className = 'type-icon';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.style.background = t.color;
+        icon.textContent = t.icon;
+
+        b.append(icon, t.label);
+        b.addEventListener('click', () => { picked = t.id; refreshModal(); });
+        list.appendChild(b);
+    });
+}
+
+function refreshModal() {
+    document.querySelectorAll('.type-opt').forEach(o =>
+        o.setAttribute('aria-checked', String(o.dataset.id === picked)));
+    $('selectBtn').disabled = picked === null;
+
+    const t = TYPES.find(x => x.id === picked);
+    const img = $('previewImg'), text = $('previewText'), desc = $('previewDesc');
+    if (!t) {
+        img.hidden = true;
+        text.hidden = false;
+        text.textContent = 'Select a question type first';
+        desc.hidden = true;
+        return;
+    }
+    desc.hidden = false;
+    desc.textContent = t.desc;
+    // Preview animation: /preview/<type id>.gif. Until the file exists, a short note is shown instead.
+    img.onload = () => { img.hidden = false; text.hidden = true; };
+    img.onerror = () => { img.hidden = true; text.hidden = false; text.textContent = 'Preview coming soon'; };
+    img.alt = t.label + ' preview';
+    img.src = '/preview/' + t.id + '.gif';
+}
+
+function openModal() {
+    lastFocus = document.activeElement;
+    picked = current;
+    buildList();
+    refreshModal();
+    $('typeModal').classList.add('on');
+    (document.querySelector('.type-opt[aria-checked="true"]') || document.querySelector('.type-opt')).focus();
+}
+
+function closeModal() {
+    $('typeModal').classList.remove('on');
+    if (lastFocus) lastFocus.focus();
+}
+
+function applyType() {
+    if (picked === null) return;
+    if (picked !== current) { resetForm(); renderCards(); }
+    current = picked;
+    renderType();
+    closeModal();
+}
+
+$('addCardBtn').addEventListener('click', openModal);
+$('typeChip').addEventListener('click', openModal);
+$('dialogClose').addEventListener('click', closeModal);
+$('selectBtn').addEventListener('click', applyType);
+$('typeModal').addEventListener('click', e => { if (e.target === $('typeModal')) closeModal(); });
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if ($('typeModal').classList.contains('on')) closeModal();
+    else closeConfirm();
+});
+
+/* ---------- Deck title ---------- */
+$('deckTitle').addEventListener('focus', e => e.target.select());
+$('deckTitle').addEventListener('blur', e => {
+    if (!e.target.value.trim()) e.target.value = 'Untitled Deck';
+});
+
+/* ---------- Multiple choice cards ---------- */
+// Kept in memory only: nothing is sent to the server yet, so a refresh clears the cards.
+const MAX_OPT = 60;
+const cards = [];
+let nextId = 1;
+let editingId = null;   // card being edited on the left
+let confirmId = null;   // card showing the delete warning
+let newCardId = null;   // card that was just added, so only it animates
+const MIN_CARDS = 1;    // cards needed before Publish turns on
+let correct = -1;       // index (0-3) of the correct option in the form
+
+const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
+const ICON_TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4zM14 6l3 3"/></svg>';
+
+function buildOptions() {
+    const grid = $('optGrid');
+    grid.innerHTML = '';
+    for (let i = 0; i < 4; i++) {
+        const wrap = document.createElement('div');
+        wrap.className = 'opt-card';
+
+        const radio = document.createElement('button');
+        radio.type = 'button';
+        radio.className = 'opt-radio';
+        radio.setAttribute('role', 'radio');
+        radio.setAttribute('aria-checked', 'false');
+        radio.setAttribute('aria-label', 'Mark option ' + (i + 1) + ' as correct');
+        radio.innerHTML = ICON_CHECK;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'opt-input';
+        input.placeholder = 'Type answer option here';
+        input.maxLength = MAX_OPT;
+        input.autocomplete = 'off';
+        input.setAttribute('aria-label', 'Answer option ' + (i + 1));
+
+        radio.addEventListener('click', () => { if (input.value.trim()) { correct = i; syncForm(); } });
+        input.addEventListener('input', () => { if (!input.value.trim() && correct === i) correct = -1; syncForm(); });
+
+        wrap.append(radio, input);
+        grid.appendChild(wrap);
+    }
+}
+
+function formValues() {
+    return {
+        q: $('qText').value.trim(),
+        opts: [...document.querySelectorAll('.opt-input')].map(i => i.value.trim())
+    };
+}
+
+function syncForm() {
+    const { q, opts } = formValues();
+    document.querySelectorAll('#optGrid .opt-card').forEach((w, i) => {
+        const filled = opts[i].length > 0;
+        w.classList.toggle('filled', filled);
+        w.classList.toggle('correct', correct === i);
+        const r = w.querySelector('.opt-radio');
+        r.setAttribute('aria-checked', String(correct === i));
+        r.setAttribute('aria-disabled', String(!filled));
+        r.tabIndex = filled ? 0 : -1;
+    });
+    const filledOpts = opts.filter(Boolean);
+    const dup = new Set(filledOpts.map(o => o.toLowerCase())).size < filledOpts.length;
+    $('formMsg').textContent = dup ? 'Each answer option must be different.' : '';
+    $('saveCardBtn').disabled = !(q && filledOpts.length === 4 && correct >= 0 && !dup);
+}
+
+function resetForm() {
+    editingId = null;
+    correct = -1;
+    $('qText').value = '';
+    document.querySelectorAll('.opt-input').forEach(i => { i.value = ''; });
+    tfAnswer = null;
+    $('tfText').value = '';
+    syncForm();
+    syncTf();
+    resetMt();
+    resetFb();
+}
+
+function saveCard() {
+    if ($('saveCardBtn').disabled) return;
+    const { q, opts } = formValues();
+    const data = { type: 'multiple-choice', question: q, options: opts, correct: correct };
+    if (editingId !== null) Object.assign(cards.find(c => c.id === editingId), data);
+    else { newCardId = nextId; cards.push({ id: nextId++, ...data }); }
+    resetForm();
+    renderCards();
+}
+
+function editCard(id) {
+    const c = cards.find(x => x.id === id);
+    if (!c) return;
+    confirmId = null;
+    current = c.type;
+    renderType();
+    editingId = id;
+    if (c.type === 'true-false') {
+        $('tfText').value = c.question;
+        tfAnswer = c.answer;
+        syncTf();
+        renderCards();
+        $('tfText').focus();
+        return;
+    }
+    if (c.type === 'matching') {
+        $('mtText').value = c.question;
+        setPairs(c.pairs);
+        renderCards();
+        $('mtText').focus();
+        return;
+    }
+        if (c.type === 'fill-blank-code' || c.type === 'drag-drop-code') {
+        $('fbText').value = c.question;
+        setFb(c);
+        renderCards();
+        $('fbText').focus();
+        return;
+    }
+    $('qText').value = c.question;
+    document.querySelectorAll('.opt-input').forEach((inp, i) => { inp.value = c.options[i]; });
+    correct = c.correct;
+    syncForm();
+    renderCards();
+    $('qText').focus();
+}
+
+function openConfirm(id) {
+    confirmId = id;
+    renderCards();
+    const no = document.querySelector('.confirm-no');
+    if (no) no.focus();
+}
+
+function closeConfirm() {
+    if (confirmId === null) return;
+    confirmId = null;
+    renderCards();
+}
+
+function deleteCard(id) {
+    const i = cards.findIndex(c => c.id === id);
+    if (i < 0) return;
+    cards.splice(i, 1);
+    confirmId = null;
+    if (editingId === id) resetForm();
+    renderCards();
+    $('cardsHeading').focus();
+}
+
+function iconButton(cls, label, svg, onClick) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'icon-btn ' + cls;
+    b.setAttribute('aria-label', label);
+    b.innerHTML = svg;
+    b.addEventListener('click', onClick);
+    return b;
+}
+
+function buildConfirm(id) {
+    const box = document.createElement('div');
+    box.className = 'confirm';
+    box.setAttribute('role', 'alertdialog');
+    box.setAttribute('aria-label', 'Delete this card?');
+
+    const icon = document.createElement('span');
+    icon.className = 'confirm-icon';
+    icon.innerHTML = ICON_TRASH;
+
+    const text = document.createElement('p');
+    text.className = 'confirm-text';
+    text.textContent = 'Are you sure you want to delete this card?';
+
+    const btns = document.createElement('div');
+    btns.className = 'confirm-btns';
+    const no = document.createElement('button');
+    no.type = 'button';
+    no.className = 'confirm-no';
+    no.textContent = 'No, Keep it.';
+    no.addEventListener('click', closeConfirm);
+    const yes = document.createElement('button');
+    yes.type = 'button';
+    yes.className = 'confirm-yes';
+    yes.textContent = 'Yes, Delete!';
+    yes.addEventListener('click', () => deleteCard(id));
+    btns.append(no, yes);
+
+    box.append(icon, text, btns);
+    return box;
+}
+
+function renderCards() {
+    $('cardCount').textContent = cards.length;
+    syncPublish();
+    $('publishBtn').disabled = cards.length < MIN_CARDS;
+    $('publishBtn').title = cards.length < MIN_CARDS ? 'Add at least ' + MIN_CARDS + ' card' + (MIN_CARDS > 1 ? 's' : '') + ' to publish' : 'Publish this deck';
+    const list = $('cardList');
+    list.innerHTML = '';
+    cards.forEach((c, idx) => {
+        const num = String(idx + 1).padStart(2, '0');
+        const el = document.createElement('article');
+        el.className = 'saved' + (c.id === editingId ? ' editing' : '') + (c.id === newCardId ? ' float-in' : '');
+
+        const head = document.createElement('div');
+        head.className = 'saved-head';
+        const tag = document.createElement('span');
+        tag.className = 'saved-tag';
+        tag.textContent = num + ' | ' + (c.type === 'true-false' ? 'True or False' : c.type === 'matching' ? 'Matching Type' : c.type === 'fill-blank-code' ? 'Fill in the Blanks Code' : c.type === 'drag-drop-code' ? 'Drag & Drop Code' : 'Multiple Choice');
+        const tools = document.createElement('div');
+        tools.className = 'saved-tools';
+        tools.append(
+            iconButton('icon-del', 'Delete card ' + num, ICON_TRASH, () => openConfirm(c.id)),
+            iconButton('icon-edit', 'Edit card ' + num, ICON_EDIT, () => editCard(c.id))
+        );
+        head.append(tag, tools);
+
+        const q = document.createElement('p');
+        q.className = 'saved-q';
+        q.textContent = c.question;
+        const a = document.createElement('p');
+        a.className = 'saved-a';
+        a.textContent = c.type === 'true-false' ? (c.answer ? 'True' : 'False') : c.options ? c.options[c.correct] : '';
+
+        if (c.type === 'matching') {
+            const grid = document.createElement('div');
+            grid.className = 'saved-pairs';
+            c.pairs.forEach(p => {
+                const left = document.createElement('span');
+                left.className = 'pair-cell';
+                left.textContent = p.item;
+                const right = document.createElement('span');
+                right.className = 'pair-cell pair-match';
+                right.textContent = p.answer;
+                grid.append(left, right);
+            });
+            el.append(head, q, grid);
+        } else if (c.type === 'fill-blank-code' || c.type === 'drag-drop-code') {
+            el.append(head, q, buildSavedCode(c));
+        } else {
+            el.append(head, q, a);
+        }
+        if (c.id === confirmId) el.appendChild(buildConfirm(c.id));
+        list.appendChild(el);
+    });
+    newCardId = null;
+}
+
+/* ---------- True or false cards ---------- */
+let tfAnswer = null;   // true, false, or null while nothing is picked
+
+function buildTf() {
+    const grid = $('tfGrid');
+    grid.innerHTML = '';
+    [['True', true], ['False', false]].forEach(([label, value]) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'opt-card filled tf-opt';
+        wrap.dataset.value = String(value);
+
+        const radio = document.createElement('button');
+        radio.type = 'button';
+        radio.className = 'opt-radio';
+        radio.setAttribute('role', 'radio');
+        radio.setAttribute('aria-checked', 'false');
+        radio.setAttribute('aria-label', label);
+        radio.innerHTML = ICON_CHECK;
+
+        const text = document.createElement('span');
+        text.className = 'opt-fixed';
+        text.textContent = label;
+
+        wrap.addEventListener('click', () => { tfAnswer = value; syncTf(); });
+        wrap.append(radio, text);
+        grid.appendChild(wrap);
+    });
+}
+
+function syncTf() {
+    document.querySelectorAll('.tf-opt').forEach(w => {
+        const on = tfAnswer !== null && w.dataset.value === String(tfAnswer);
+        w.classList.toggle('correct', on);
+        w.querySelector('.opt-radio').setAttribute('aria-checked', String(on));
+    });
+    $('saveTfBtn').disabled = !($('tfText').value.trim() && tfAnswer !== null);
+}
+
+function saveTf() {
+    if ($('saveTfBtn').disabled) return;
+    const data = { type: 'true-false', question: $('tfText').value.trim(), answer: tfAnswer };
+    if (editingId !== null) Object.assign(cards.find(c => c.id === editingId), data);
+    else { newCardId = nextId; cards.push({ id: nextId++, ...data }); }
+    resetForm();
+    renderCards();
+}
+
+$('tfText').addEventListener('input', syncTf);
+$('saveTfBtn').addEventListener('click', saveTf);
+
+/* ---------- Matching cards ---------- */
+const MAX_PAIRS = 8;
+const MAX_PAIR_TEXT = 40;
+
+function addPairRow(focus) {
+    const rows = $('mtRows');
+    if (rows.children.length >= MAX_PAIRS) return;
+    const n = rows.children.length + 1;
+
+    const row = document.createElement('div');
+    row.className = 'mt-row';
+
+    const item = document.createElement('input');
+    item.type = 'text';
+    item.className = 'mt-input mt-item';
+    item.placeholder = 'Type item option here';
+    item.maxLength = MAX_PAIR_TEXT;
+    item.autocomplete = 'off';
+    item.setAttribute('aria-label', 'Item ' + n);
+
+    const match = document.createElement('input');
+    match.type = 'text';
+    match.className = 'mt-input mt-match';
+    match.placeholder = 'Type answer option here';
+    match.maxLength = MAX_PAIR_TEXT;
+    match.autocomplete = 'off';
+    match.setAttribute('aria-label', 'Match for item ' + n);
+
+    item.addEventListener('input', syncMt);
+    match.addEventListener('input', syncMt);
+    item.addEventListener('keydown', onPairKey);
+    match.addEventListener('keydown', onPairKey);
+    row.append(item, match);
+    rows.appendChild(row);
+    syncMt();
+    if (focus) item.focus();
+}
+
+function pairValues() {
+    return [...$('mtRows').children].map(r => ({
+        item: r.querySelector('.mt-item').value.trim(),
+        answer: r.querySelector('.mt-match').value.trim()
+    }));
+}
+
+// Backspace in a completely empty row removes that row (the first row always stays)
+function onPairKey(e) {
+    if (e.key !== 'Backspace' || e.repeat) return;
+    const row = e.target.closest('.mt-row');
+    if (row.querySelector('.mt-item').value || row.querySelector('.mt-match').value) return;
+    const rows = $('mtRows');
+    if (rows.children.length <= 1) return;
+    e.preventDefault();
+    const prev = row.previousElementSibling;
+    row.remove();
+    [...rows.children].forEach((r, i) => {
+        r.querySelector('.mt-item').setAttribute('aria-label', 'Item ' + (i + 1));
+        r.querySelector('.mt-match').setAttribute('aria-label', 'Match for item ' + (i + 1));
+    });
+    syncMt();
+    (prev ? prev.querySelector('.mt-match') : rows.firstElementChild.querySelector('.mt-item')).focus();
+}
+
+function syncMt() {
+    const all = pairValues();
+    const full = all.filter(p => p.item && p.answer);
+    const half = all.some(p => (p.item && !p.answer) || (!p.item && p.answer));
+    const dup = new Set(full.map(p => p.item.toLowerCase())).size < full.length
+             || new Set(full.map(p => p.answer.toLowerCase())).size < full.length;
+    const hasQ = $('mtText').value.trim().length > 0;
+
+    $('mtAdd').disabled = all.length >= MAX_PAIRS;
+    $('mtMsg').textContent = dup ? 'Each item and each match must be different.'
+        : (half && hasQ && full.length >= 2) ? 'Fill in both sides of each pair, or leave the row empty.' : '';
+    $('saveMtBtn').disabled = !(hasQ && full.length >= 2 && !half && !dup);
+}
+
+function resetMt() {
+    $('mtText').value = '';
+    $('mtRows').innerHTML = '';
+    addPairRow(false);
+}
+
+function setPairs(pairs) {
+    $('mtRows').innerHTML = '';
+    pairs.forEach(() => addPairRow(false));
+    [...$('mtRows').children].forEach((r, i) => {
+        r.querySelector('.mt-item').value = pairs[i].item;
+        r.querySelector('.mt-match').value = pairs[i].answer;
+    });
+    syncMt();
+}
+
+function saveMt() {
+    if ($('saveMtBtn').disabled) return;
+    const data = { type: 'matching', question: $('mtText').value.trim(), pairs: pairValues().filter(p => p.item && p.answer) };
+    if (editingId !== null) Object.assign(cards.find(c => c.id === editingId), data);
+    else { newCardId = nextId; cards.push({ id: nextId++, ...data }); }
+    resetForm();
+    renderCards();
+}
+
+$('mtText').addEventListener('input', syncMt);
+$('mtAdd').addEventListener('click', () => addPairRow(true));
+$('saveMtBtn').addEventListener('click', saveMt);
+
+/* ---------- Fill in the blanks code cards ---------- */
+const MAX_BLANKS = 5;
+const MAX_CODE = 1000;
+const MAX_ANSWER = 40;
+const SAVED_CODE_LINES = 4;   // lines of code shown on the saved card
+const ZW = '\u200B';          // invisible character that lets the caret sit next to a blank
+const fbHint = $('fbHint');
+let fbList = [];              // blanks currently listed under "Correct answers"
+let pendingRange = null;      // selection that "+ Make blank" will turn into a blank
+
+function fbBlanks() {
+    return [...$('fbCode').querySelectorAll('.blank')];
+}
+
+function fbPlain() {
+    let s = '';
+    $('fbCode').childNodes.forEach(n => { if (n.nodeType === 3) s += n.data; });
+    return s.replace(/\u200B/g, '');
+}
+
+function insertAtCaret(str) {
+    const sel = getSelection();
+    if (!sel.rangeCount) return;
+    const r = sel.getRangeAt(0);
+    if (!$('fbCode').contains(r.commonAncestorContainer)) return;
+    r.deleteContents();
+    const node = document.createTextNode(str);
+    r.insertNode(node);
+    r.setStart(node, node.length);
+    r.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(r);
+}
+
+// Keep the editor to plain text plus blanks, and keep one newline at the end so a new last line shows
+function cleanEditor() {
+    const ed = $('fbCode');
+    [...ed.childNodes].forEach(n => {
+        if (n.nodeType === 3 || (n.nodeType === 1 && n.classList.contains('blank'))) return;
+        const text = n.nodeName === 'BR' ? '\n' : n.textContent + (n.nodeName === 'DIV' ? '\n' : '');
+        ed.replaceChild(document.createTextNode(text), n);
+    });
+    const last = ed.lastChild;
+    if (last && !(last.nodeType === 3 && /\n$/.test(last.data))) ed.appendChild(document.createTextNode('\n'));
+}
+
+// A blank always has text on both sides so the caret can sit next to it
+function padBlank(span) {
+    const p = span.previousSibling, n = span.nextSibling;
+    if (!p || p.nodeType !== 3 || p.data === '') {
+        if (p && p.nodeType === 3) p.remove();
+        span.before(document.createTextNode(ZW));
+    }
+    if (!n || n.nodeType !== 3 || n.data === '') {
+        if (n && n.nodeType === 3) n.remove();
+        span.after(document.createTextNode(ZW));
+    }
+}
+
+function trimmedRange(r) {
+    const t = r.cloneRange();
+    if (t.startContainer.nodeType === 3) {
+        const s = t.startContainer.data;
+        const end = t.endContainer === t.startContainer ? t.endOffset : s.length;
+        let o = t.startOffset;
+        while (o < end && /\s/.test(s[o])) o++;
+        t.setStart(t.startContainer, o);
+    }
+    if (t.endContainer.nodeType === 3) {
+        const s = t.endContainer.data;
+        const start = t.startContainer === t.endContainer ? t.startOffset : 0;
+        let o = t.endOffset;
+        while (o > start && /\s/.test(s[o - 1])) o--;
+        t.setEnd(t.endContainer, o);
+    }
+    return t;
+}
+
+function hidePop() {
+    $('makeBlank').hidden = true;
+}
+
+function evalSelection() {
+    pendingRange = null;
+    const sel = getSelection();
+    const ed = $('fbCode');
+    if (!sel.rangeCount || sel.isCollapsed) return hidePop();
+    const r = sel.getRangeAt(0);
+    if (!ed.contains(r.startContainer) || !ed.contains(r.endContainer)) return hidePop();
+    if (r.cloneContents().querySelector('.blank')) return hidePop();
+    const t = trimmedRange(r);
+    const text = t.toString().replace(/\u200B/g, '');
+    if (!text.trim() || text.includes('\n')) return hidePop();
+    pendingRange = t;
+    const rect = t.getBoundingClientRect();
+    const pop = $('makeBlank');
+    pop.style.left = (rect.left + rect.width / 2) + 'px';
+    pop.style.top = rect.top + 'px';
+    pop.hidden = false;
+}
+
+function makeBlank() {
+    const r = pendingRange;
+    if (!r) return;
+    const answer = r.toString().replace(/\u200B/g, '').trim();
+    if (!answer) return;
+    if (fbBlanks().length >= MAX_BLANKS) { $('fbMsg').textContent = 'You can make up to ' + MAX_BLANKS + ' blanks.'; hidePop(); return; }
+    if (answer.length > MAX_ANSWER) { $('fbMsg').textContent = 'A blank can hold at most ' + MAX_ANSWER + ' characters.'; hidePop(); return; }
+
+    const span = document.createElement('span');
+    span.className = 'blank';
+    span.setAttribute('contenteditable', 'false');
+    span.dataset.answer = answer;
+    span.textContent = '0';
+    r.deleteContents();
+    r.insertNode(span);
+    padBlank(span);
+
+    const next = span.nextSibling;
+    const nr = document.createRange();
+    nr.setStart(next, Math.min(next.data.length, next.data.startsWith(ZW) ? 1 : 0));
+    nr.collapse(true);
+    const sel = getSelection();
+    sel.removeAllRanges();
+    sel.addRange(nr);
+    pendingRange = null;
+    hidePop();
+    syncFb();
+}
+
+function rebuildAnswers(blanks) {
+    fbList = blanks;
+    renderOptions();
+    const box = $('fbAnswers');
+    box.innerHTML = '';
+    if (!blanks.length) { box.appendChild(fbHint); return; }
+    blanks.forEach((b, i) => {
+        b.textContent = i + 1;
+        const row = document.createElement('div');
+        row.className = 'fb-ans';
+        const num = document.createElement('span');
+        num.className = 'fb-n';
+        num.textContent = (i + 1) + '.';
+        const ans = document.createElement('div');
+        ans.className = 'fb-input';
+        ans.textContent = b.dataset.answer || '';
+        row.append(num, ans);
+        box.appendChild(row);
+    });
+}
+
+function validateFb() {
+    const dd = current === 'drag-drop-code';
+    const plain = fbPlain();
+    const answers = fbList.map(b => (b.dataset.answer || '').trim());
+    const decoyVals = dd ? decoys.map(t => t.trim()).filter(Boolean) : [];
+    const decoysDiffer = new Set(decoyVals).size === decoyVals.length;
+    const decoysNew = !decoyVals.some(t => answers.includes(t));
+    let msg = '';
+    if (plain.length > MAX_CODE) msg = 'Code can be at most ' + MAX_CODE + ' characters.';
+    else if (answers.some(a => !a)) msg = 'Every blank needs an answer.';
+    else if (!decoysDiffer) msg = 'Each decoy must be different.';
+    else if (!decoysNew) msg = 'A decoy can\'t be the same as a correct option.';
+    else if (!$('fbText').value.trim() && plain.trim() && fbList.length >= 1) msg = 'Type a question to save this card.';
+    $('fbMsg').textContent = msg;
+    $('saveFbBtn').disabled = !($('fbText').value.trim() && plain.trim() && fbList.length >= 1 && answers.every(Boolean) && plain.length <= MAX_CODE && decoysDiffer && decoysNew);
+}
+
+function syncFb() {
+    cleanEditor();
+    const blanks = fbBlanks();
+    if (blanks.length !== fbList.length || blanks.some((b, i) => b !== fbList[i])) rebuildAnswers(blanks);
+    $('fbCode').classList.toggle('is-empty', !fbPlain().trim() && blanks.length === 0);
+    validateFb();
+    drawGuides();
+}
+
+function resetFb() {
+    $('fbText').value = '';
+    $('fbCode').innerHTML = '';
+    decoys = [];
+    syncFb();
+    renderOptions();
+}
+
+function setFb(c) {
+    const ed = $('fbCode');
+    ed.innerHTML = '';
+    decoys = (c.decoys || []).slice();
+    c.parts.forEach(p => {
+        if (p.blank !== undefined) {
+            const span = document.createElement('span');
+            span.className = 'blank';
+            span.setAttribute('contenteditable', 'false');
+            span.dataset.answer = c.answers[p.blank];
+            span.textContent = p.blank + 1;
+            ed.appendChild(span);
+        } else {
+            ed.appendChild(document.createTextNode(p.text));
+        }
+    });
+    ed.querySelectorAll('.blank').forEach(b => padBlank(b));
+    syncFb();
+    renderOptions();
+}
+
+function saveFb() {
+    if ($('saveFbBtn').disabled) return;
+    const dd = current === 'drag-drop-code';
+    const parts = [];
+    const answers = [];
+    [...$('fbCode').childNodes].forEach(n => {
+        if (n.nodeType === 3) {
+            const t = n.data.replace(/\u200B/g, '');
+            if (t) parts.push({ text: t });
+        } else if (n.classList.contains('blank')) {
+            answers.push((n.dataset.answer || '').trim());
+            parts.push({ blank: answers.length - 1 });
+        }
+    });
+    const last = parts[parts.length - 1];
+    if (last && last.text !== undefined) {
+        last.text = last.text.replace(/\s+$/, '');
+        if (!last.text) parts.pop();
+    }
+    const data = { type: dd ? 'drag-drop-code' : 'fill-blank-code', question: $('fbText').value.trim(), parts: parts, answers: answers };
+    if (dd) data.decoys = decoys.map(t => t.trim()).filter(Boolean);
+    if (editingId !== null) Object.assign(cards.find(c => c.id === editingId), data);
+    else { newCardId = nextId; cards.push({ id: nextId++, ...data }); }
+    resetForm();
+    renderCards();
+}
+
+function buildSavedCode(c) {
+    const lines = [[]];
+    c.parts.forEach(p => {
+        if (p.blank !== undefined) { lines[lines.length - 1].push({ blank: p.blank }); return; }
+        p.text.split('\n').forEach((seg, i) => {
+            if (i > 0) lines.push([]);
+            if (seg) lines[lines.length - 1].push({ text: seg });
+        });
+    });
+    while (lines.length && !lines[lines.length - 1].length) lines.pop();
+
+    const box = document.createElement('div');
+    box.className = 'saved-code';
+    lines.slice(0, SAVED_CODE_LINES).forEach(parts => {
+        const line = document.createElement('div');
+        line.className = 'saved-code-line';
+        if (!parts.length) line.textContent = '\u00a0';
+        parts.forEach(p => {
+            if (p.blank !== undefined) {
+                const chip = document.createElement('span');
+                chip.className = 'blank-chip';
+                chip.textContent = p.blank + 1;
+                line.appendChild(chip);
+            } else {
+                line.appendChild(document.createTextNode(p.text));
+            }
+        });
+        box.appendChild(line);
+    });
+    if (lines.length > SAVED_CODE_LINES) {
+        const more = document.createElement('div');
+        more.className = 'saved-code-line';
+        more.textContent = '....';
+        box.appendChild(more);
+    }
+
+    const ans = document.createElement('div');
+    ans.className = 'saved-answers' + (c.type === 'drag-drop-code' ? ' as-chips' : '');
+    c.answers.forEach((a, i) => {
+        const item = document.createElement('span');
+        item.className = 'saved-ans';
+        const n = document.createElement('span');
+        n.className = 'saved-ans-n';
+        n.textContent = i + 1;
+        const v = document.createElement('span');
+        v.className = 'saved-ans-v';
+        v.textContent = a;
+        item.append(n, v);
+        ans.appendChild(item);
+    });
+
+    const wrap = document.createDocumentFragment();
+    wrap.append(box, ans);
+    return wrap;
+}
+
+/* ---------- Drag and drop code: correct options + decoys (shares the code editor above) ---------- */
+const MAX_DECOYS = 5;
+let decoys = [];   // decoy texts, in the order they were added
+
+function applyFbMode() {
+    const dd = current === 'drag-drop-code';
+    $('fbLabel').textContent = dd ? 'Correct options' : 'Correct answers';
+    $('fbAnswers').hidden = dd;
+    $('ddOptions').hidden = !dd;
+    renderOptions();
+    validateFb();
+}
+
+function renderOptions() {
+    const box = $('ddOptions');
+    box.innerHTML = '';
+    if (!fbList.length && !decoys.length) {
+        const hint = document.createElement('p');
+        hint.className = 'fb-hint';
+        hint.textContent = 'Blanks you make in the code will show up here as options.';
+        box.appendChild(hint);
+        return;
+    }
+    const row = document.createElement('div');
+    row.className = 'dd-row';
+
+    fbList.forEach((b, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'dd-chip dd-correct';
+        const badge = document.createElement('span');
+        badge.className = 'dd-badge';
+        badge.textContent = i + 1;
+        const text = document.createElement('span');
+        text.textContent = b.dataset.answer || '';
+        chip.append(badge, text);
+        row.appendChild(chip);
+    });
+
+    decoys.forEach((t, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'dd-chip dd-decoy';
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.className = 'dd-decoy-input';
+        inp.value = t;
+        inp.placeholder = 'decoy';
+        inp.maxLength = MAX_ANSWER;
+        inp.autocomplete = 'off';
+        inp.spellcheck = false;
+        inp.setAttribute('aria-label', 'Decoy ' + (i + 1));
+        const size = () => { inp.style.width = Math.max(6, inp.value.length + 1) + 'ch'; };
+        size();
+        inp.addEventListener('input', () => { decoys[i] = inp.value; size(); validateFb(); });
+        inp.addEventListener('keydown', e => {
+            if (e.key === 'Backspace' && !e.repeat && inp.value === '') { e.preventDefault(); removeDecoy(i); }
+        });
+        const tag = document.createElement('span');
+        tag.className = 'dd-decoy-tag';
+        tag.textContent = 'decoy';
+        chip.append(inp, tag);
+        row.appendChild(chip);
+    });
+
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'dd-add';
+    add.textContent = '+Add decoy';
+    add.disabled = decoys.length >= MAX_DECOYS;
+    add.addEventListener('click', addDecoy);
+    row.appendChild(add);
+    box.appendChild(row);
+}
+
+function addDecoy() {
+    if (decoys.length >= MAX_DECOYS) return;
+    decoys.push('');
+    renderOptions();
+    const inputs = $('ddOptions').querySelectorAll('.dd-decoy-input');
+    inputs[inputs.length - 1].focus();
+    validateFb();
+}
+
+function removeDecoy(i) {
+    decoys.splice(i, 1);
+    renderOptions();
+    const inputs = $('ddOptions').querySelectorAll('.dd-decoy-input');
+    const next = inputs[i - 1] || $('ddOptions').querySelector('.dd-add');
+    if (next) next.focus();
+    validateFb();
+}
+
+/* ---------- Indent guides (vertical lines showing how deep each line is) ---------- */
+const INDENT_SPACES = 4;
+
+// Indent level of every line: 2 fixed lines, your code (inside main), 2 fixed closing lines
+function codeLevels() {
+    const text = [...$('fbCode').childNodes]
+        .map(n => n.nodeType === 3 ? n.data.replace(/\u200B/g, '') : '#')
+        .join('')
+        .replace(/\n$/, '');
+    const own = text.split('\n').map(l => l.trim() === '' ? null : 2 + Math.floor(/^ */.exec(l)[0].length / INDENT_SPACES));
+    const user = own.map((lv, i) => {
+        if (lv !== null) return lv;
+        let prev = null, next = null;
+        for (let a = i - 1; a >= 0 && prev === null; a--) prev = own[a];
+        for (let b = i + 1; b < own.length && next === null; b++) next = own[b];
+        return Math.max(2, Math.min(prev === null ? 2 : prev, next === null ? 2 : next));
+    });
+    return [0, 1, ...user, 1, 0];
+}
+
+// One guide per indent level, running over every neighbouring line that is indented at least that deep
+function guideSegments(levels) {
+    const segs = [];
+    const max = Math.max(0, ...levels);
+    for (let k = 0; k < max; k++) {
+        let start = -1;
+        levels.forEach((lv, i) => {
+            if (lv > k && start < 0) start = i;
+            if (lv <= k && start >= 0) { segs.push({ k: k, from: start, to: i - 1 }); start = -1; }
+        });
+        if (start >= 0) segs.push({ k: k, from: start, to: levels.length - 1 });
+    }
+    return segs;
+}
+
+function drawGuides() {
+    const body = document.querySelector('.code-body');
+    const layer = $('codeGuides');
+    const ed = $('fbCode');
+    if (!body || !layer || !body.offsetParent) return;   // form is hidden
+
+    // Width of one indent level = four spaces in the code font
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+    probe.textContent = ' '.repeat(INDENT_SPACES * 10);
+    body.appendChild(probe);
+    const unit = probe.getBoundingClientRect().width / 10;
+    probe.remove();
+    if (!unit) return;
+    body.style.setProperty('--indent', unit + 'px');
+
+    const levels = codeLevels();
+    const lineH = parseFloat(getComputedStyle(ed).lineHeight) || 26;
+    const fixed = [...body.querySelectorAll('.code-line')];
+    const tops = [], bottoms = [];
+    const add = (t, h) => { tops.push(t); bottoms.push(t + h); };
+    add(fixed[0].offsetTop, fixed[0].offsetHeight);
+    add(fixed[1].offsetTop, fixed[1].offsetHeight);
+    for (let j = 0; j < levels.length - 4; j++) add(ed.offsetTop + j * lineH, lineH);
+    add(fixed[2].offsetTop, fixed[2].offsetHeight);
+    add(fixed[3].offsetTop, fixed[3].offsetHeight);
+
+    const left = parseFloat(getComputedStyle(body).paddingLeft) || 0;
+    layer.innerHTML = '';
+    guideSegments(levels).forEach(g => {
+        const line = document.createElement('div');
+        line.className = 'guide';
+        line.style.left = (left + g.k * unit) + 'px';
+        line.style.top = tops[g.from] + 'px';
+        line.style.height = (bottoms[g.to] - tops[g.from]) + 'px';
+        layer.appendChild(line);
+    });
+}
+
+window.addEventListener('resize', drawGuides);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawGuides);
+
+const fbEditor = $('fbCode');
+fbEditor.addEventListener('input', syncFb);
+fbEditor.addEventListener('beforeinput', e => {
+    if (e.inputType === 'insertParagraph' || e.inputType === 'insertLineBreak') {
+        e.preventDefault();
+        insertAtCaret('\n');
+        syncFb();
+    }
+});
+fbEditor.addEventListener('paste', e => {
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain').replace(/\r\n?/g, '\n').replace(/\t/g, '    ');
+    insertAtCaret(text);
+    syncFb();
+});
+fbEditor.addEventListener('drop', e => e.preventDefault());
+/* ---------- Tab, Shift+Tab and Backspace for indentation ---------- */
+let tabLeaves = false;   // after Esc, the next Tab moves focus out of the editor
+
+// Code on the caret's line, up to the caret (a blank counts as one character)
+function lineBeforeCaret(r) {
+    const pre = document.createRange();
+    pre.selectNodeContents($('fbCode'));
+    pre.setEnd(r.startContainer, r.startOffset);
+    const text = [...pre.cloneContents().childNodes].map(n => n.nodeType === 3 ? n.data : '#').join('').replace(/\u200B/g, '');
+    return text.slice(text.lastIndexOf('\n') + 1);
+}
+
+function flatText() {
+    return [...$('fbCode').childNodes].map(n => n.nodeType === 3 ? n.data.replace(/\u200B/g, '') : '#').join('');
+}
+
+function flatIndex(container, offset) {
+    const pre = document.createRange();
+    pre.selectNodeContents($('fbCode'));
+    pre.setEnd(container, offset);
+    return [...pre.cloneContents().childNodes].map(n => n.nodeType === 3 ? n.data.replace(/\u200B/g, '') : '#').join('').length;
+}
+
+// Position inside the editor for a character index of flatText()
+function domPoint(flat) {
+    let count = 0, lastText = null;
+    for (const n of $('fbCode').childNodes) {
+        if (n.nodeType === 3) {
+            lastText = n;
+            for (let i = 0; i <= n.data.length; i++) {
+                if (count === flat) return [n, i];
+                if (i < n.data.length && n.data[i] !== ZW) count++;
+            }
+        } else {
+            count++;
+        }
+    }
+    return [lastText, lastText ? lastText.data.length : 0];
+}
+
+// Indent (Tab) or outdent (Shift+Tab) every line the selection touches
+function changeIndent(outdent) {
+    const ed = $('fbCode');
+    const sel = getSelection();
+    const r = sel.getRangeAt(0);
+    const a = flatIndex(r.startContainer, r.startOffset);   // measured before the pieces of text are joined
+    const b = flatIndex(r.endContainer, r.endOffset);
+    ed.normalize();
+    if (!ed.firstChild) ed.appendChild(document.createTextNode(''));
+    const flat = flatText();
+    const starts = [0];
+    for (let i = 0; i < flat.length; i++) if (flat[i] === '\n') starts.push(i + 1);
+    let first = 0, last = 0;
+    starts.forEach((s, i) => { if (s <= a) first = i; if (s <= b) last = i; });
+    if (last > first && starts[last] === b) last--;   // selection ends at the very start of a line: leave that line alone
+
+    const pad = ' '.repeat(INDENT_SPACES);
+    let moveA = 0, moveB = 0;
+    for (let i = last; i >= first; i--) {
+        const s = starts[i];
+        if (outdent) {
+            let n = 0;
+            while (n < INDENT_SPACES && flat[s + n] === ' ') n++;
+            if (!n) continue;
+            const [node, off] = domPoint(s);
+            node.deleteData(off, n);
+            moveA -= Math.min(n, Math.max(0, a - s));
+            moveB -= Math.min(n, Math.max(0, b - s));
+        } else {
+            const [node, off] = domPoint(s);
+            node.insertData(off, pad);
+            if (s <= a) moveA += pad.length;
+            if (s <= b) moveB += pad.length;
+        }
+    }
+    const [n1, o1] = domPoint(a + moveA);
+    const [n2, o2] = domPoint(b + moveB);
+    const nr = document.createRange();
+    nr.setStart(n1, o1);
+    nr.setEnd(n2, o2);
+    sel.removeAllRanges();
+    sel.addRange(nr);
+}
+
+function onTab(outdent) {
+    const sel = getSelection();
+    if (!sel.rangeCount) return;
+    const r = sel.getRangeAt(0);
+    if (!$('fbCode').contains(r.commonAncestorContainer)) return;
+    if (outdent || !sel.isCollapsed) {
+        changeIndent(outdent);
+    } else {
+        const before = lineBeforeCaret(r);
+        const inIndent = /^ *$/.test(before);
+        insertAtCaret(' '.repeat(inIndent ? INDENT_SPACES - (before.length % INDENT_SPACES) : INDENT_SPACES));
+    }
+    syncFb();
+}
+
+// Backspace inside the indentation removes back to the previous 4-space stop
+function smartBackspace(e) {
+    const ed = $('fbCode');
+    const sel = getSelection();
+    if (!sel.rangeCount || !sel.isCollapsed || !ed.contains(sel.anchorNode)) return;
+    const idx = flatIndex(sel.anchorNode, sel.anchorOffset);   // measured before the pieces of text are joined
+    const before = lineBeforeCaret(sel.getRangeAt(0));
+    if (!/^ +$/.test(before)) return;
+    const n = before.length;
+    const remove = n % INDENT_SPACES === 0 ? INDENT_SPACES : n % INDENT_SPACES;
+
+    ed.normalize();   // join neighbouring pieces of text so the indentation is in one piece
+    const [node, off] = domPoint(idx);
+    const nr = document.createRange();
+    nr.setStart(node, off);
+    nr.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(nr);
+    if (off < remove || node.data.slice(off - remove, off) !== ' '.repeat(remove)) return;
+
+    e.preventDefault();
+    node.deleteData(off - remove, remove);
+    nr.setStart(node, off - remove);
+    nr.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(nr);
+    syncFb();
+}
+
+fbEditor.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+        if (tabLeaves) { tabLeaves = false; return; }   // Esc then Tab leaves the editor
+        e.preventDefault();
+        onTab(e.shiftKey);
+        return;
+    }
+    tabLeaves = e.key === 'Escape';
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        makeBlank();
+    } else if (e.key === 'Backspace' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        smartBackspace(e);
+    }
+});
+fbEditor.addEventListener('blur', () => { tabLeaves = false; });
+$('makeBlank').addEventListener('mousedown', e => e.preventDefault());
+$('makeBlank').addEventListener('click', makeBlank);
+document.addEventListener('selectionchange', evalSelection);
+window.addEventListener('scroll', hidePop, true);
+window.addEventListener('resize', hidePop);
+$('fbText').addEventListener('input', validateFb);
+$('saveFbBtn').addEventListener('click', saveFb);
+$('qText').addEventListener('input', syncForm);
+$('saveCardBtn').addEventListener('click', saveCard);
+document.addEventListener('click', e => {
+    if (confirmId !== null && !e.target.closest('.confirm') && !e.target.closest('.icon-del')) closeConfirm();
+});
+// Cards are not stored anywhere yet, so warn before the page is left with cards in it.
+window.addEventListener('beforeunload', e => {
+    if (hasUnsaved()) { e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ---------- Step 6 and 8: Create a deck screen, publishing and "Deck created!" ---------- */
+const PUBLISH_MIN_CARDS = 1;     // cards needed before Publish turns on
+const MAX_DECK_NAME = 30;
+const PUBLISH_WAIT_MS = 2200;    // stands in for the server until the API is ready
+const PUB_COVERS = [
+    'Pixel art picnic scene by a river with a white rabbit at a wooden table',
+    'Pixel art seaside view at sunset with a lighthouse and a park bench',
+    'Pixel art cozy room with cats and a vintage television playing a cake video',
+    'Pixel art storefront of a charming bakery called Evening Cakery',
+    'Pixel art snowy winter landscape with pine trees and a mushroom house',
+    'Pixel art cozy bedroom overlooking a glowing city at night'
+];
+const SHARE_LABELS = { 'public': 'Public', 'private': 'Private' };
+let published = false;
+let pubCover = null;      // chosen cover (1-6)
+let galPending = null;    // cover picked in the gallery, not saved yet
+let pubShare = 'public';  // 'public' or 'private'
+
+function syncPublish() {
+    const ok = cards.length >= PUBLISH_MIN_CARDS;
+    const verb = published ? 'Save' : 'Publish';
+    $('publishBtn').textContent = verb;
+    $('publishBtn').disabled = !ok;
+    $('publishBtn').title = ok ? (published ? 'Save your changes' : 'Publish this deck') : 'Add at least ' + PUBLISH_MIN_CARDS + ' card' + (PUBLISH_MIN_CARDS > 1 ? 's' : '') + ' to ' + verb.toLowerCase();
+}
+
+// Items and types are read from the cards, so they cannot be edited here
+function renderPubTags() {
+    $('pubItems').textContent = cards.length;
+    const box = $('pubTypes');
+    box.innerHTML = '';
+    TYPES.filter(t => cards.some(c => c.type === t.id)).forEach(t => {
+        const chip = document.createElement('span');
+        chip.className = 'pub-chip';
+        chip.textContent = t.chip;
+        box.appendChild(chip);
+    });
+}
+
+function updateCount() {
+    const n = $('pubName').value.length;
+    $('pubCount').textContent = n + '/' + MAX_DECK_NAME;
+    $('pubCount').classList.toggle('full', n >= MAX_DECK_NAME);
+}
+
+function showPublish() {
+    if ($('publishBtn').disabled) return;
+    closeConfirm();
+    renderPubTags();
+    const title = $('deckTitle').value.trim();
+    if (!$('pubName').value && title && title !== 'Untitled Deck') $('pubName').value = title.slice(0, MAX_DECK_NAME);
+    updateCount();
+    $('pubMsg').textContent = '';
+    document.querySelector('.topbar').hidden = true;
+    document.querySelector('.workspace').hidden = true;
+    $('pubView').hidden = false;
+    $('pubName').focus();
+}
+
+function showBuild() {
+    $('pubView').hidden = true;
+    document.querySelector('.topbar').hidden = false;
+    document.querySelector('.workspace').hidden = false;
+    $('publishBtn').focus();
+}
+
+/* cover gallery */
+function buildGallery() {
+    const grid = $('galGrid');
+    PUB_COVERS.forEach((alt, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'pub-thumb';
+        b.dataset.n = i + 1;
+        b.setAttribute('aria-pressed', 'false');
+        const img = document.createElement('img');
+        img.src = '/cover/cover ' + (i + 1) + '.jpg';
+        img.alt = alt;
+        b.appendChild(img);
+        b.addEventListener('click', () => { galPending = i + 1; markCovers(); });
+        grid.appendChild(b);
+    });
+}
+
+function markCovers() {
+    document.querySelectorAll('.pub-thumb').forEach(t => t.setAttribute('aria-pressed', String(Number(t.dataset.n) === galPending)));
+    $('galSave').disabled = galPending === null;
+}
+
+function openGallery() {
+    galPending = pubCover;
+    markCovers();
+    $('galleryModal').classList.add('on');
+    $('galClose').focus();
+}
+
+function closeGallery() {
+    $('galleryModal').classList.remove('on');
+    $('pubCoverBtn').focus();
+}
+
+function saveCover() {
+    if (galPending === null) return;
+    pubCover = galPending;
+    $('pubCoverImg').src = '/cover/cover ' + pubCover + '.jpg';
+    $('pubCoverImg').alt = PUB_COVERS[pubCover - 1];
+    $('pubCoverImg').hidden = false;
+    $('pubCoverBtn').classList.add('has-img');
+    $('pubCoverLabel').textContent = 'Change cover image';
+    $('pubMsg').textContent = '';
+    closeGallery();
+}
+
+/* share with */
+function setShare(v) {
+    pubShare = v;
+    $('pubSelectText').textContent = SHARE_LABELS[v];
+    document.querySelectorAll('#pubOptions button').forEach(b => {
+        const on = b.dataset.value === v;
+        b.setAttribute('aria-selected', String(on));
+        if (on) $('pubSelectIcon').innerHTML = b.querySelector('.pub-ico').innerHTML;   // show the chosen option's icon in the field
+    });
+}
+
+function toggleShare(open) {
+    $('pubOptions').hidden = !open;
+    $('pubSelectBtn').setAttribute('aria-expanded', String(open));
+}
+
+let currentDeckId = null;   // set at the first publish, so a later Save updates the same deck
+
+/* publishing */
+async function publishDeck(details) {
+    // TODO: send `details` (including the cards) to the Decks API once it can store them.
+    // Until then the decks are kept in sessionStorage, shared with the Lobby and Deck overview pages (this browser tab only).
+    try {
+        const raw = JSON.parse(sessionStorage.getItem('jm.decks'));
+        const list = Array.isArray(raw) ? raw : [];
+        if (currentDeckId === null) currentDeckId = 'd' + Date.now();
+        const i = list.findIndex(d => d.id === currentDeckId);
+        const now = Date.now();
+        // createdAt stays the same; updatedAt moves forward every time the deck is published or saved
+        const deck = Object.assign({ id: currentDeckId, createdAt: i >= 0 && list[i].createdAt ? list[i].createdAt : now, updatedAt: now }, details);
+        if (i >= 0) list[i] = deck; else list.push(deck);
+        sessionStorage.setItem('jm.decks', JSON.stringify(list));
+    } catch (e) {
+        throw new Error('Could not save the deck in this browser. Try again.');
+    }
+    await new Promise(resolve => setTimeout(resolve, PUBLISH_WAIT_MS));
+}
+
+async function startPublish() {
+    const btn = $('pubBtn');
+    if (btn.disabled) return;
+    const name = $('pubName').value.trim();
+    if (!name) { $('pubMsg').textContent = 'Enter a deck name.'; $('pubName').focus(); return; }
+    if (pubCover === null) { $('pubMsg').textContent = 'Choose a cover image.'; return; }
+
+    const details = {
+        name: name,
+        share: pubShare,
+        cover: pubCover,
+        items: cards.length,
+        types: TYPES.filter(t => cards.some(c => c.type === t.id)).map(t => t.id),
+        cards: JSON.parse(JSON.stringify(cards))
+    };
+    $('pubMsg').textContent = '';
+    const wasPublished = published;
+    btn.disabled = true;
+    btn.classList.add('loading');
+    btn.setAttribute('aria-busy', 'true');
+    try {
+        await publishDeck(details);
+        published = true;
+        savedSnapshot = snapshot();
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        btn.removeAttribute('aria-busy');
+        syncPubBtn();
+        syncPublish();
+        showDone(wasPublished ? 'saved' : 'created');
+    } catch (err) {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        btn.removeAttribute('aria-busy');
+        $('pubMsg').textContent = (err && err.message) || 'Could not publish. Try again.';
+    }
+}
+
+function closeDone() {
+    $('doneModal').classList.remove('on');
+    $('pubBack').focus();
+}
+
+/* publish / save, the two pop-ups and View deck */
+const DECK_OVERVIEW_URL = '/pages/Deck overview.html';
+const DONE_COPY = {
+    created: { title: 'Deck created!',  text: 'Your deck is saved and ready to play with players and/or practice on your own.', icon: '/icons/stamp.png' },
+    saved:   { title: 'Changes saved!', text: 'Your changes are saved and your deck is up to date.',                            icon: '/icons/save.png' }
+};
+let savedSnapshot = '';   // what the deck looked like at the last publish or save
+
+function snapshot() {
+    return JSON.stringify({ cards: cards, name: $('pubName').value.trim(), cover: pubCover, share: pubShare });
+}
+
+// Before the first publish any card counts as unsaved. After that, only a change since the last publish or save does.
+function hasUnsaved() {
+    return published ? snapshot() !== savedSnapshot : cards.length > 0;
+}
+
+function syncPubBtn() {
+    $('pubBtn').querySelector('.pub-btn-text').textContent = published ? 'Save' : 'Publish';
+}
+
+function showDone(kind) {
+    const c = DONE_COPY[kind];
+    $('doneTitle').textContent = c.title;
+    $('doneText').textContent = c.text;
+    $('doneFallback').hidden = true;
+    $('doneIcon').hidden = false;
+    $('doneIcon').src = c.icon;
+    $('doneView').disabled = false;
+    $('doneView').textContent = 'View deck';
+    $('doneModal').classList.add('on');
+    $('doneView').focus();
+}
+
+function viewDeck() {
+    $('doneView').disabled = true;
+    $('doneView').textContent = 'Opening…';   // so the next page does not come as a surprise
+    location.href = DECK_OVERVIEW_URL + '?id=' + encodeURIComponent(currentDeckId);
+}
+
+buildGallery();
+$('doneView').addEventListener('click', viewDeck);
+$('publishBtn').addEventListener('click', showPublish);
+$('pubBack').addEventListener('click', showBuild);
+$('pubName').addEventListener('input', () => { updateCount(); $('pubMsg').textContent = ''; });
+$('pubCoverBtn').addEventListener('click', openGallery);
+$('galClose').addEventListener('click', closeGallery);
+$('galSave').addEventListener('click', saveCover);
+$('galleryModal').addEventListener('click', e => { if (e.target === $('galleryModal')) closeGallery(); });
+$('pubSelectBtn').addEventListener('click', () => toggleShare($('pubOptions').hidden));
+document.querySelectorAll('#pubOptions button').forEach(b => b.addEventListener('click', () => {
+    setShare(b.dataset.value);
+    toggleShare(false);
+    $('pubSelectBtn').focus();
+}));
+$('pubSelect').addEventListener('keydown', e => {
+    if (e.key === 'Escape') { toggleShare(false); $('pubSelectBtn').focus(); return; }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault();
+    toggleShare(true);
+    const opts = [...document.querySelectorAll('#pubOptions button')];
+    const i = opts.indexOf(document.activeElement);
+    opts[(i + (e.key === 'ArrowDown' ? 1 : -1) + opts.length) % opts.length].focus();
+});
+document.addEventListener('click', e => { if (!$('pubSelect').contains(e.target)) toggleShare(false); });
+$('pubBtn').addEventListener('click', startPublish);
+$('doneClose').addEventListener('click', closeDone);
+$('doneModal').addEventListener('click', e => { if (e.target === $('doneModal')) closeDone(); });
+$('doneIcon').addEventListener('error', () => { $('doneIcon').hidden = true; $('doneFallback').hidden = false; });
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if ($('galleryModal').classList.contains('on')) closeGallery();
+    else if ($('doneModal').classList.contains('on')) closeDone();
+});
+
+
+/* ---------- Init ---------- */
+buildOptions();
+syncForm();
+buildTf();
+syncTf();
+resetMt();
+resetFb();
+renderType();
+renderCards();
+</script>
+</body>
+</html>
