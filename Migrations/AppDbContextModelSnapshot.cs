@@ -67,6 +67,177 @@ namespace JavaMaster.Api.Migrations
                     b.ToTable("Decks");
                 });
 
+            modelBuilder.Entity("JavaMaster.Api.Entities.ErrorRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Help")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Pattern")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ErrorRules");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Help = "Add the missing ; and run it again.",
+                            IsActive = true,
+                            Message = "Java needs a ; at the end of this line.",
+                            Pattern = "^';' expected",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Help = "Add a \" at the end of the text and run it again.",
+                            IsActive = true,
+                            Message = "This text is missing its closing quotation mark.",
+                            Pattern = "^unclosed string literal",
+                            SortOrder = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Help = "Write the type first, like int, double or String.",
+                            IsActive = true,
+                            Message = "“{1}” needs a type before it.",
+                            Pattern = "^cannot find symbol \\[variable (\\w+)\\] \\[missing-type\\]",
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Help = "{2} starts with a capital letter. Fix it and run it again.",
+                            IsActive = true,
+                            Message = "Java doesn't know “{1}”. Did you mean “{2}”?",
+                            Pattern = "\\[(?:class|variable) (\\w+)\\] \\[did-you-mean (\\w+)\\]",
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Help = "Check the spelling and the capital letters.",
+                            IsActive = true,
+                            Message = "Java doesn't know the command “{1}”.",
+                            Pattern = "^cannot find symbol \\[method (\\w+)\\]",
+                            SortOrder = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Help = "Check the spelling and the capital letters.",
+                            IsActive = true,
+                            Message = "Java doesn't know the type “{1}”.",
+                            Pattern = "^cannot find symbol \\[class (\\w+)\\]",
+                            SortOrder = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Help = "If it's text, put it inside quotation marks. If it's a variable, create it first.",
+                            IsActive = true,
+                            Message = "Java doesn't know the name “{1}”.",
+                            Pattern = "^cannot find symbol \\[variable (\\w+)\\]",
+                            SortOrder = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Help = "Change int to double and run it again.",
+                            IsActive = true,
+                            Message = "An int can't hold decimals. Use double for numbers like 3.14.",
+                            Pattern = "possible lossy conversion from double to int",
+                            SortOrder = 8
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Help = "Check that the value matches the variable's type.",
+                            IsActive = true,
+                            Message = "A {1} value can't be stored in a {2} variable.",
+                            Pattern = "^incompatible types: (\\w+) cannot be converted to (\\w+)",
+                            SortOrder = 9
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Help = "Use a different name, or remove the second one.",
+                            IsActive = true,
+                            Message = "You already created a variable named “{1}”.",
+                            Pattern = "^variable (\\w+) is already defined",
+                            SortOrder = 10
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Help = "Did you forget a command such as System.out.println?",
+                            IsActive = true,
+                            Message = "This line isn't a complete instruction.",
+                            Pattern = "^not a statement",
+                            SortOrder = 11
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Help = "Check your curly braces { }.",
+                            IsActive = true,
+                            Message = "Some code is outside the class.",
+                            Pattern = "^class, interface, enum, or record expected",
+                            SortOrder = 12
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Help = "Every { needs a } to close it.",
+                            IsActive = true,
+                            Message = "A closing curly brace } is missing.",
+                            Pattern = "^reached end of file while parsing",
+                            SortOrder = 13
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Help = "Check this line for a missing symbol.",
+                            IsActive = true,
+                            Message = "Java expected a {1} here.",
+                            Pattern = "^'(.)' expected",
+                            SortOrder = 14
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Help = "Look for an extra or missing character, or check the spelling near this spot.",
+                            IsActive = true,
+                            Message = "Something on this line is out of place.",
+                            Pattern = "^(?:illegal start of (?:expression|type)|<identifier> expected)",
+                            SortOrder = 15
+                        });
+                });
+
             modelBuilder.Entity("JavaMaster.Api.Entities.LearnNode", b =>
                 {
                     b.Property<int>("Id")
@@ -156,6 +327,25 @@ namespace JavaMaster.Api.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("NodeQuestions");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.PracticePass", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LearnNodeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PassedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId", "LearnNodeId", "ItemId");
+
+                    b.ToTable("PracticePasses");
                 });
 
             modelBuilder.Entity("JavaMaster.Api.Entities.Purchase", b =>

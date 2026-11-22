@@ -23,6 +23,8 @@ public class AppDbContext : DbContext
     public DbSet<UserDailyChallenge> UserDailyChallenges => Set<UserDailyChallenge>();
     public DbSet<UserBadge> UserBadges => Set<UserBadge>();
     public DbSet<Deck> Decks => Set<Deck>();
+    public DbSet<ErrorRule> ErrorRules => Set<ErrorRule>();
+    public DbSet<PracticePass> PracticePasses => Set<PracticePass>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -91,5 +93,12 @@ public class AppDbContext : DbContext
             e.Property(d => d.Description).HasMaxLength(GameRules.DeckDescriptionMaxLength);
             e.HasIndex(d => d.OwnerUserId);
         });
+
+        b.Entity<ErrorRule>(e =>
+        {
+            e.HasData(ErrorRuleSeed.All);   // the 15 friendly-error rows
+        });
+
+        b.Entity<PracticePass>(e => e.HasKey(x => new { x.UserId, x.LearnNodeId, x.ItemId }));
     }
 }
