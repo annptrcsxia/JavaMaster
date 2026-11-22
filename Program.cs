@@ -8,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
     builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+    builder.Services.AddMemoryCache();
+    builder.Services.AddSingleton<JavaRunnerService>();
+    builder.Services.AddScoped<FriendlyErrorService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -24,7 +27,6 @@ using (var scope = app.Services.CreateScope())
     {
         await db.Database.MigrateAsync();
         await DbSeeder.SeedAsync(db);
-        await LessonContent.SeedAsync(db);
         await PracticeContent.SeedAsync(db);
     }
     catch (Exception ex)
