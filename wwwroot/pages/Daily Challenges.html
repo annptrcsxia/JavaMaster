@@ -25,7 +25,11 @@ body {
     padding: 28px 40px; z-index: 5;
 }
 .top-bar button { background: none; border: none; cursor: pointer; display: flex; }
-.top-bar img { width: 34px; height: 34px; }
+.top-bar svg {
+    width: min(2.258vw, 4vh);
+    height: min(2.258vw, 4vh);
+    color: #f3e6d8;
+}
 
 /* ---------- Stage + question ---------- */
 #stage {
@@ -135,8 +139,8 @@ body {
 <audio id="completedSound"><source src="/sounds/completed_sound-efx.wav" type="audio/wav"></audio>
 
 <div class="top-bar" id="topBar">
-    <button onclick="goBack()"><img src="/icons/goback.png" alt="Go Back"></button>
-    <button onclick="openModal('settingsModal')"><img src="/icons/settings_icon.png" alt="Settings"></button>
+<button onclick="openModal('exitModal')" aria-label="Go back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+<button onclick="openModal('settingsModal')" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg></button>
 </div>
 
 <div id="stage"></div>

@@ -36,6 +36,7 @@ public class MeController : ControllerBase
             .Select(i => new { i.ShopItem!.Code, i.Quantity })
             .ToListAsync();
         var repairs = inventory.FirstOrDefault(i => i.Code == "STREAK_REPAIR")?.Quantity ?? 0;
+        var badgeCount = await _db.UserBadges.CountAsync(b => b.UserId == user.Id);
 
         // Badges earned by finishing lessons for the first time
         var badges = await _db.UserBadges.CountAsync(x => x.UserId == user.Id);
@@ -68,12 +69,13 @@ public class MeController : ControllerBase
                 icon = "/rank titles/" + rank.IconFile
             },
             streak = alive ? user.CurrentStreak : 0,
+            longestStreak = user.LongestStreak,
+            badges = badgeCount,
             activeToday = last == today,
             missedDays,                                            // 0 = fine, 1 = repairable, 2+ = too late
             lostStreak = missedDays > 0 ? user.CurrentStreak : 0,  // the "14" in "Repair 14-day streak"
             canRepairStreak = missedDays == 1 && repairs > 0,      // missed exactly one day AND owns 1+
             inventory = inventory.ToDictionary(x => x.Code, x => x.Quantity),
-            badges
         });
     }
 
