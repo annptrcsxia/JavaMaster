@@ -168,23 +168,6 @@ body {
     filter: brightness(1.35) saturate(1.3);
 }
 
-/* Completed Practice / Test get a small check badge */
-.lesson-node.completed[data-type="practice"]::after,
-.lesson-node.completed[data-type="test"]::after {
-    content: '\2713';
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--line-done);
-    color: #2c1608;
-    font: 700 24px/44px 'Poppins', sans-serif;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
-
 /* Tap on a locked node */
 .lesson-node.shake {
     animation: shake 0.35s ease;
@@ -363,4 +346,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .lesson-node.current::before { animation: none; }
     .lesson-node { transition: none; }
+}
+
+.lesson-node.current > img {
+    filter: none !important;
 }
