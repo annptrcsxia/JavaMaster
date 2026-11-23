@@ -20,17 +20,31 @@ body {
 
 /* ---------- Top bar ---------- */
 .top-bar {
-    position: absolute; top: 0; left: 0; right: 0;
-    display: flex; justify-content: space-between;
-    padding: 28px 40px; z-index: 5;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(100vw, calc(100vh * 1240 / 700));
+    display: flex;
+    justify-content: space-between;
+    padding: min(1.774vw, 3.143vh) min(3.548vw, 6.286vh);
+    z-index: 5;
 }
-.top-bar button { background: none; border: none; cursor: pointer; display: flex; }
+.top-bar button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(3.548vw, 6.286vh);
+    height: min(3.548vw, 6.286vh);
+}
 .top-bar svg {
     width: min(2.258vw, 4vh);
     height: min(2.258vw, 4vh);
     color: #f3e6d8;
 }
-
 /* ---------- Stage + question ---------- */
 #stage {
     position: absolute; inset: 0;
@@ -68,12 +82,26 @@ body {
 }
 
 .mainbtn {
-    width: 265px; padding: 20px; border: none; border-radius: 14px;
-    background: #c97f60; color: #fff; font: 700 20px 'Inter', sans-serif;
-    cursor: pointer; transition: background .2s;
+    width: 240px;
+    padding: 20px;
+    border: none;
+    border-radius: 14px;
+    background: #c8662d;
+    box-shadow: 0 7px 0 #8a421d;
+    transition: transform .1s, box-shadow .1s;
+    color: #fff;
+    font: 700 19px 'Inter', sans-serif;
+    cursor: pointer;
 }
-.mainbtn:hover:not(:disabled) { background: #d68c6d; }
-.mainbtn:disabled { background: #7a5a4e; cursor: not-allowed; }
+.mainbtn:disabled {
+    background: #7a5a4e;
+    box-shadow: 0 7px 0 #53392f;
+    cursor: not-allowed;
+}
+.mainbtn:not(:disabled):active {
+    transform: translateY(4px);
+    box-shadow: 0 3px 0 #8a421d;
+}
 
 /* ---------- Settings modal ---------- */
 .modal {
@@ -115,9 +143,27 @@ body {
 .note { margin-bottom: 30px; font-size: 16px; color: #a89684; }
 .rbtn {
     width: 306px; padding: 20px; border: none; border-radius: 14px;
-    background: #5b3fe0; color: #fff; font: 700 20px 'Inter', sans-serif; cursor: pointer;
+    background: #5b3fe0;
+    box-shadow: 0 7px 0 #3a2a9a;
+    transition: transform .1s, box-shadow .1s;
+    color: #fff; font: 700 20px 'Inter', sans-serif; cursor: pointer;
 }
-.rbtn.claimed { background: #432da3; cursor: default; }
+.rbtn.claimed {
+    background: #432da3;
+    box-shadow: 0 3px 0 #2a1d75;
+    transform: translateY(4px);
+    cursor: default;
+}
+.rbtn:not(.claimed):active {
+    transform: translateY(4px);
+    box-shadow: 0 3px 0 #3a2a9a;
+}
+/* "Go Back" / "Continue" button (no reward animation) */
+.rbtn.edge { box-shadow: 0 6px 0 #3a2a9a; }
+.rbtn.edge:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 #3a2a9a;
+}
 
 /* ---------- Gold coin canvas ---------- */
 #coins { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
@@ -302,7 +348,7 @@ function showAlreadyCompleted() {
     st.innerHTML = `<div class="done"><img src="/icons/green_check.png" alt="Complete" style="width:120px">
         <h1>Challenge Complete!</h1>
         <p class="note">Come back tomorrow for a new challenge!</p>
-        <button class="rbtn" onclick="goBack()">Go Back</button></div>`;
+        <button class="rbtn edge" onclick="goBack()">Go Back</button></div>`;
 }
 
 /* ---------- Reward: the server already saved it, this only plays the animation ---------- */
@@ -407,7 +453,7 @@ async function init() {
         $('stage').classList.add('center');
         $('stage').innerHTML = `<div class="done"><h1>Could not load the challenge</h1>
             <p class="note">${esc(e.message)}</p>
-            <button class="rbtn" onclick="goBack()">Go Back</button></div>`;
+            <button class="rbtn edge" onclick="goBack()">Go Back</button></div>`;
         return;
     }
     loadQuestion();
