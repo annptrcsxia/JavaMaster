@@ -252,6 +252,7 @@
             } catch (e) {
                 console.error('Could not load the Learn path', e);
                 drawPath();
+                jumpToCurrent();
                 return;
             }
             const status = {};
@@ -271,6 +272,40 @@
             });
 
             drawPath();
+            jumpToCurrent();
+        }
+
+        /* Opening Learn from anywhere lands on the current node.
+        Reload and Back button: browser restores scroll, so no jump. */
+        let jumped = false;
+
+        function getScroller(el) {
+            let p = el.parentElement;
+            while (p) {
+                const o = getComputedStyle(p).overflowY;
+                if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight) return p;
+                p = p.parentElement;
+            }
+            return window;
+        }
+
+        function jumpToCurrent() {
+            if (jumped) return;
+            jumped = true;
+            const nav = performance.getEntriesByType('navigation')[0];
+            if (nav && nav.type !== 'navigate') return;
+            const node = document.querySelector('.lesson-node.current');
+            if (!node) return;
+            const sc = getScroller(node);
+            const r = node.getBoundingClientRect();
+            if (sc === window) {
+                if (r.top >= 0 && r.bottom <= window.innerHeight) return;   // already visible
+                window.scrollTo({ top: window.scrollY + r.top - window.innerHeight * 0.4, behavior: 'auto' });
+            } else {
+                const cr = sc.getBoundingClientRect();
+                if (r.top >= cr.top && r.bottom <= cr.bottom) return;       // already visible
+                sc.scrollTo({ top: sc.scrollTop + (r.top - cr.top) - sc.clientHeight * 0.4, behavior: 'auto' });
+            }
         }
 
         function anchor(node, side) {
