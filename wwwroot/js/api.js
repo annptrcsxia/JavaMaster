@@ -20,5 +20,10 @@ const JM = {
     daily:       ()               => api('/daily'),
     dailyAnswer: (answer)         => api('/daily/answer', { method: 'POST', body: JSON.stringify({ answer }) }),
     repair:      ()               => api('/streak/repair', { method: 'POST' }),
-    createDeck:  (deck)           => api('/decks', { method: 'POST', body: JSON.stringify(deck) })
+    decks:        ()               => api('/decks'),
+    deck:         (id)             => api('/decks/' + id),
+    createDeck:   (deck)           => api('/decks', { method: 'POST', body: JSON.stringify(deck) }),
+    deckByCode:   (code)           => api('/decks/code/' + encodeURIComponent(code)),
+    updateDeck:   (id, deck)       => api('/decks/' + id, { method: 'PUT', body: JSON.stringify(deck) }),
+    setDeckShare: (id, share)      => api('/decks/' + id + '/share', { method: 'PATCH', body: JSON.stringify({ share }) })
 };

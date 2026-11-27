@@ -8,13 +8,13 @@ public class Deck
     public User? Owner { get; set; }
 
     public string Name { get; set; } = "";
-    public string? Description { get; set; }
+    public int CoverNumber { get; set; }          // 1 to 6
 
-    public int CoverNumber { get; set; }      // 1 to 6
-    public int ItemCount { get; set; }        // 10, 15 or 20
-
-    // JSON list of type ids, for example ["multiple-choice","fill-blank"]
-    public string QuestionTypes { get; set; } = "[]";
+    public string Share { get; set; } = "public";   // "public" or "private"
+    public string ShareCode { get; set; } = "";     // random 8 characters, for the Copy link
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public List<DeckCard> Cards { get; set; } = new();
 }

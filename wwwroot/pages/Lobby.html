@@ -102,25 +102,29 @@
 
                 <!-- Play -->
                 <section class="play-section">
-                    <h1 class="lobby-heading">Play</h1>
+                    <h1 class="lobby-heading">Community Play</h1>
 
                     <div class="play-buttons">
-                        <button type="button" class="play-btn host-btn" id="hostDeckBtn">Host a Deck</button>
-                        <button type="button" class="play-btn join-btn" id="joinDeckBtn">Join a Deck</button>
+                        <button type="button" class="play-btn host-btn" id="hostDeckBtn">Publish a Deck</button>
+                        <button type="button" class="play-btn join-btn" id="joinDeckBtn">Play a Shared Deck</button>
                     </div>
                 </section>
 
-                <!-- Live Quiz card -->
-                <section class="live-quiz-card">
-                    <div class="live-quiz-info">
-                        <h2 class="live-quiz-title">Live Quiz</h2>
-                        <p class="live-quiz-desc">Join a live quiz hosted by your professor.</p>
-                    </div>
+                <!-- Class Quiz -->
+                <div class="class-quiz">
+                    <h1 class="lobby-heading">Class Quiz</h1>
 
-                    <img src="/icons/live quiz.png" alt="Live Quiz" class="live-quiz-img">
+                    <section class="live-quiz-card">
+                        <div class="live-quiz-info">
+                            <h2 class="live-quiz-title">Live Quiz</h2>
+                            <p class="live-quiz-desc">Take a quiz assigned by your professor.</p>
+                        </div>
 
-                    <a href="/pages/Join Quiz.html" class="enter-code-btn" id="enterClassCodeBtn">Enter class code</a>
-                </section>
+                        <img src="/icons/live quiz.png" alt="Live Quiz" class="live-quiz-img">
+
+                        <a href="/pages/Join Quiz.html" class="enter-code-btn" id="enterClassCodeBtn">Enter class code</a>
+                    </section>
+                </div>
             </div>
 
             <!-- Your Decks -->
@@ -128,12 +132,12 @@
                 <div class="decks-head">
                     <h2 class="lobby-heading">Your Decks</h2>
 
-                    <!-- Shown once the user has decks. New Deck opens the loading screen, then Building deck. Sort does nothing yet. -->
+                    <!-- Shown once the user has decks. New Deck opens the loading screen, then Building deck. -->
                     <div class="decks-tools" id="decksTools" hidden>
-                        <a href="/pages/Loading-screen.html" class="deck-tool" id="newDeckBtn"><span class="deck-tool-plus" aria-hidden="true">+</span>New Deck</a>
+                        <a href="/pages/Loading-screen.html" class="deck-tool" id="newDeckBtn"><img class="deck-tool-icon" src="/icons/plus.png" alt="">New Deck</a>
                         <div class="sort-wrap">
                             <button type="button" class="deck-tool deck-sort" id="sortBtn" aria-haspopup="menu" aria-expanded="false">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h12M4 12h8M4 18h4M18 7v11m0 0l-3-3m3 3l3-3"/></svg>
+                                <img class="deck-tool-icon" src="/icons/sort.png" alt="">
                                 Sort
                             </button>
                             <div class="pop-menu sort-menu" id="sortMenu" role="menu" aria-label="Sort decks" hidden>
@@ -162,12 +166,10 @@
     </main>
 <script src="/js/profile-dropdown.js"></script>
 <script src="/js/study-modal.js"></script>
+<script src="/js/api.js"></script>
 <script src="/js/share-deck.js"></script>
 <script>
 (function () {
-    // TODO: load the user's decks from the Decks API (for example GET /api/decks) instead of this temporary list.
-    // The Building deck page keeps the decks published in this browser tab here.
-    const DECKS_KEY = 'jm.decks';
     const MAX_TYPE_CHIPS = 2;   // more types than this show as "+3"
     const TYPE_LABELS = {
         'multiple-choice': 'Multiple Choice',
@@ -189,10 +191,10 @@
         return node;
     }
 
-    function loadDecks() {
+    async function loadDecks() {
         try {
-            const list = JSON.parse(sessionStorage.getItem(DECKS_KEY));
-            return Array.isArray(list) ? list.filter(d => d && d.id && Array.isArray(d.cards)) : [];
+            const list = await JM.decks();
+            return Array.isArray(list) ? list : [];
         } catch (e) {
             return [];
         }
@@ -209,7 +211,7 @@
 
     function sortedDecks() {
         return decks
-            .map((deck, i) => ({ deck: deck, i: i, at: deck.updatedAt || deck.createdAt || 0 }))
+            .map((deck, i) => ({ deck: deck, i: i, at: Date.parse(deck.updatedAt || deck.createdAt) || 0 }))
             .sort(SORTS[sortKey])
             .map(x => x.deck);
     }
@@ -276,7 +278,7 @@
         const shareItem = menuItem('button', 'Share', '/icons/share.png');
         shareItem.addEventListener('click', () => { closeMenus(); JMShare.open(deck.id, menuBtn); });
         panel.append(
-            menuItem('a', 'Edit', '/icons/edit.png', overview),
+            menuItem('a', 'Edit', '/icons/edit.png', '/pages/Building-deck.html?id=' + encodeURIComponent(deck.id)),
             shareItem,
             menuItem('button', 'Archive', '/icons/archive.png')
         );
@@ -289,7 +291,7 @@
         title.appendChild(link);
 
         const tags = el('div', 'deck-tags');
-        const n = deck.cards.length;
+        const n = deck.items;
         tags.appendChild(el('span', 'deck-chip', n + (n === 1 ? ' Card' : ' Cards')));
         const types = deck.types || [];
         types.slice(0, MAX_TYPE_CHIPS).forEach(t => tags.appendChild(el('span', 'deck-chip', TYPE_LABELS[t] || t)));
@@ -308,7 +310,6 @@
     }
 
     function render() {
-        decks = loadDecks();
         $('decksEmptyState').hidden = decks.length > 0;
         $('decksTools').hidden = decks.length === 0;
         $('decksGrid').hidden = decks.length === 0;
@@ -344,7 +345,10 @@
         else if (e.key === 'End') { e.preventDefault(); items[items.length - 1].focus(); }
     });
 
-    render();
+    $('hostDeckBtn').addEventListener('click', e => JMShare.openPublish(e.currentTarget));
+    $('joinDeckBtn').addEventListener('click', e => JMShare.openJoin(e.currentTarget));
+    $('decksEmptyState').hidden = true;   // nothing flashes while decks load
+    loadDecks().then(list => { decks = list; render(); });
 })();
 </script>
 </body>

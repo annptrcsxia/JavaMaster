@@ -218,6 +218,7 @@
 
 <button type="button" class="make-blank" id="makeBlank" hidden>+ Make blank</button>
 
+<script src="/js/api.js"></script>
 <script>
 /* ---------- Question types ---------- */
 const TYPES = [
@@ -1381,7 +1382,6 @@ window.addEventListener('beforeunload', e => {
 /* ---------- Step 6 and 8: Create a deck screen, publishing and "Deck created!" ---------- */
 const PUBLISH_MIN_CARDS = 1;     // cards needed before Publish turns on
 const MAX_DECK_NAME = 30;
-const PUBLISH_WAIT_MS = 2200;    // stands in for the server until the API is ready
 const PUB_COVERS = [
     'Pixel art picnic scene by a river with a white rabbit at a wooden table',
     'Pixel art seaside view at sunset with a lighthouse and a park bench',
@@ -1511,22 +1511,10 @@ let currentDeckId = null;   // set at the first publish, so a later Save updates
 
 /* publishing */
 async function publishDeck(details) {
-    // TODO: send `details` (including the cards) to the Decks API once it can store them.
-    // Until then the decks are kept in sessionStorage, shared with the Lobby and Deck overview pages (this browser tab only).
-    try {
-        const raw = JSON.parse(sessionStorage.getItem('jm.decks'));
-        const list = Array.isArray(raw) ? raw : [];
-        if (currentDeckId === null) currentDeckId = 'd' + Date.now();
-        const i = list.findIndex(d => d.id === currentDeckId);
-        const now = Date.now();
-        // createdAt stays the same; updatedAt moves forward every time the deck is published or saved
-        const deck = Object.assign({ id: currentDeckId, createdAt: i >= 0 && list[i].createdAt ? list[i].createdAt : now, updatedAt: now }, details);
-        if (i >= 0) list[i] = deck; else list.push(deck);
-        sessionStorage.setItem('jm.decks', JSON.stringify(list));
-    } catch (e) {
-        throw new Error('Could not save the deck in this browser. Try again.');
-    }
-    await new Promise(resolve => setTimeout(resolve, PUBLISH_WAIT_MS));
+    const saved = currentDeckId === null
+        ? await JM.createDeck(details)
+        : await JM.updateDeck(currentDeckId, details);
+    currentDeckId = saved.id;
 }
 
 async function startPublish() {
@@ -1648,7 +1636,41 @@ document.addEventListener('keydown', e => {
 });
 
 
+/* ---------- Edit an existing deck: Building-deck.html?id=<deck id> ---------- */
+async function loadForEdit() {
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) return;   // no id: a new deck, as before
+    if (!/^\d+$/.test(id)) { location.replace('/pages/Lobby.html'); return; }
+    try {
+        const deck = await JM.deck(id);
+        currentDeckId = deck.id;
+
+        cards.length = 0;
+        deck.cards.forEach(c => cards.push(Object.assign({ id: nextId++ }, c)));
+
+        $('deckTitle').value = deck.name;
+        $('pubName').value = deck.name;
+        updateCount();
+
+        pubCover = deck.cover;
+        $('pubCoverImg').src = '/cover/cover ' + pubCover + '.jpg';
+        $('pubCoverImg').alt = PUB_COVERS[pubCover - 1];
+        $('pubCoverImg').hidden = false;
+        $('pubCoverBtn').classList.add('has-img');
+        $('pubCoverLabel').textContent = 'Change cover image';
+        setShare(deck.share === 'private' ? 'private' : 'public');
+
+        published = true;   // the top button now says Save
+        renderCards();
+        syncPubBtn();
+        savedSnapshot = snapshot();   // nothing changed yet, so leaving the page does not warn
+    } catch (e) {
+        location.replace('/pages/Lobby.html');   // deck not found, or not yours
+    }
+}
+
 /* ---------- Init ---------- */
+loadForEdit();   // starts loading; the rest of Init below runs while it waits
 buildOptions();
 syncForm();
 buildTf();

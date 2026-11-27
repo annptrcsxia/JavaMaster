@@ -36,17 +36,10 @@ namespace JavaMaster.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("ItemCount")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int?>("OwnerId")
                         .HasColumnType("int");
@@ -54,9 +47,18 @@ namespace JavaMaster.Api.Migrations
                     b.Property<int>("OwnerUserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("QuestionTypes")
+                    b.Property<string>("Share")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("ShareCode")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -64,7 +66,46 @@ namespace JavaMaster.Api.Migrations
 
                     b.HasIndex("OwnerUserId");
 
+                    b.HasIndex("ShareCode")
+                        .IsUnique();
+
                     b.ToTable("Decks");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.DeckCard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DeckId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeckId", "Position")
+                        .IsUnique();
+
+                    b.ToTable("DeckCards");
                 });
 
             modelBuilder.Entity("JavaMaster.Api.Entities.ErrorRule", b =>
@@ -746,6 +787,17 @@ namespace JavaMaster.Api.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("JavaMaster.Api.Entities.DeckCard", b =>
+                {
+                    b.HasOne("JavaMaster.Api.Entities.Deck", "Deck")
+                        .WithMany("Cards")
+                        .HasForeignKey("DeckId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deck");
+                });
+
             modelBuilder.Entity("JavaMaster.Api.Entities.LearnNode", b =>
                 {
                     b.HasOne("JavaMaster.Api.Entities.LearnSection", "LearnSection")
@@ -848,6 +900,11 @@ namespace JavaMaster.Api.Migrations
                     b.Navigation("LearnNode");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("JavaMaster.Api.Entities.Deck", b =>
+                {
+                    b.Navigation("Cards");
                 });
 
             modelBuilder.Entity("JavaMaster.Api.Entities.LearnNode", b =>

@@ -23,6 +23,7 @@ public class AppDbContext : DbContext
     public DbSet<UserDailyChallenge> UserDailyChallenges => Set<UserDailyChallenge>();
     public DbSet<UserBadge> UserBadges => Set<UserBadge>();
     public DbSet<Deck> Decks => Set<Deck>();
+    public DbSet<DeckCard> DeckCards => Set<DeckCard>();
     public DbSet<ErrorRule> ErrorRules => Set<ErrorRule>();
     public DbSet<PracticePass> PracticePasses => Set<PracticePass>();
 
@@ -90,8 +91,17 @@ public class AppDbContext : DbContext
         b.Entity<Deck>(e =>
         {
             e.Property(d => d.Name).HasMaxLength(GameRules.DeckNameMaxLength);
-            e.Property(d => d.Description).HasMaxLength(GameRules.DeckDescriptionMaxLength);
+            e.Property(d => d.Share).HasMaxLength(10);
+            e.Property(d => d.ShareCode).HasMaxLength(GameRules.DeckShareCodeLength);
             e.HasIndex(d => d.OwnerUserId);
+            e.HasIndex(d => d.ShareCode).IsUnique();
+        });
+
+        b.Entity<DeckCard>(e =>
+        {
+            e.Property(c => c.Type).HasMaxLength(30);
+            e.Property(c => c.Question).HasMaxLength(GameRules.DeckQuestionMaxLength);
+            e.HasIndex(c => new { c.DeckId, c.Position }).IsUnique();
         });
 
         b.Entity<ErrorRule>(e =>

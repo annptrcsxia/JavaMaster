@@ -17,12 +17,25 @@ public static class GameRules
     };
 
     // Decks
-    public const int DeckNameMaxLength = 40;
-    public const int DeckDescriptionMaxLength = 200;
+    public const int DeckNameMaxLength = 30;
+    public const int DeckMinCards = 1;
+    public const int DeckMaxCards = 50;
     public const int DeckCoverCount = 6;
-    public static readonly int[] DeckItemOptions = { 10, 15, 20 };
+    public const int DeckShareCodeLength = 6;
+    public const int DeckQuestionMaxLength = 200;
+    public const int DeckOptionMaxLength = 60;       // multiple-choice options
+    public const int DeckMatchTextMaxLength = 40;    // matching item and answer
+    public const int DeckMinPairs = 2;
+    public const int DeckMaxPairs = 8;
+    public const int DeckCodeMaxLength = 1000;
+    public const int DeckMinBlanks = 1;
+    public const int DeckMaxBlanks = 5;
+    public const int DeckAnswerMaxLength = 40;       // blank answers and decoys
+    public const int DeckMaxDecoys = 5;
+
+    public static readonly string[] DeckShareValues = { "public", "private" };
     public static readonly string[] DeckQuestionTypes =
     {
-        "multiple-choice", "true-false", "matching", "fill-blank"
+        "multiple-choice", "true-false", "matching", "fill-blank-code", "drag-drop-code"
     };
 }

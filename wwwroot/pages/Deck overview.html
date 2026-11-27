@@ -14,8 +14,8 @@
     <style>
         .ov {
             width: min(945px, 100%);
-            margin: 0 auto;
-            padding: 70px 0 60px;
+            margin: -15px auto 0;
+            padding: 0 0 60px;
             font-family: 'Bricolage Grotesque', sans-serif;
             color: #f3e6d8;
         }
@@ -354,7 +354,7 @@
                         <button type="button" class="ov-btn ov-icon-btn" id="ovShare" aria-label="Share deck">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 14v5h14v-5"/></svg>
                         </button>
-                        <button type="button" class="ov-btn">
+                        <button type="button" class="ov-btn" id="ovEdit">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4zM14 6l3 3"/></svg>
                             Edit
                         </button>
@@ -380,14 +380,12 @@
     <!-- ===== COPY #3: NAVBAR SCRIPTS (dropdown, logout, notification badge) ===== -->
     <script src="/js/notification-manager.js"></script>
     <script src="/js/profile-dropdown.js"></script>
+    <script src="/js/api.js"></script>
     <script src="/js/share-deck.js"></script>
 
     <!-- ===== Deck overview script ===== -->
     <script>
     (function () {
-        // TODO: when the Decks API can store decks, load the deck from it (for example GET /api/decks/{id})
-        // instead of this temporary hand-off. The Building deck page saves the published deck here (this tab only).
-        const DECKS_KEY = 'jm.decks';
 
         const COVER_ALTS = [
             'Pixel art picnic scene by a river with a white rabbit at a wooden table',
@@ -415,11 +413,11 @@
         }
 
         // The deck is chosen by the id in the address, for example  Deck overview.html?id=d1700000000000
-        function loadDeck() {
+        async function loadDeck() {
             try {
                 const id = new URLSearchParams(location.search).get('id');
-                const list = JSON.parse(sessionStorage.getItem(DECKS_KEY));
-                const deck = Array.isArray(list) ? list.find(d => String(d.id) === id) : null;
+                if (!/^\d+$/.test(id || '')) return null;
+                const deck = await JM.deck(id);
                 return deck && Array.isArray(deck.cards) && deck.cards.length ? deck : null;
             } catch (e) {
                 return null;
@@ -475,12 +473,15 @@
             return card;
         }
 
-        function render() {
-            const deck = loadDeck();
+    async function render() {
+            const deck = await loadDeck();
             $('ovDeck').hidden = !deck;
             $('ovEmpty').hidden = !!deck;
             if (!deck) return;     
             $('ovShare').addEventListener('click', () => JMShare.open(deck.id, $('ovShare')));
+            $('ovEdit').addEventListener('click', () => {
+                location.href = '/pages/Building-deck.html?id=' + encodeURIComponent(deck.id);
+            });
 
             document.title = 'Java Master - ' + deck.name;
             $('ovName').textContent = deck.name;
